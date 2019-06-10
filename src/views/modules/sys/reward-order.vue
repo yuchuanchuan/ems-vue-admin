@@ -8,9 +8,25 @@
         <el-input v-model="dataRewardForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
+        <el-date-picker
+          v-model="createOrderTime"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="订单开始日期"
+          end-placeholder="订单结束日期"
+          value-format="yyyy-MM-dd"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
         <el-button @click="getRewardDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataRewardListSelections.length <= 0">批量删除</el-button>-->
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="exportExcel">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -83,8 +99,8 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle('',scope.row.userId)">修改</el-button>
-          <el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.userId)">取消订单</el-button>
+          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle('',scope.row.orderId)">修改</el-button>
+          <el-button v-if="isAuth('sys:order:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消订单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -105,10 +121,49 @@
     data(){
       return{
         activeName: 'first',
+        pickerOptions: {
+          shortcuts: [
+            {
+              text: '今天',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                // start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit('pick', [start, end]);
+              }
+            },{
+              text: '最近一周',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit('pick', [start, end]);
+              }
+            }, {
+              text: '最近一个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                picker.$emit('pick', [start, end]);
+              }
+            }, {
+              text: '最近一年',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
+                picker.$emit('pick', [start, end]);
+              }
+            }]
+        },
+        createOrderTime: [],
         dataRewardForm:{
           orderNumber: '',
           phone: '',
-          status: 4
+          status: 4,
+          startOrderTime: '',
+          endOrderTime: ''
         },
         dataRewardList: [],
         pageRewardIndex: 1,
@@ -125,6 +180,14 @@
     methods: {
       // 获取数据列表
       getRewardDataList () {
+        if(this.createOrderTime && this.createOrderTime.length > 0){
+          this.dataRewardForm.startOrderTime = this.createOrderTime[0]
+          this.dataRewardForm.endOrderTime = this.createOrderTime[1]
+        }else{
+          this.dataRewardForm.startOrderTime = ""
+          this.dataRewardForm.endOrderTime = ""
+        }
+
         this.dataRewardListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
@@ -134,7 +197,9 @@
             'limit': this.pageRewardSize,
             'orderNumber': this.dataRewardForm.userName,
             'phone': this.dataRewardForm.phone,
-            'status': this.dataRewardForm.status
+            'status': this.dataRewardForm.status,
+            'startOrderTime': this.dataRewardForm.startOrderTime,
+            'endOrderTime': this.dataRewardForm.endOrderTime
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -198,6 +263,32 @@
             }
           })
         }).catch(() => {})
+      },
+      exportExcel(){
+        if(this.createOrderTime && this.createOrderTime.length > 0){
+          this.dataRewardForm.startOrderTime = this.createOrderTime[0]
+          this.dataRewardForm.endOrderTime = this.createOrderTime[1]
+        }else {
+          this.dataRewardForm.startOrderTime = ""
+          this.dataRewardForm.endOrderTime = ""
+        }
+        this.$http({
+          url: this.$http.adornUrl('/sys/order/exportInfo'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'startOrderTime': this.dataRewardForm.startOrderTime,
+            'endOrderTime': this.dataRewardForm.endOrderTime,
+            'status': this.dataRewardForm.status
+          })
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+              + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
+              + "&status=" + this.dataRewardForm.status
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
       }
     },
   }

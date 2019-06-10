@@ -13,6 +13,10 @@
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="dataForm.phone" placeholder="手机号"></el-input>
       </el-form-item>
+      <el-form-item label="验证码" prop="mobileCode">
+        <el-input v-model="dataForm.mobileCode" placeholder="手机验证码"></el-input>
+        <el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>
+      </el-form-item>
       <el-form-item label="产权人身份证正面" prop="ownerPositive">
         <Uploader v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''"></Uploader>
       </el-form-item>
@@ -43,6 +47,14 @@
           <el-radio :label="2">否</el-radio>
         </el-radio-group>
       </el-form-item>
+
+      <el-form-item label="投递费用" size="mini" prop="postRiskId" v-if="dataForm.postRisk === 1">
+        <el-radio-group v-model="dataForm.postRiskId">
+          <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.insuredId" border size="medium">{{item.insuredComment}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+
 
       <el-form-item label="收件地址" prop="addressList">
         <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
@@ -94,6 +106,7 @@
         visible: false,
         imageUrl: '',
         options: [],
+        postRiskList: [],
         props: {
           value: "id",
           label: "name",
@@ -110,11 +123,13 @@
           name: '',
           idCard: '',
           phone: '',
+          mobileCode: '',
           ownerPositive: '',
           ownerNegative: '',
           housingAuthority: '',
           postType: '',
           postRisk: 1,
+          postRiskId: '',
           postProvinceId: '',
           postCityId: '',
           postCountyId: '',
@@ -130,6 +145,9 @@
           ],
           phone: [
             { required: true, validator: validateMobile, trigger: 'blur' }
+          ],
+          mobileCode: [
+            { required: true, message: '手机验证码不能为空', trigger: 'blur' }
           ],
           ownerPositive: [
             { required: true, message: '请上传产权人身份证正面', trigger: 'blur'}
@@ -170,10 +188,25 @@
             })
           }
         }).then(()=>{
-          this.visible = true
-          this.$nextTick(() => {
-            this.$refs['dataForm'].resetFields()
-          })
+            this.$http({
+              url: this.$http.adornUrl('/sys/insured/listAll'),
+              method: 'get',
+              params: this.$http.adornParams()
+            }).then(({ data }) => {
+              if (data && data.code === 0) {
+                console.log(data)
+                this.postRiskList = []
+                data.list.forEach((item) => {
+                  this.postRiskList.push(item)
+                })
+                this.dataForm.postRiskId = data.list[0].insuredId
+              }
+            }).then(()=>{
+              this.visible = true
+              this.$nextTick(() => {
+                this.$refs['dataForm'].resetFields()
+              })
+            })
         }).then(() => {
           if (this.dataForm.id) {
             this.$http({
@@ -221,7 +254,24 @@
       },
       handleItemChange(val){
 
-      }
+      },
+
+      sendMsg(){
+        console.log("-----------------" + this.dataForm.phone)
+        this.$http({
+          url: this.$http.adornUrl('/sendMsg'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'phone': this.dataForm.phone
+          })
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            this.$message.success('验证码发送成功')
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
     },
     components:{
       Uploader

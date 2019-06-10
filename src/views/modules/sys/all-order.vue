@@ -8,9 +8,25 @@
         <el-input v-model="dataAllForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
+        <el-date-picker
+          v-model="createOrderTime"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="订单开始日期"
+          end-placeholder="订单结束日期"
+          value-format="yyyy-MM-dd"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
         <el-button @click="getAllDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataAllListSelections.length <= 0">批量删除</el-button>-->
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="exportExcel">导出</el-button>
       </el-form-item>
     </el-form>
       <el-table
@@ -86,7 +102,7 @@
       >
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
-          <el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)">取消订单</el-button>
+          <el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消订单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -111,9 +127,49 @@
     data(){
       return{
         activeName: 'first',
+        pickerOptions: {
+          shortcuts: [
+            {
+              text: '今天',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                // start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit('pick', [start, end]);
+              }
+            },{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一年',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
+        createOrderTime: [],
         dataAllForm:{
           orderNumber: '',
-          phone: ''
+          phone: '',
+          startOrderTime: '',
+          endOrderTime: '',
+          status: ''
         },
         dataAllList: [],
         pageAllIndex: 1,
@@ -130,6 +186,15 @@
     methods: {
       // 获取数据列表
       getAllDataList () {
+        console.log("创建订单日期----------");
+        if(this.createOrderTime && this.createOrderTime.length > 0){
+          this.dataAllForm.startOrderTime = this.createOrderTime[0]
+          this.dataAllForm.endOrderTime = this.createOrderTime[1]
+        }else{
+          this.dataAllForm.startOrderTime = ""
+          this.dataAllForm.endOrderTime = ""
+        }
+
         this.dataAllListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
@@ -138,7 +203,10 @@
             'page': this.pageAllIndex,
             'limit': this.pageAllSize,
             'orderNumber': this.dataAllForm.orderNumber,
-            'phone': this.dataAllForm.phone
+            'phone': this.dataAllForm.phone,
+            'startOrderTime': this.dataAllForm.startOrderTime,
+            'endOrderTime': this.dataAllForm.endOrderTime,
+            'status': this.dataAllForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -202,6 +270,33 @@
             }
           })
         }).catch(() => {})
+      },
+
+      exportExcel(){
+        if(this.createOrderTime && this.createOrderTime.length > 0){
+          this.dataAllForm.startOrderTime = this.createOrderTime[0]
+          this.dataAllForm.endOrderTime = this.createOrderTime[1]
+        }else {
+          this.dataAllForm.startOrderTime = ""
+          this.dataAllForm.endOrderTime = ""
+        }
+        this.$http({
+          url: this.$http.adornUrl('/sys/order/exportInfo'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'startOrderTime': this.dataAllForm.startOrderTime,
+            'endOrderTime': this.dataAllForm.endOrderTime,
+            'status': this.dataAllForm.status
+          })
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+              + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+              + "&status=" + this.dataAllForm.status
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
       }
     },
     components: {
