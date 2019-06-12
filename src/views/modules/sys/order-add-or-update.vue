@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="!dataForm.orderId ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="135px">
@@ -119,7 +119,7 @@
           {id:3, name:'其他'}
         ],
         dataForm:{
-          id: 0,
+          orderId: 0,
           name: '',
           idCard: '',
           phone: '',
@@ -171,8 +171,8 @@
       }
     },
     methods:{
-      init (id) {
-        this.dataForm.id = id || 0
+      init (orderId) {
+        this.dataForm.orderId = orderId || 0
         this.$http({
           url: this.$http.adornUrl('/sys/area/list'),
           method: 'get',
@@ -208,9 +208,9 @@
               })
             })
         }).then(() => {
-          if (this.dataForm.id) {
+          if (this.dataForm.orderId) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({ data }) => {
@@ -230,8 +230,12 @@
             this.dataForm.postCityId = this.dataForm.addressList[1]
             this.dataForm.postCountyId = this.dataForm.addressList[2]
 
+            if(this.dataForm.postRisk === 2){
+              this.dataForm.postRiskId = 0
+            }
+
             this.$http({
-              url: this.$http.adornUrl(`/sys/order/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/sys/order/${!this.dataForm.orderId ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData(this.dataForm)
             }).then(({ data }) => {

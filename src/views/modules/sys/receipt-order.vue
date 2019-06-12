@@ -72,10 +72,10 @@
         label="收货地址">
       </el-table-column>
       <el-table-column
-        prop="handleAreaId"
+        prop="areaName"
         header-align="center"
         align="center"
-        label="办理地点">
+        label="办理地区">
       </el-table-column>
       <el-table-column
         prop="createOrderTime"

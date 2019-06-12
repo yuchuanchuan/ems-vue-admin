@@ -12,9 +12,9 @@
     <el-tab-pane label="已收货" name="fourth">
       <RewardOrder />
     </el-tab-pane>
-    <el-tab-pane label="已取消" name="fifth">
-      <CancelOrder />
-    </el-tab-pane>
+    <!--<el-tab-pane label="已取消" name="fifth">-->
+      <!--<CancelOrder />-->
+    <!--</el-tab-pane>-->
   </el-tabs>
 </template>
 
