@@ -131,7 +131,7 @@
           this.roleList = data && data.code === 0 ? data.list : []
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/sys/area/region'),
+            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
             method: 'get',
             params: this.$http.adornParams()
           }).then(({ data }) => {
