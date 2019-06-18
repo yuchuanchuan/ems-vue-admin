@@ -136,11 +136,11 @@
             params: this.$http.adornParams()
           }).then(({ data }) => {
             this.areaList = []
-            if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
-              data.regionList[0].childList.forEach((item) => {
+            if(data && data.code === 0){
+              data.regionList.forEach((item) => {
                 this.areaList.push({
-                  id: item.id,
-                  name: item.name
+                  id: item.areaId,
+                  name: item.areaName
                 })
               })
             }

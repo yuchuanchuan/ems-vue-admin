@@ -50,7 +50,7 @@
 
       <el-form-item label="投递费用" size="mini" prop="postRiskId" v-if="dataForm.postRisk === 1">
         <el-radio-group v-model="dataForm.postRiskId">
-          <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.insuredId" border size="medium">{{item.insuredComment}}</el-radio>
+          <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.id" border size="medium">{{item.text}}</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -197,7 +197,10 @@
                 console.log(data)
                 this.postRiskList = []
                 data.list.forEach((item) => {
-                  this.postRiskList.push(item)
+                  this.postRiskList.push({
+                    id: item.insuredId,
+                    text: item.insuredComment + '￥' + item.insuredAmount
+                  })
                 })
                 this.dataForm.postRiskId = data.list[0].insuredId
               }
