@@ -161,6 +161,7 @@
 
         if(res.code === 0){
           this.$message.success("导入成功");
+          this.getDataList()
         }else{
           this.$message.error(res.msg);
         }
