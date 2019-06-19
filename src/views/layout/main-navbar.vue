@@ -2,8 +2,8 @@
   <nav class="site-navbar" :class="'site-navbar--' + navbarLayoutType">
     <div class="site-navbar__header">
       <h1 class="site-navbar__brand" @click="$router.push({ name: 'home' })">
-        <a class="site-navbar__brand-lg" href="javascript:;">OS-ADMIN</a>
-        <a class="site-navbar__brand-mini" href="javascript:;">OS</a>
+        <a class="site-navbar__brand-lg" href="javascript:;"><img src="~@/assets/img/logo.png"></a>
+        <a class="site-navbar__brand-mini" href="javascript:;"><img src="~@/assets/img/logoBig.png"></a>
       </h1>
     </div>
     <div class="site-navbar__body clearfix">
@@ -21,7 +21,7 @@
         <el-menu-item class="site-navbar__avatar" index="3">
           <el-dropdown :show-timeout="0" placement="bottom">
             <span class="el-dropdown-link">
-              <img src="~@/assets/img/avatar.gif" :alt="userName">{{ userName }}
+              <img src="~@/assets/img/uname.png" :alt="userName">{{ userName }}
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="updatePasswordHandle()">修改密码</el-dropdown-item>
@@ -94,3 +94,11 @@
     }
   }
 </script>
+<style scoped>
+  .site-navbar__brand-lg>img{
+    width:100%;
+  }
+  .site-navbar__brand-mini>img{
+    width:100%;
+  }
+</style>

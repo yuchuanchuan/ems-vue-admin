@@ -1,5 +1,11 @@
 <template>
   <div class="all-order">
+    <div class="hidenbox" v-show="!show">
+      <div class="cha" @click="cha">×</div>
+    </div>
+    <div class="hidenimg" v-show="!show">
+      <img src="../../../assets/img/uname.png" @click="fangda">
+    </div>
     <el-form :inline="true" :model="dataAllForm">
       <el-form-item>
         <el-input v-model="dataAllForm.orderNumber" placeholder="订单号" clearable></el-input>
@@ -90,7 +96,7 @@
         width="180"
         label="凭证截图">
         <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100">
+          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda">
         </template>
       </el-table-column>
       <el-table-column
@@ -123,10 +129,12 @@
 
 <script>
   import AddOrUpdate from './order-add-or-update.vue'
+  import $ from 'jquery'
   export default {
     data(){
       return{
         activeName: 'first',
+        show:true,
         pickerOptions: {
           shortcuts: [
             {
@@ -184,6 +192,16 @@
       this.getAllDataList()
     },
     methods: {
+      cha (){
+        this.show=true
+        console.log(0)
+        $("body").css("overflow","auto");
+      },
+      fangda (){
+        this.show=false
+        $("body").css("overflow","hidden");
+      },
+      
       // 获取数据列表
       getAllDataList () {
         console.log("创建订单日期----------");
@@ -306,5 +324,40 @@
 </script>
 
 <style scoped>
-
+.hidenbox{
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.5);
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:10;
+}
+.hidenimg{
+  position:fixed;
+  top:15%;
+  left:15%;
+  width:70%;
+  height:70%;
+  z-index:20;
+  text-align: center;
+}
+.hidenimg>img{
+  height:100%;
+  max-height:100%;
+  max-width:100%;
+}
+.cha{
+  columns: #333;
+  position: fixed;
+  top:15%;
+  right:13%;
+  font-size:30px;
+  height:30px;
+  width:30px;
+  background:#fff;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+}
 </style>
