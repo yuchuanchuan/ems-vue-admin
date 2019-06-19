@@ -7,6 +7,7 @@ module.exports = {
   env: {
     browser: true,
     node: true,
+    jquery: true,
     es6: true,
   },
   extends: ['plugin:vue/recommended', 'eslint:recommended'],
