@@ -13,6 +13,16 @@
       <el-form-item>
         <el-input v-model="dataAllForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
+      <el-form-item v-if="type == 1">
+        <el-select v-model="dataAllForm.areaId" placeholder="办理地区" width="100%" clearable>
+          <el-option
+            v-for="item in areaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
@@ -54,7 +64,7 @@
         label="订单号">
       </el-table-column>
       <el-table-column
-        prop="orderNumber"
+        prop="mailNum"
         header-align="center"
         align="center"
         label="快递单号">
@@ -99,6 +109,18 @@
           <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda">
         </template>
       </el-table-column>
+        <el-table-column
+        prop="status"
+        header-align="center"
+        align="center"
+        label="订单状态">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
+            <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">待发货</el-tag>
+            <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
+            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已收货</el-tag>
+          </template>
+      </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
@@ -107,8 +129,9 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
-          <el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消订单</el-button>
+          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">修改</el-button>
+          <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
+          <!--<el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">取消订单</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -124,11 +147,15 @@
 
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getAllDataList"></add-or-update>
+
+    <!-- 查看 -->
+    <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
 </template>
 
 <script>
   import AddOrUpdate from './order-add-or-update.vue'
+  import ViewOrder from './view-order.vue'
   import $ from 'jquery'
   export default {
     data(){
@@ -172,12 +199,14 @@
           }]
         },
         createOrderTime: [],
+        areaList: [],
         dataAllForm:{
           orderNumber: '',
           phone: '',
           startOrderTime: '',
           endOrderTime: '',
-          status: ''
+          status: '',
+          areaId: ''
         },
         dataAllList: [],
         pageAllIndex: 1,
@@ -185,11 +214,13 @@
         totalAllPage: 0,
         dataAllListLoading: false,
         dataAllListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        viewOrderVisible: false
       }
     },
     activated () {
       this.getAllDataList()
+      this.getAreaInfo()
     },
     methods: {
       cha (){
@@ -201,7 +232,7 @@
         this.show=false
         $("body").css("overflow","hidden");
       },
-      
+
       // 获取数据列表
       getAllDataList () {
         console.log("创建订单日期----------");
@@ -224,7 +255,8 @@
             'phone': this.dataAllForm.phone,
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
-            'status': this.dataAllForm.status
+            'status': this.dataAllForm.status,
+            'areaId': this.dataAllForm.areaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -259,37 +291,44 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
-      // 删除
-      deleteHandle (id) {
-        var userIds = id ? [id] : this.dataAllListSelections.map(item => {
-          return item.userId
-        })
-        this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/sys/order/delete'),
-            method: 'post',
-            data: this.$http.adornData(userIds, false)
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getAllDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        }).catch(() => {})
-      },
+      // 取消订单
+      // deleteHandle (id) {
+      //   var userIds = id ? [id] : this.dataAllListSelections.map(item => {
+      //     return item.userId
+      //   })
+      //   this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     this.$http({
+      //       url: this.$http.adornUrl('/sys/order/delete'),
+      //       method: 'post',
+      //       data: this.$http.adornData(userIds, false)
+      //     }).then(({ data }) => {
+      //       if (data && data.code === 0) {
+      //         this.$message({
+      //           message: '操作成功',
+      //           type: 'success',
+      //           duration: 1500,
+      //           onClose: () => {
+      //             this.getAllDataList()
+      //           }
+      //         })
+      //       } else {
+      //         this.$message.error(data.msg)
+      //       }
+      //     })
+      //   }).catch(() => {})
+      // },
 
+      // 查看订单
+      viewOrder(id){
+        this.viewOrderVisible = true
+        this.$nextTick(() => {
+          this.$refs.viewOrder.init(id)
+        })
+      },
       exportExcel(){
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataAllForm.startOrderTime = this.createOrderTime[0]
@@ -315,11 +354,34 @@
             this.$message.error(data.msg)
           }
         })
+      },
+      getAreaInfo(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.areaList = []
+          if(data && data.code === 0){
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.areaId,
+                name: item.areaName
+              })
+            })
+          }
+        })
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      ViewOrder
     },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
+      }
+    }
   }
 </script>
 

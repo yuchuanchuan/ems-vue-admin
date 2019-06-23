@@ -1,14 +1,14 @@
 <template>
-  <div class="reward-order">
-    <el-form :inline="true" :model="dataRewardForm">
+  <div class="cancel-order">
+    <el-form :inline="true" :model="dataPayForm">
       <el-form-item>
-        <el-input v-model="dataRewardForm.orderNumber" placeholder="订单号" clearable></el-input>
+        <el-input v-model="dataPayForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataRewardForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataPayForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataRewardForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataPayForm.areaId" placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -31,19 +31,19 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getRewardDataList()">查询</el-button>
+        <el-button @click="getCancelDataList()">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
-        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataRewardListSelections.length <= 0">批量删除</el-button>-->
+        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCancelListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="exportExcel">导出</el-button>
-      </el-form-item>
+      <!--<el-form-item>-->
+        <!--<el-button type="primary" @click="exportExcel">导出</el-button>-->
+      <!--</el-form-item>-->
     </el-form>
     <el-table
-      :data="dataRewardList"
+      :data="dataCancelList"
       border
-      v-loading="dataRewardListLoading"
-      @selection-change="selectionRewardChangeHandle"
+      v-loading="dataCancelListLoading"
+      @selection-change="selectionCancelChangeHandle"
       style="width: 100%;">
       <!--<el-table-column-->
       <!--type="selection"-->
@@ -56,12 +56,6 @@
         header-align="center"
         align="center"
         label="订单号">
-      </el-table-column>
-      <el-table-column
-        prop="orderNumber"
-        header-align="center"
-        align="center"
-        label="快递单号">
       </el-table-column>
       <el-table-column
         prop="name"
@@ -100,17 +94,18 @@
         width="180"
         label="凭证截图">
         <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" >
+          <img :src="scope.row.housingAuthority" alt="" width="100" height="100">
         </template>
       </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="100"
+        width="150"
         label="操作"
       >
         <template slot-scope="scope">
+          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">支付</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
         </template>
       </el-table-column>
@@ -118,12 +113,13 @@
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
-      :current-page="pageRewardIndex"
+      :current-page="pageCancelIndex"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageRewardSize"
-      :total="totalRewardPage"
+      :page-size="pageCancelSize"
+      :total="totalCancelPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
+
     <!-- 查看 -->
     <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
@@ -134,7 +130,7 @@
   export default {
     data(){
       return{
-        activeName: 'fifth',
+        activeName: 'second',
         pickerOptions: {
           shortcuts: [
             {
@@ -173,89 +169,129 @@
         },
         createOrderTime: [],
         areaList: [],
-        dataRewardForm:{
+        dataPayForm:{
           orderNumber: '',
           phone: '',
-          status: 4,
+          status: 1,
           startOrderTime: '',
           endOrderTime: '',
           areaId: ''
         },
-        dataRewardList: [],
-        pageRewardIndex: 1,
-        pageRewardSize: 10,
-        totalRewardPage: 0,
-        dataRewardListLoading: false,
-        dataRewardListSelections: [],
+        dataCancelList: [],
+        pageCancelIndex: 1,
+        pageCancelSize: 10,
+        totalCancelPage: 0,
+        dataCancelListLoading: false,
+        dataCancelListSelections: [],
         addOrUpdateVisible: false,
         viewOrderVisible: false
       }
     },
     activated () {
-      this.getRewardDataList()
+      this.getCancelDataList()
       this.getAreaInfo()
     },
     methods: {
       // 获取数据列表
-      getRewardDataList () {
+      getCancelDataList () {
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataRewardForm.startOrderTime = this.createOrderTime[0]
-          this.dataRewardForm.endOrderTime = this.createOrderTime[1]
+          this.dataPayForm.startOrderTime = this.createOrderTime[0]
+          this.dataPayForm.endOrderTime = this.createOrderTime[1]
         }else{
-          this.dataRewardForm.startOrderTime = ""
-          this.dataRewardForm.endOrderTime = ""
+          this.dataPayForm.startOrderTime = ""
+          this.dataPayForm.endOrderTime = ""
         }
 
-        this.dataRewardListLoading = true
+        this.dataCancelListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageRewardIndex,
-            'limit': this.pageRewardSize,
-            'orderNumber': this.dataRewardForm.orderNumber,
-            'phone': this.dataRewardForm.phone,
-            'status': this.dataRewardForm.status,
-            'startOrderTime': this.dataRewardForm.startOrderTime,
-            'endOrderTime': this.dataRewardForm.endOrderTime,
-            'areaId': this.dataRewardForm.areaId
+            'page': this.pageCancelIndex,
+            'limit': this.pageCancelSize,
+            'orderNumber': this.dataPayForm.orderNumber,
+            'phone': this.dataPayForm.phone,
+            'status': this.dataPayForm.status,
+            'startOrderTime': this.dataPayForm.startOrderTime,
+            'endOrderTime': this.dataPayForm.endOrderTime,
+            'status': this.dataPayForm.status,
+            'areaId': this.dataPayForm.areaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            this.dataRewardList = data.page.list
-            this.totalRewardPage = data.page.totalCount
+            this.dataCancelList = data.page.list
+            this.totalCancelPage = data.page.totalCount
           } else {
-            this.dataRewardList = []
-            this.totalRewardPage = 0
+            this.dataCancelList = []
+            this.totalCancelPage = 0
           }
-          this.dataRewardListLoading = false
+          this.dataCancelListLoading = false
         })
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.pageRewardSize = val
-        this.pageRewardIndex = 1
-        this.getRewardDataList()
+        this.pageCancelSize = val
+        this.pageCancelIndex = 1
+        this.getCancelDataList()
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageRewardIndex = val
-        this.getRewardDataList()
+        this.pageCancelIndex = val
+        this.getCancelDataList()
       },
       // 多选
-      selectionRewardChangeHandle (val) {
-        this.dataRewardListSelections = val
+      selectionCancelChangeHandle (val) {
+        this.dataCancelListSelections = val
       },
-      // 新增 / 修改
+      // 支付
       addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+        this.$http({
+          url: this.$http.adornUrl('/sys/order/findOrderMoney'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'orderId': id
+          })
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            let title = ''
+            if(data.totalRate == ''){
+              title = "订单号" + data.orderNum  +"，姓名为" + data.name+ "的客户,请在柜台前支付运费共计" + data.totalAmount + "元"
+            }else{
+              title = "订单号" + data.orderNum  +"，姓名为" + data.name+ "的客户,请在柜台前支付费用共计" + (data.totalAmount + data.totalRate) + "元," +
+                "其中包含运费" + data.totalAmount +"元和保险费用" + data.totalRate +"元"
+            }
+            this.$confirm(title, '提示', {
+              confirmButtonText: '支付完成',
+              // cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+              this.$http({
+                url: this.$http.adornUrl('/sys/order/updateOrderState'),
+                method: 'get',
+                params: this.$http.adornParams({
+                  'orderId': data.orderId
+                })
+              }).then(({ data }) => {
+                if (data && data.code === 0) {
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.getCancelDataList()
+                    }
+                  })
+                }
+              })
+            }).catch(()=>{
+
+            })
+          }
         })
       },
       // 删除
       deleteHandle (id) {
-        var userIds = id ? [id] : this.dataRewardListSelections.map(item => {
+        var userIds = id ? [id] : this.dataCancelListSelections.map(item => {
           return item.userId
         })
         this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
@@ -274,7 +310,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getRewardDataList()
+                  this.getCancelDataList()
                 }
               })
             } else {
@@ -292,25 +328,25 @@
       },
       exportExcel(){
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataRewardForm.startOrderTime = this.createOrderTime[0]
-          this.dataRewardForm.endOrderTime = this.createOrderTime[1]
+          this.dataPayForm.startOrderTime = this.createOrderTime[0]
+          this.dataPayForm.endOrderTime = this.createOrderTime[1]
         }else {
-          this.dataRewardForm.startOrderTime = ""
-          this.dataRewardForm.endOrderTime = ""
+          this.dataPayForm.startOrderTime = ""
+          this.dataPayForm.endOrderTime = ""
         }
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
           params: this.$http.adornParams({
-            'startOrderTime': this.dataRewardForm.startOrderTime,
-            'endOrderTime': this.dataRewardForm.endOrderTime,
-            'status': this.dataRewardForm.status
+            'startOrderTime': this.dataPayForm.startOrderTime,
+            'endOrderTime': this.dataPayForm.endOrderTime,
+            'status': this.dataPayForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
             window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
-              + "&status=" + this.dataRewardForm.status
+              + this.dataPayForm.startOrderTime + "&endOrderTime=" + this.dataPayForm.endOrderTime
+              + "&status=" + this.dataPayForm.status
           } else {
             this.$message.error(data.msg)
           }

@@ -5,9 +5,10 @@
         <span slot="label"><i class="el-icon-date"></i> 邮寄介绍</span>
         <el-form :model="dataForm" status-icon label-width="100px" class="dataForm" ref="dataForm">
           <el-form-item label="邮寄介绍" prop="postComment">
-            <div id="editor" class="editor">
+            <div id="editor" class="editor" v-if="type == 1">
               <!--<wangeditor :catchData="catchData"></wangeditor>-->
             </div>
+            <div v-else v-html="dataForm.postComment"></div>
             <!--<el-input v-model="dataForm.postComment" placeholder="邮寄介绍" :maxlength="500" type="textarea" ></el-input>-->
           </el-form-item>
           <el-form-item>
@@ -70,8 +71,6 @@
             if(data.postEntity){
               this.dataForm.postId = data.postEntity.postId
               this.dataForm.postComment = data.postEntity.postComment
-              console.log("999999999999")
-              console.log(this.dataForm.postComment)
               if(this.dataForm.postId){
                 editor.txt.html(this.dataForm.postComment)
               }

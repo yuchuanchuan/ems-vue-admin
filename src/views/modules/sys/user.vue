@@ -7,6 +7,16 @@
       <el-form-item>
         <el-input v-model="dataForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
+      <el-form-item v-if="type == 1">
+        <el-select v-model="dataForm.areaId" placeholder="办理地区" width="100%" clearable>
+          <el-option
+            v-for="item in areaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:user:save') && type == 1" type="primary" @click="addOrUpdateHandle(1)">新增区管理员</el-button>
@@ -124,9 +134,11 @@
       return {
         dataForm: {
           userName: '',
-          phone: ''
+          phone: '',
+          areaId: ''
         },
         dataList: [],
+        areaList: [],
         pageIndex: 1,
         pageSize: 10,
         totalPage: 0,
@@ -140,6 +152,7 @@
     },
     activated () {
       this.getDataList()
+      this.getAreaInfo()
     },
     methods: {
       // 获取数据列表
@@ -152,7 +165,8 @@
             'page': this.pageIndex,
             'limit': this.pageSize,
             'userName': this.dataForm.userName,
-            'phone': this.dataForm.phone
+            'phone': this.dataForm.phone,
+            'areaId': this.dataForm.areaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -216,6 +230,23 @@
             }
           })
         }).catch(() => {})
+      },
+      getAreaInfo(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.areaList = []
+          if(data && data.code === 0){
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.areaId,
+                name: item.areaName
+              })
+            })
+          }
+        })
       }
     },
     computed: {

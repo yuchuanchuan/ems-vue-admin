@@ -18,15 +18,15 @@
         <el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>
       </el-form-item>
       <el-form-item label="产权人身份证正面" prop="ownerPositive">
-        <Uploader v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''"></Uploader>
+        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''"></Uploader>
       </el-form-item>
       <el-form-item label="产权人身份证反面" prop="ownerNegative">
         <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
-        <Uploader v-model="dataForm.ownerNegative" :imgUrl="dataForm.ownerNegative?dataForm.ownerNegative:''"></Uploader>
+        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="dataForm.ownerNegative?dataForm.ownerNegative:''"></Uploader>
       </el-form-item>
       <el-form-item label="房管局受理凭证" prop="housingAuthority">
         <!--<el-input v-model="dataForm.housingAuthority" placeholder="房管局受理凭证"></el-input>-->
-        <Uploader v-model="dataForm.housingAuthority" :imgUrl="dataForm.housingAuthority?dataForm.housingAuthority:''"></Uploader>
+        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="dataForm.housingAuthority?dataForm.housingAuthority:''"></Uploader>
       </el-form-item>
       <el-form-item label="邮寄类型" prop="postType">
         <el-select v-model="dataForm.postType" placeholder="请选择" width="100%">
@@ -48,7 +48,7 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="投递费用" size="mini" prop="postRiskId" v-if="dataForm.postRisk === 1">
+      <el-form-item label="投递费用" size="mini" prop="postRiskId">
         <el-radio-group v-model="dataForm.postRiskId">
           <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.id" border size="medium">{{item.text}}</el-radio>
         </el-radio-group>
@@ -207,6 +207,9 @@
             }).then(()=>{
               this.visible = true
               this.$nextTick(() => {
+                this.$refs.uploadPositive.imageUrl = ''
+                this.$refs.uploadNegative.imageUrl = ''
+                this.$refs.uploadAuthority.imageUrl = ''
                 this.$refs['dataForm'].resetFields()
               })
             })
@@ -226,16 +229,15 @@
         })
       },
       dataFormSubmit(){
-        console.log(this.dataForm.addressList)
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.dataForm.postProvinceId = this.dataForm.addressList[0]
             this.dataForm.postCityId = this.dataForm.addressList[1]
             this.dataForm.postCountyId = this.dataForm.addressList[2]
 
-            if(this.dataForm.postRisk === 2){
-              this.dataForm.postRiskId = 0
-            }
+            // if(this.dataForm.postRisk === 2){
+            //   this.dataForm.postRiskId = 0
+            // }
 
             this.$http({
               url: this.$http.adornUrl(`/sys/order/${!this.dataForm.orderId ? 'save' : 'update'}`),
@@ -243,15 +245,53 @@
               data: this.$http.adornData(this.dataForm)
             }).then(({ data }) => {
               if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
+                if(this.dataForm.orderId == '' || this.dataForm.status === 1){
+                  let title = ''
+                  if(data.totalRate == ''){
+                    title = "您的订单已创建成功，请在柜台前支付运费共计" + data.totalAmount + "元"
+                  }else{
+                    title = "您的订单已创建成功，请在柜台前支付费用共计" + (data.totalAmount + data.totalRate) + "元," +
+                      "其中包含运费" + data.totalAmount +"元和保险费用" + data.totalRate +"元"
+                  }
+                  this.$confirm(title, '提示', {
+                    confirmButtonText: '支付完成',
+                    // cancelButtonText: '取消',
+                    type: 'info'
+                  }).then(() => {
+                    this.$http({
+                      url: this.$http.adornUrl('/sys/order/updateOrderState'),
+                      method: 'get',
+                      params: this.$http.adornParams({
+                        'orderId': data.orderId
+                      })
+                    }).then(({ data }) => {
+                      if (data && data.code === 0) {
+                        this.$message({
+                          message: '操作成功',
+                          type: 'success',
+                          duration: 1500,
+                          onClose: () => {
+                            this.visible = false
+                            this.$emit('refreshDataList')
+                          }
+                        })
+                      }
+                    })
+                  }).catch(()=>{
                     this.visible = false
                     this.$emit('refreshDataList')
-                  }
-                })
+                  })
+                }else{
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                }
               } else {
                 this.$message.error(data.msg)
               }

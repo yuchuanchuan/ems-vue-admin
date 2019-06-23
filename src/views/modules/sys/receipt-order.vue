@@ -7,6 +7,16 @@
       <el-form-item>
         <el-input v-model="dataReceiptForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
+      <el-form-item v-if="type == 1">
+        <el-select v-model="dataReceiptForm.areaId" placeholder="办理地区" width="100%" clearable>
+          <el-option
+            v-for="item in areaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
@@ -22,7 +32,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getReceiptDataList()">查询</el-button>
-        <el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="exportExcel">导出</el-button>
@@ -44,7 +54,6 @@
         prop="orderNumber"
         header-align="center"
         align="center"
-        width="120"
         label="订单号">
       </el-table-column>
       <el-table-column
@@ -89,17 +98,19 @@
         align="center"
         width="180"
         label="凭证截图">
+        <template slot-scope="scope">
+          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" >
+        </template>
       </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="100"
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle('',scope.row.orderId)">修改</el-button>
-          <el-button v-if="isAuth('sys:order:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消订单</el-button>
+          <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -112,14 +123,17 @@
       :total="totalReceiptPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
+    <!-- 查看 -->
+    <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
 </template>
 
 <script>
+  import ViewOrder from './view-order.vue'
   export default {
     data(){
       return{
-        activeName: 'first',
+        activeName: 'fourth',
         pickerOptions: {
           shortcuts: [
             {
@@ -157,12 +171,14 @@
             }]
         },
         createOrderTime: [],
+        areaList: [],
         dataReceiptForm:{
           orderNumber: '',
           phone: '',
           status: 3,
           startOrderTime: '',
-          endOrderTime: ''
+          endOrderTime: '',
+          areaId: ''
         },
         dataReceiptList: [],
         pageReceiptIndex: 1,
@@ -170,11 +186,13 @@
         totalReceiptPage: 0,
         dataReceiptListLoading: false,
         dataReceiptListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        viewOrderVisible: false
       }
     },
     activated () {
       this.getReceiptDataList()
+      this.getAreaInfo()
     },
     methods: {
       // 获取数据列表
@@ -194,11 +212,12 @@
           params: this.$http.adornParams({
             'page': this.pageReceiptIndex,
             'limit': this.pageReceiptSize,
-            'orderNumber': this.dataReceiptForm.userName,
+            'orderNumber': this.dataReceiptForm.orderNumber,
             'phone': this.dataReceiptForm.phone,
             'startOrderTime': this.dataReceiptForm.startOrderTime,
             'endOrderTime': this.dataReceiptForm.endOrderTime,
-            'status': this.dataReceiptForm.status
+            'status': this.dataReceiptForm.status,
+            'areaId': this.dataReceiptForm.areaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -264,6 +283,13 @@
         }).catch(() => {})
       },
 
+      // 查看订单
+      viewOrder(id){
+        this.viewOrderVisible = true
+        this.$nextTick(() => {
+          this.$refs.viewOrder.init(id)
+        })
+      },
       exportExcel(){
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataReceiptForm.startOrderTime = this.createOrderTime[0]
@@ -289,7 +315,32 @@
             this.$message.error(data.msg)
           }
         })
+      },
+      getAreaInfo(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.areaList = []
+          if(data && data.code === 0){
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.areaId,
+                name: item.areaName
+              })
+            })
+          }
+        })
       }
+    },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
+      }
+    },
+    components: {
+      ViewOrder
     },
   }
 </script>

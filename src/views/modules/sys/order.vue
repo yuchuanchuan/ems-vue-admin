@@ -1,16 +1,19 @@
 <template>
-  <el-tabs v-model="activeName">
+  <el-tabs v-model="activeName" @tab-click="handleClick">
     <el-tab-pane label="全部订单" name="first">
       <AllOrder/>
     </el-tab-pane>
-    <el-tab-pane label="待发货" name="second">
-      <ShipOrder/>
+    <el-tab-pane label="待支付" name="second">
+      <AwiatPay ref="awaitPay"/>
     </el-tab-pane>
-    <el-tab-pane label="待收货" name="third">
-      <ReceiptOrder/>
+    <el-tab-pane label="待发货" name="third">
+      <ShipOrder ref="shipOrder"/>
     </el-tab-pane>
-    <el-tab-pane label="已收货" name="fourth">
-      <RewardOrder />
+    <el-tab-pane label="待收货" name="fourth">
+      <ReceiptOrder ref="receiptOrder"/>
+    </el-tab-pane>
+    <el-tab-pane label="已收货" name="fifth">
+      <RewardOrder ref="rewardOrder"/>
     </el-tab-pane>
     <!--<el-tab-pane label="已取消" name="fifth">-->
       <!--<CancelOrder />-->
@@ -24,10 +27,11 @@
   import ReceiptOrder from './receipt-order.vue'
   import RewardOrder from './reward-order.vue'
   import CancelOrder from './cancel-order.vue'
+  import AwiatPay from './awiat-pay.vue'
   export default {
     data(){
       return{
-        activeName: 'first',
+        activeName: 'first'
       }
     },
     components:{
@@ -35,7 +39,24 @@
       ShipOrder,
       ReceiptOrder,
       RewardOrder,
-      CancelOrder
+      CancelOrder,
+      AwiatPay
+    },
+    methods:{
+      handleClick(tab, event){
+        if(tab.name === 'second'){
+          this.$refs.awaitPay.getCancelDataList()
+        }
+        if(tab.name === 'third'){
+          this.$refs.shipOrder.getShipDataList()
+        }
+        if(tab.name === 'fourth'){
+          this.$refs.receiptOrder.getReceiptDataList()
+        }
+        if(tab.name === 'fifth'){
+          this.$refs.rewardOrder.getRewardDataList()
+        }
+      }
     }
   }
 </script>

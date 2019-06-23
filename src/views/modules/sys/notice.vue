@@ -1,48 +1,33 @@
 <template>
-  <div class="mod-insudred">
-    <el-form>
+  <div class="mod-notice">
+    <el-form :inline="true" :model="dataForm">
       <el-form-item>
-        <el-button v-if="isAuth('sys:insured:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-input v-model="dataForm.content" placeholder="公告内容" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <span style="color:red">* 投保费用自动按运费的千分之五计算，不足一元，按一元处理</span>
+        <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('sys:notice:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <!--<el-button v-if="isAuth('sys:role:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
     </el-form>
+
     <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
       style="width: 100%;">
       <el-table-column
-        prop="insuredId"
+        prop="id"
         header-align="center"
         align="center"
         width="80"
         label="ID">
       </el-table-column>
       <el-table-column
-        prop="insuredAmount"
+        prop="content"
         header-align="center"
         align="center"
-        label="运费(元)">
-        <template slot-scope="scope">
-          <span>{{ scope.row.insuredAmount / 100 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="insuredRate"
-        header-align="center"
-        align="center"
-        label="投保费用(元)">
-        <template slot-scope="scope">
-          <span>{{ scope.row.insuredRate / 100 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="insuredComment"
-        header-align="center"
-        align="center"
-        label="投保说明">
+        label="公告内容">
       </el-table-column>
       <el-table-column
         prop="createTime"
@@ -52,15 +37,22 @@
         label="创建时间">
       </el-table-column>
       <el-table-column
-        v-if="type == 1"
+        prop="updateTime"
+        header-align="center"
+        align="center"
+        width="180"
+        label="更新时间">
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
         width="150"
-        label="操作">
+        label="操作"
+      >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:insured:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.insuredId)">修改</el-button>
-          <el-button v-if="isAuth('sys:insured:delete')" type="text" size="small" @click="deleteHandle(scope.row.insuredId)">删除</el-button>
+          <el-button v-if="isAuth('sys:notice:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button v-if="isAuth('sys:notice:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -74,40 +66,37 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <insured-add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></insured-add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
 <script>
-  import insuredAddOrUpdate from './insured-add-or-update'
+  import AddOrUpdate from './notice-add-or-update'
   export default {
-    data () {
-      return {
+    data(){
+      return{
+        addOrUpdateVisible: false,
         dataList: [],
         pageIndex: 1,
         pageSize: 10,
         totalPage: 0,
         dataListLoading: false,
-        dataListSelections: [],
-        addOrUpdateVisible: false
+        dataForm:{
+          content: ''
+        }
       }
     },
-    components: {
-      insuredAddOrUpdate
-    },
-    activated () {
-      this.getDataList()
-    },
-    methods: {
+    methods:{
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/sys/insured/list'),
+          url: this.$http.adornUrl('/sys/notice/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
-            'limit': this.pageSize
+            'limit': this.pageSize,
+            'content': this.dataForm.content
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -131,10 +120,6 @@
         this.pageIndex = val
         this.getDataList()
       },
-      // 多选
-      // selectionChangeHandle (val) {
-      //   this.dataListSelections = val
-      // },
       // 新增 / 修改
       addOrUpdateHandle (id) {
         this.addOrUpdateVisible = true
@@ -153,7 +138,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/sys/insured/delete'),
+            url: this.$http.adornUrl('/sys/notice/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({ data }) => {
@@ -173,10 +158,15 @@
         }).catch(() => {})
       }
     },
-    computed: {
-      type: {
-        get () { return this.$store.state.user.type }
-      }
-    }
+    created(){
+      this.getDataList()
+    },
+    components: {
+      AddOrUpdate
+    },
   }
 </script>
+
+<style scoped>
+
+</style>
