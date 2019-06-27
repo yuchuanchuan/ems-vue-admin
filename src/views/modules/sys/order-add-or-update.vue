@@ -7,8 +7,8 @@
       <el-form-item label="姓名" prop="name">
         <el-input v-model="dataForm.name" placeholder="姓名"></el-input>
       </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
-        <el-input v-model="dataForm.idCard" placeholder="身份证号"></el-input>
+      <el-form-item label="凭证编号" prop="idCard">
+        <el-input v-model="dataForm.idCard" placeholder="凭证编号"></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="dataForm.phone" placeholder="手机号"></el-input>
@@ -84,15 +84,15 @@
   import { isIdCard, isMobile } from '@/utils/validate'
   export default {
     data(){
-      var validateComfirmIdCard = (rule, value, callback) => {
-        if (!/\S/.test(value)) {
-          callback(new Error('身份证号码不能为空'))
-        } else if (!isIdCard(value)) {
-          callback(new Error('身份证号码格式不正确'))
-        } else {
-          callback()
-        }
-      }
+      // var validateComfirmIdCard = (rule, value, callback) => {
+      //   if (!/\S/.test(value)) {
+      //     callback(new Error('身份证号码不能为空'))
+      //   } else if (!isIdCard(value)) {
+      //     callback(new Error('身份证号码格式不正确'))
+      //   } else {
+      //     callback()
+      //   }
+      // }
       var validateMobile = (rule, value, callback) => {
         if (!/\S/.test(value)) {
           callback(new Error('手机号不能为空'))
@@ -141,7 +141,7 @@
             { required: true, message: '姓名不能为空', trigger: 'blur' }
           ],
           idCard: [
-            { required: true, validator: validateComfirmIdCard, trigger: 'blur' }
+            { required: true, message: '凭证编号不能为空', trigger: 'blur'  }
           ],
           phone: [
             { required: true, validator: validateMobile, trigger: 'blur' }

@@ -7,8 +7,8 @@
       <el-form-item label="姓名" prop="name">
         <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
       </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
-        <el-input v-model="dataForm.idCard" placeholder="身份证号" :disabled="true"></el-input>
+      <el-form-item label="凭证编号" prop="idCard">
+        <el-input v-model="dataForm.idCard" placeholder="凭证编号" :disabled="true"></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="dataForm.phone" placeholder="手机号" :disabled="true"></el-input>
