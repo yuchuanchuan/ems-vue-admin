@@ -4,7 +4,7 @@
       <div class="cha" @click="cha">×</div>
     </div>
     <div class="hidenimg" v-show="!show">
-      <img src="../../../assets/img/uname.png" @click="fangda">
+      <img :src="show_img" @click="fangda">
     </div>
     <el-form :inline="true" :model="dataAllForm">
       <el-form-item>
@@ -106,7 +106,7 @@
         width="180"
         label="凭证截图">
         <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda">
+          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.$index)">
         </template>
       </el-table-column>
         <el-table-column
@@ -160,6 +160,8 @@
   export default {
     data(){
       return{
+				url:'ems.jujinkeji.net/',
+				show_img:'',
         activeName: 'first',
         show:true,
         pickerOptions: {
@@ -225,10 +227,11 @@
     methods: {
       cha (){
         this.show=true
-        console.log(0)
         $("body").css("overflow","auto");
       },
-      fangda (){
+      fangda (e){
+				this.show_img = this.dataAllList[e].housingAuthority
+				this.show_img = this.url+this.dataAllList[e].housingAuthority
         this.show=false
         $("body").css("overflow","hidden");
       },
@@ -261,6 +264,7 @@
         }).then(({ data }) => {
           if (data && data.code === 0) {
             this.dataAllList = data.page.list
+            console.log(this.dataAllList)
             this.totalAllPage = data.page.totalCount
           } else {
             this.dataAllList = []
@@ -420,6 +424,6 @@
   background:#fff;
   line-height: 30px;
   text-align: center;
-  border-radius: 50%;
+  border-radius:50%;
 }
 </style>
