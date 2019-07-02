@@ -4,7 +4,7 @@
       <div class="cha" @click="cha">×</div>
     </div>
     <div class="hidenimg" v-show="!show">
-      <img :src="show_img" @click="fangda">
+      <img :src="show_img">
     </div>
     <el-form :inline="true" :model="dataAllForm">
       <el-form-item>
@@ -106,7 +106,7 @@
         width="180"
         label="凭证截图">
         <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.$index)">
+          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">
         </template>
       </el-table-column>
         <el-table-column
@@ -160,7 +160,7 @@
   export default {
     data(){
       return{
-				url:'ems.jujinkeji.net/',
+				// url:'ems.jujinkeji.net/',
 				show_img:'',
         activeName: 'first',
         show:true,
@@ -229,9 +229,9 @@
         this.show=true
         $("body").css("overflow","auto");
       },
-      fangda (e){
-				this.show_img = this.dataAllList[e].housingAuthority
-				this.show_img = this.url+this.dataAllList[e].housingAuthority
+      fangda (imgSrc){
+				// this.show_img = this.dataAllList[e].housingAuthority
+				this.show_img = imgSrc
         this.show=false
         $("body").css("overflow","hidden");
       },
