@@ -88,14 +88,11 @@
         label="下单时间">
       </el-table-column>
       <el-table-column
-        prop="housingAuthority"
+        prop="idCard"
         header-align="center"
         align="center"
         width="180"
-        label="凭证截图">
-        <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100">
-        </template>
+        label="凭证编号">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -214,7 +211,7 @@
             'status': this.dataPayForm.status,
             'startOrderTime': this.dataPayForm.startOrderTime,
             'endOrderTime': this.dataPayForm.endOrderTime,
-            'status': this.dataPayForm.status,
+            // 'status': this.dataPayForm.status,
             'areaId': this.dataPayForm.areaId
           })
         }).then(({ data }) => {

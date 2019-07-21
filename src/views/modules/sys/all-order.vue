@@ -1,11 +1,5 @@
 <template>
   <div class="all-order">
-    <div class="hidenbox" v-show="!show">
-      <div class="cha" @click="cha">×</div>
-    </div>
-    <div class="hidenimg" v-show="!show">
-      <img :src="show_img">
-    </div>
     <el-form :inline="true" :model="dataAllForm">
       <el-form-item>
         <el-input v-model="dataAllForm.orderNumber" placeholder="订单号" clearable></el-input>
@@ -100,14 +94,14 @@
         label="下单时间">
       </el-table-column>
       <el-table-column
-        prop="housingAuthority"
+        prop="idCard"
         header-align="center"
         align="center"
         width="180"
-        label="凭证截图">
-        <template slot-scope="scope">
-          <img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">
-        </template>
+        label="凭证编号">
+        <!--<template slot-scope="scope">-->
+          <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">-->
+        <!--</template>-->
       </el-table-column>
         <el-table-column
         prop="status"
@@ -225,16 +219,16 @@
       this.getAreaInfo()
     },
     methods: {
-      cha (){
-        this.show=true
-        $("body").css("overflow","auto");
-      },
-      fangda (imgSrc){
-				// this.show_img = this.dataAllList[e].housingAuthority
-				this.show_img = imgSrc
-        this.show=false
-        $("body").css("overflow","hidden");
-      },
+      // cha (){
+      //   this.show=true
+      //   $("body").css("overflow","auto");
+      // },
+      // fangda (imgSrc){
+			// 	// this.show_img = this.dataAllList[e].housingAuthority
+			// 	this.show_img = imgSrc
+      //   this.show=false
+      //   $("body").css("overflow","hidden");
+      // },
 
       // 获取数据列表
       getAllDataList () {
@@ -390,40 +384,5 @@
 </script>
 
 <style scoped>
-.hidenbox{
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.5);
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:10;
-}
-.hidenimg{
-  position:fixed;
-  top:15%;
-  left:15%;
-  width:70%;
-  height:70%;
-  z-index:20;
-  text-align: center;
-}
-.hidenimg>img{
-  height:100%;
-  max-height:100%;
-  max-width:100%;
-}
-.cha{
-  columns: #333;
-  position: fixed;
-  top:15%;
-  right:13%;
-  font-size:30px;
-  height:30px;
-  width:30px;
-  background:#fff;
-  line-height: 30px;
-  text-align: center;
-  border-radius:50%;
-}
+
 </style>

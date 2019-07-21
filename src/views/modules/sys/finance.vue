@@ -1,14 +1,14 @@
 <template>
-  <div class="receipt-order">
-    <el-form :inline="true" :model="dataReceiptForm">
+  <div class="ship-order">
+    <el-form :inline="true" :model="dataShipForm">
       <el-form-item>
-        <el-input v-model="dataReceiptForm.orderNumber" placeholder="订单号" clearable></el-input>
+        <el-input v-model="dataShipForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-input v-model="dataReceiptForm.phone" placeholder="手机号" clearable></el-input>
-      </el-form-item>
+      <!--<el-form-item>-->
+        <!--<el-input v-model="dataShipForm.phone" placeholder="手机号" clearable></el-input>-->
+      <!--</el-form-item>-->
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataReceiptForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataShipForm.areaId" placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -19,30 +19,31 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="createOrderTime"
+          v-model="createPayTime"
           type="daterange"
           align="right"
           unlink-panels
           range-separator="至"
-          start-placeholder="订单开始日期"
-          end-placeholder="订单结束日期"
+          start-placeholder="付款开发日期"
+          end-placeholder="付款结束日期"
           value-format="yyyy-MM-dd"
           :picker-options="pickerOptions">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getReceiptDataList()">查询</el-button>
+        <el-button @click="getShipDataList()">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
+        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataReceiptListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="exportExcel">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
-      :data="dataReceiptList"
+      :data="dataShipList"
       border
-      v-loading="dataReceiptListLoading"
-      @selection-change="selectionReceiptChangeHandle"
+      v-loading="dataShipListLoading"
+      @selection-change="selectionShipChangeHandle"
       style="width: 100%;">
       <!--<el-table-column-->
       <!--type="selection"-->
@@ -51,34 +52,26 @@
       <!--width="50">-->
       <!--</el-table-column>-->
       <el-table-column
-        prop="orderNumber"
+        prop="orderNum"
         header-align="center"
         align="center"
         label="订单号">
       </el-table-column>
       <el-table-column
-        prop="orderNumber"
+        prop="mailNum"
         header-align="center"
         align="center"
         label="快递单号">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="idCard"
         header-align="center"
         align="center"
-        label="收货人">
-      </el-table-column>
-      <el-table-column
-        prop="phone"
-        header-align="center"
-        align="center"
-        label="电话">
-      </el-table-column>
-      <el-table-column
-        prop="postAddress"
-        header-align="center"
-        align="center"
-        label="收货地址">
+        width="180"
+        label="凭证编号">
+        <!--<template slot-scope="scope">-->
+        <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100">-->
+        <!--</template>-->
       </el-table-column>
       <el-table-column
         prop="areaName"
@@ -87,53 +80,59 @@
         label="办理地区">
       </el-table-column>
       <el-table-column
-        prop="createOrderTime"
+        prop="createPayTime"
         header-align="center"
         align="center"
-        label="下单时间">
+        label="付款时间">
       </el-table-column>
       <el-table-column
-        prop="idCard"
+        prop="insuredAmount"
         header-align="center"
         align="center"
-        width="180"
-        label="凭证截图">
-        <!--<template slot-scope="scope">-->
-          <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" >-->
-        <!--</template>-->
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="100"
-        label="操作"
-      >
+        label="运费金额">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
+          <span>{{scope.row.insuredAmount / 100}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="insuredRated"
+        header-align="center"
+        align="center"
+        label="保费金额">
+        <template slot-scope="scope">
+          <span>{{scope.row.insuredRated / 100}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="insuredRated"
+        header-align="center"
+        align="center"
+        label="邮寄总金额">
+        <template slot-scope="scope">
+          <span>{{(scope.row.insuredAmount + scope.row.insuredRated) / 100}}</span>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
-      :current-page="pageReceiptIndex"
+      :current-page="pageShipIndex"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageReceiptSize"
-      :total="totalReceiptPage"
+      :page-size="pageShipSize"
+      :total="totalShipPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
+
     <!-- 查看 -->
     <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
 </template>
 
 <script>
-  import ViewOrder from './view-order.vue'
   export default {
     data(){
       return{
-        activeName: 'fourth',
+        activeName: 'third',
         pickerOptions: {
           shortcuts: [
             {
@@ -170,147 +169,103 @@
               }
             }]
         },
-        createOrderTime: [],
+        createPayTime: [],
         areaList: [],
-        dataReceiptForm:{
+        dataShipForm:{
           orderNumber: '',
           phone: '',
-          status: 3,
+          status: 2,
           startOrderTime: '',
           endOrderTime: '',
           areaId: ''
         },
-        dataReceiptList: [],
-        pageReceiptIndex: 1,
-        pageReceiptSize: 10,
-        totalReceiptPage: 0,
-        dataReceiptListLoading: false,
+        dataShipList: [],
+        pageShipIndex: 1,
+        pageShipSize: 10,
+        totalShipPage: 0,
+        dataShipListLoading: false,
         dataReceiptListSelections: [],
         addOrUpdateVisible: false,
         viewOrderVisible: false
       }
     },
     activated () {
-      this.getReceiptDataList()
+      this.getShipDataList()
       this.getAreaInfo()
     },
     methods: {
       // 获取数据列表
-      getReceiptDataList () {
-        if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataReceiptForm.startOrderTime = this.createOrderTime[0]
-          this.dataReceiptForm.endOrderTime = this.createOrderTime[1]
+      getShipDataList () {
+        if(this.createPayTime && this.createPayTime.length > 0){
+          this.dataShipForm.startOrderTime = this.createPayTime[0]
+          this.dataShipForm.endOrderTime = this.createPayTime[1]
         }else{
-          this.dataReceiptForm.startOrderTime = ""
-          this.dataReceiptForm.endOrderTime = ""
+          this.dataShipForm.startOrderTime = ""
+          this.dataShipForm.endOrderTime = ""
         }
 
-        this.dataReceiptListLoading = true
+        this.dataShipListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/sys/order/list'),
+          url: this.$http.adornUrl('/sys/order/financeList'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageReceiptIndex,
-            'limit': this.pageReceiptSize,
-            'orderNumber': this.dataReceiptForm.orderNumber,
-            'phone': this.dataReceiptForm.phone,
-            'startOrderTime': this.dataReceiptForm.startOrderTime,
-            'endOrderTime': this.dataReceiptForm.endOrderTime,
-            'status': this.dataReceiptForm.status,
-            'areaId': this.dataReceiptForm.areaId
+            'page': this.pageShipIndex,
+            'limit': this.pageShipSize,
+            'orderNumber': this.dataShipForm.orderNumber,
+            'phone': this.dataShipForm.phone,
+            'status': this.dataShipForm.status,
+            'startOrderTime': this.dataShipForm.startOrderTime,
+            'endOrderTime': this.dataShipForm.endOrderTime,
+            'areaId': this.dataShipForm.areaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            this.dataReceiptList = data.page.list
-            this.totalReceiptPage = data.page.totalCount
+            this.dataShipList = data.page.list
+            this.totalShipPage = data.page.totalCount
           } else {
-            this.dataReceiptList = []
-            this.totalReceiptPage = 0
+            this.dataShipList = []
+            this.totalShipPage = 0
           }
-          this.dataReceiptListLoading = false
+          this.dataShipListLoading = false
         })
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.pageReceiptSize = val
-        this.pageReceiptIndex = 1
-        this.getReceiptDataList()
+        this.pageShipSize = val
+        this.pageShipIndex = 1
+        this.getShipDataList()
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageReceiptIndex = val
-        this.getReceiptDataList()
+        this.pageShipIndex = val
+        this.getShipDataList()
       },
       // 多选
-      selectionReceiptChangeHandle (val) {
+      selectionShipChangeHandle (val) {
         this.dataReceiptListSelections = val
       },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      // 删除
-      deleteHandle (id) {
-        var userIds = id ? [id] : this.dataReceiptListSelections.map(item => {
-          return item.userId
-        })
-        this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/sys/order/delete'),
-            method: 'post',
-            data: this.$http.adornData(userIds, false)
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getReceiptDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
-        }).catch(() => {})
-      },
 
-      // 查看订单
-      viewOrder(id){
-        this.viewOrderVisible = true
-        this.$nextTick(() => {
-          this.$refs.viewOrder.init(id)
-        })
-      },
       exportExcel(){
-        if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataReceiptForm.startOrderTime = this.createOrderTime[0]
-          this.dataReceiptForm.endOrderTime = this.createOrderTime[1]
+        if(this.createPayTime && this.createPayTime.length > 0){
+          this.dataShipForm.startOrderTime = this.createPayTime[0]
+          this.dataShipForm.endOrderTime = this.createPayTime[1]
         }else {
-          this.dataReceiptForm.startOrderTime = ""
-          this.dataReceiptForm.endOrderTime = ""
+          this.dataShipForm.startOrderTime = ""
+          this.dataShipForm.endOrderTime = ""
         }
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
           params: this.$http.adornParams({
-            'startOrderTime': this.dataReceiptForm.startOrderTime,
-            'endOrderTime': this.dataReceiptForm.endOrderTime,
-            'status': this.dataReceiptForm.status
+            'startOrderTime': this.dataShipForm.startOrderTime,
+            'endOrderTime': this.dataShipForm.endOrderTime,
+            'status': this.dataShipForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataReceiptForm.startOrderTime + "&endOrderTime=" + this.dataReceiptForm.endOrderTime
-              + "&status=" + this.dataReceiptForm.status
+            window.location.href = this.$http.adornUrl('/sys/order/exportOrderFinance') + "?startOrderTime="
+              + this.dataShipForm.startOrderTime + "&endOrderTime=" + this.dataShipForm.endOrderTime
+              + "&status=" + this.dataShipForm.status
           } else {
             this.$message.error(data.msg)
           }
@@ -334,14 +289,14 @@
         })
       }
     },
+    components: {
+
+    },
     computed: {
       type: {
         get () { return this.$store.state.user.type }
       }
-    },
-    components: {
-      ViewOrder
-    },
+    }
   }
 </script>
 

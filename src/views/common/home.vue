@@ -28,7 +28,7 @@
         <el-button @click="getOrderCount()">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="type != 1">
       <div slot="header" class="clearfix">
         <span>订单数据统计</span>
       </div>
@@ -52,6 +52,61 @@
         </el-col>
       </el-row>
     </el-card>
+
+    <div v-if="type == 1">
+      <el-table
+        show-summary
+        :data="dataList"
+        border
+        v-loading="dataListLoading"
+        style="width: 100%;">
+        <!--<el-table-column-->
+        <!--type="selection"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--width="50">-->
+        <!--</el-table-column>-->
+        <el-table-column
+          prop="areaName"
+          header-align="center"
+          align="center"
+          label="办理地区">
+        </el-table-column>
+        <el-table-column
+          prop="address"
+          header-align="center"
+          align="center"
+          label="办理地点">
+        </el-table-column>
+        <el-table-column
+          prop="noRisk"
+          header-align="center"
+          align="center"
+          label="未投递保险单数">
+        </el-table-column>
+        <el-table-column
+          prop="hasRisk"
+          header-align="center"
+          align="center"
+          label="已投递保险单数">
+        </el-table-column>
+        <el-table-column
+          prop="countOrder"
+          header-align="center"
+          align="center"
+          label="总单数">
+        </el-table-column>
+      </el-table>
+      <!--<el-pagination-->
+        <!--@size-change="sizeChangeHandle"-->
+        <!--@current-change="currentChangeHandle"-->
+        <!--:current-page="pageIndex"-->
+        <!--:page-sizes="[10, 20, 50, 100]"-->
+        <!--:page-size="pageSize"-->
+        <!--:total="totalPage"-->
+        <!--layout="total, sizes, prev, pager, next, jumper">-->
+      <!--</el-pagination>-->
+    </div>
     <!--<h3>项目介绍</h3>-->
     <!--<ul>-->
       <!--<li>基于 Spring Boot 2.0 + Shiro + Mybatis + Vue2.0 + Element 实现的权限系统</li>-->
@@ -127,14 +182,60 @@
           leftPadding: 50,                // canvas 左边距
           rightPadding: 0,                // canvas 右边距
         },
-        data:[]
+        data:[],
+
+        dataList: [],
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        dataListLoading: false
       }
     },
     created(){
-      this.getAreaList()
-      this.getOrderCount()
+      if(this.$store.state.user.type != 1){
+        this.getOrderCount()
+      }
+      if(this.$store.state.user.type == 1){
+        this.getAreaList()
+        this.getDataList()
+      }
     },
     methods: {
+      // 每页数
+      sizeChangeHandle (val) {
+        this.pageSize = val
+        this.pageIndex = 1
+        this.getDataList()
+      },
+      // 当前页
+      currentChangeHandle (val) {
+        this.pageIndex = val
+        this.getDataList()
+      },
+      getDataList () {
+        this.dataListLoading = true
+        this.$http({
+          url: this.$http.adornUrl('/sys/order/orderDataCount'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'startOrderTime': this.startOrderTime,
+            'endOrderTime': this.endOrderTime,
+            'areaId': this.areaId
+          })
+        }).then(({ data }) => {
+          console.log(data)
+
+          if (data && data.code === 0) {
+            this.dataList = data.countOrderList
+            // this.totalPage = data.page.totalCount
+          } else {
+            this.dataList = []
+            // this.totalPage = 0
+          }
+          this.dataListLoading = false
+        })
+      },
+
       getOrderCount() {
         if (this.createOrderTime && this.createOrderTime.length > 0) {
           this.startOrderTime = this.createOrderTime[0]

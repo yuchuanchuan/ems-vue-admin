@@ -6,18 +6,18 @@
     <el-tab-pane label="待支付" name="second">
       <AwiatPay ref="awaitPay"/>
     </el-tab-pane>
-    <el-tab-pane label="待发货" name="third">
+    <el-tab-pane label="已支付" name="third">
       <ShipOrder ref="shipOrder"/>
     </el-tab-pane>
-    <el-tab-pane label="待收货" name="fourth">
+    <el-tab-pane label="已发货" name="fourth">
       <ReceiptOrder ref="receiptOrder"/>
     </el-tab-pane>
     <el-tab-pane label="已收货" name="fifth">
       <RewardOrder ref="rewardOrder"/>
     </el-tab-pane>
-    <!--<el-tab-pane label="已取消" name="fifth">-->
-      <!--<CancelOrder />-->
-    <!--</el-tab-pane>-->
+    <el-tab-pane label="已取消" name="sixth">
+      <CancelOrder ref="cancelOrder"/>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -55,6 +55,9 @@
         }
         if(tab.name === 'fifth'){
           this.$refs.rewardOrder.getRewardDataList()
+        }
+        if(tab.name === 'sixth'){
+          this.$refs.cancelOrder.getCancelDataList()
         }
       }
     }
