@@ -205,7 +205,7 @@
     position:fixed;
     top:0;
     left:0;
-    z-index:10;
+    z-index:3000;
   }
   .hidenimg{
     position:fixed;
@@ -215,6 +215,7 @@
     height:70%;
     z-index:20;
     text-align: center;
+    z-index:3000;
   }
   .hidenimg>img{
     height:100%;
@@ -233,5 +234,6 @@
     line-height: 30px;
     text-align: center;
     border-radius:50%;
+    z-index:3000;
   }
 </style>
