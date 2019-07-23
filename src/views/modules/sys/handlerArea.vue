@@ -52,6 +52,12 @@
         label="受理地区">
       </el-table-column>
       <el-table-column
+        prop="systemNo"
+        header-align="center"
+        align="center"
+        label="不动产预约系统地区代号">
+      </el-table-column>
+      <el-table-column
         prop="createTime"
         header-align="center"
         align="center"

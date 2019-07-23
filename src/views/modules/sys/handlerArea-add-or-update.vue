@@ -3,8 +3,9 @@
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="80px">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="180px">
       <el-form-item label="所属区域" prop="areaId">
+        <!--<el-input v-model="dataForm.areaId" placeholder="受理地点名称"></el-input>-->
         <el-select v-model="dataForm.areaId" placeholder="请选择" width="100%">
           <el-option
             v-for="item in areaList"
@@ -16,6 +17,9 @@
       </el-form-item>
       <el-form-item label="受理地点" prop="handleAddress">
         <el-input v-model="dataForm.handleAddress" placeholder="受理地点名称"></el-input>
+      </el-form-item>
+      <el-form-item label="不动产登记系统地区代号" prop="systemNo">
+        <el-input v-model="dataForm.systemNo" placeholder="不动产登记系统地区代号"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -34,7 +38,8 @@
         dataForm: {
           id: 0,
           areaId: '',
-          handleAddress: ''
+          handleAddress: '',
+          systemNo: ''
         },
         dataRule: {
           areaId: [
@@ -42,6 +47,9 @@
           ],
           handleAddress: [
             { required: true, message: '受理地点名称不能为空', trigger: 'blur' }
+          ],
+          systemNo: [
+            { required: true, message: '不动产登记系统地区代号不能为空', trigger: 'blur' }
           ]
         },
       }
@@ -78,6 +86,7 @@
               if (data && data.code === 0) {
                 this.dataForm.areaId = data.handleAreaEntity.areaId
                 this.dataForm.handleAddress = data.handleAreaEntity.handleAddress
+                this.dataForm.systemNo = data.handleAreaEntity.systemNo
               }
             })
           }
@@ -92,7 +101,8 @@
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'areaId': this.dataForm.areaId,
-                'handleAddress': this.dataForm.handleAddress
+                'handleAddress': this.dataForm.handleAddress,
+                'systemNo': this.dataForm.systemNo
               })
             }).then(({ data }) => {
               if (data && data.code === 0) {
