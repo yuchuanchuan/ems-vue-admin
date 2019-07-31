@@ -14,6 +14,9 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
         </el-form-item>
+        <el-form-item label="身份证号" prop="propertyNo">
+          <el-input v-model="dataForm.propertyNo" placeholder="身份证号" :disabled="true"></el-input>
+        </el-form-item>
         <el-form-item label="凭证编号" prop="idCard">
           <el-input v-model="dataForm.idCard" placeholder="凭证编号" :disabled="true"></el-input>
         </el-form-item>
@@ -98,13 +101,13 @@
         },
         childOptions: [],
         postTypeList:[
-          {id:1, name:'房本'},
-          {id:2, name:'证书'},
-          {id:3, name:'其他'}
+          {id:1, name:'不动产权证'},
+          {id:2, name:'其他'}
         ],
         dataForm:{
           orderId: 0,
           name: '',
+          propertyNo: '', // 身份证号
           idCard: '',
           phone: '',
           mobileCode: '',
