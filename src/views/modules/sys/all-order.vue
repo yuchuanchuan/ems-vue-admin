@@ -113,6 +113,7 @@
             <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">待发货</el-tag>
             <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
             <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已收货</el-tag>
+            <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
           </template>
       </el-table-column>
       <el-table-column
