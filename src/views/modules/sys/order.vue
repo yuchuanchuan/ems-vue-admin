@@ -12,7 +12,7 @@
     <el-tab-pane label="已发货" name="fourth">
       <ReceiptOrder ref="receiptOrder"/>
     </el-tab-pane>
-    <el-tab-pane label="已收货" name="fifth">
+    <el-tab-pane label="已妥投" name="fifth">
       <RewardOrder ref="rewardOrder"/>
     </el-tab-pane>
     <el-tab-pane label="已取消" name="sixth">

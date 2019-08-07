@@ -3,7 +3,7 @@
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="100px">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="150px">
       <el-form-item label="业务种类名称" prop="bussinessName">
         <el-input v-model="dataForm.bussinessName" placeholder="业务种类名称"></el-input>
       </el-form-item>

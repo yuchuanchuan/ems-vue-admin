@@ -116,10 +116,7 @@
           children: "childList"
         },
         childOptions: [],
-        postTypeList:[
-          {id:1, name:'不动产权证'},
-          {id:2, name:'其他'}
-        ],
+        postTypeList:[],
         dataForm:{
           orderId: 0,
           name: '',
@@ -211,12 +208,29 @@
                 this.dataForm.postRiskId = data.list[0].insuredId
               }
             }).then(()=>{
-              this.visible = true
-              this.$nextTick(() => {
-                this.$refs.uploadPositive.imageUrl = ''
-                this.$refs.uploadNegative.imageUrl = ''
-                this.$refs.uploadAuthority.imageUrl = ''
-                this.$refs['dataForm'].resetFields()
+
+              this.$http({
+                url: this.$http.adornUrl('/sys/bussiness/allList'),
+                method: 'get',
+                params: this.$http.adornParams()
+              }).then(({ data }) => {
+                if (data && data.code === 0) {
+                  this.postTypeList = []
+                  data.list.forEach((item) => {
+                    this.postTypeList.push({
+                      id: item.id,
+                      name: item.bussinessName
+                    })
+                  })
+                }
+              }).then(()=>{
+                this.visible = true
+                this.$nextTick(() => {
+                  this.$refs.uploadPositive.imageUrl = ''
+                  this.$refs.uploadNegative.imageUrl = ''
+                  this.$refs.uploadAuthority.imageUrl = ''
+                  this.$refs['dataForm'].resetFields()
+                })
               })
             })
         }).then(() => {
@@ -321,6 +335,7 @@
           if (data && data.code === 0) {
             this.$message.success('验证码发送成功')
           } else {
+            this.$message.error(data.msg)
             this.$message.error(data.msg)
           }
         })

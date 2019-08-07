@@ -18,6 +18,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataAllForm.status" placeholder="状态" width="100%" clearable>
+          <el-option
+            v-for="item in statusList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -112,7 +122,10 @@
             <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
             <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">待发货</el-tag>
             <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
-            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已收货</el-tag>
+            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">妥投</el-tag>
+            <el-tag v-else-if="scope.row.status === 11" size="small" type="success">他人代签</el-tag>
+            <el-tag v-else-if="scope.row.status === 10" size="small" type="success">其他</el-tag>
+            <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
           </template>
       </el-table-column>
@@ -159,6 +172,16 @@
 				show_img:'',
         activeName: 'first',
         show:true,
+        statusList:[
+          {id:1,name:'待支付'},
+          {id:2,name:'待发货'},
+          {id:3,name:'已发货'},
+          {id:4,name:'妥投'},
+          {id:11,name:'代签'},
+          {id:12,name:'未妥投'},
+          {id:5,name:'已取消'},
+          {id:10,name:'其他'}
+        ],
         pickerOptions: {
           shortcuts: [
             {

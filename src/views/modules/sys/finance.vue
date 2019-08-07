@@ -41,6 +41,8 @@
     </el-form>
     <el-table
       :data="dataShipList"
+      show-summary
+      :summary-method="getSummaries"
       border
       v-loading="dataShipListLoading"
       @selection-change="selectionShipChangeHandle"
@@ -104,7 +106,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="insuredRated"
+        prop="insuredTotal"
         header-align="center"
         align="center"
         label="邮寄总金额">
@@ -194,6 +196,64 @@
       this.getAreaInfo()
     },
     methods: {
+      getSummaries(param) {
+        const { columns, data } = param;
+        const sums = [];
+        let insuredAmount = []
+        let insuredRated = []
+        let total = []
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总计';
+            return;
+          }
+          //this.closeList等等是后台返回的总的数据，然后取值到这里
+          switch(column.property) {
+            case "insuredAmount":
+              insuredAmount = data.map(item => Number(item.insuredAmount / 100))
+              sums[index] = insuredAmount.reduce((prev, curr) => {
+                const value = Number(curr)
+                if(!isNaN(value)){
+                  return prev + curr
+                }else{
+                  return prev
+                }
+              }, 0)
+              break;
+            case "insuredRated":
+              insuredRated = data.map(item => Number(item.insuredRated / 100))
+              sums[index] = insuredRated.reduce((prev, curr) => {
+                const value = Number(curr)
+                if(!isNaN(value)){
+                  return prev + curr
+                }else{
+                  return prev
+                }
+              }, 0)
+              break;
+            case "insuredTotal":
+              total = data.map(item => Number((item.insuredAmount + item.insuredRated) / 100))
+              sums[index] = total.reduce((prev, curr) => {
+                const value = Number(curr)
+                if(!isNaN(value)){
+                  return prev + curr
+                }else{
+                  return prev
+                }
+              }, 0)
+              break;
+            case "debugTime":
+              sums[index] = this.debugTimeList + ' h'
+              break;
+            default:
+              break;
+          }
+
+
+        });
+        console.log(sums)
+        return sums;
+      },
       // 获取数据列表
       getShipDataList () {
         if(this.createPayTime && this.createPayTime.length > 0){
