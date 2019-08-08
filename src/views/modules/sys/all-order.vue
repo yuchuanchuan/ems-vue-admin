@@ -48,6 +48,16 @@
       <el-form-item>
         <el-button type="primary" @click="exportExcel">导出</el-button>
       </el-form-item>
+      <el-form-item>
+        <el-upload
+          class="upload-demo"
+          :action="importExcel"
+          :show-file-list="false"
+          :before-upload="beforeImport"
+          :on-success="handleExcel">
+          <el-button type="primary">导入</el-button>
+        </el-upload>
+      </el-form-item>
     </el-form>
       <el-table
       :data="dataAllList"
@@ -168,6 +178,7 @@
   export default {
     data(){
       return{
+        importExcel: process.env.BASE_API + '/sys/order/import',
 				// url:'ems.jujinkeji.net/',
 				show_img:'',
         activeName: 'first',
@@ -243,6 +254,31 @@
       this.getAreaInfo()
     },
     methods: {
+      beforeImport(file){
+        // console.log(file)
+        // const isJPG = file.type === '.xls' || file.type === '.xlsx';
+        // const isLt2M = file.size / 1024 / 1024 < 10;
+        //
+        // if (!isJPG) {
+        //   this.$message.error('导入的格式只能是xls或xlsx格式!');
+        // }
+        // if (!isLt2M) {
+        //   this.$message.error('导入文件大小不能超过 10MB!');
+        // }
+        // return isJPG && isLt2M;
+      },
+      handleExcel(res, file){
+        if(res.code === 0) {
+          this.$message({
+            message: '导入成功',
+            type: 'success',
+            duration: 1500,
+            onClose: () => {
+              this.getAllDataList()
+            }
+          })
+        }
+      },
       // cha (){
       //   this.show=true
       //   $("body").css("overflow","auto");
