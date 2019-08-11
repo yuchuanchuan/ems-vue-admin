@@ -269,10 +269,18 @@
       },
       handleExcel(res, file){
         if(res.code === 0) {
+          this.$confirm(res.info, '提示', {
+            showConfirmButton: false,
+            cancelButtonText: '关闭',
+          }).then(() => {
+
+          }).catch(() => {
+          });
+        }else{
           this.$message({
-            message: '导入成功',
-            type: 'success',
-            duration: 1500,
+            message: res.msg,
+            type: 'error',
+            // duration: 3000,
             onClose: () => {
               this.getAllDataList()
             }

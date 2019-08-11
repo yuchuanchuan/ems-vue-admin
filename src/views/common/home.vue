@@ -91,6 +91,12 @@
           label="已投递保险单数">
         </el-table-column>
         <el-table-column
+          prop="reviceRate"
+          header-align="center"
+          align="center"
+          label="妥投率">
+        </el-table-column>
+        <el-table-column
           prop="countOrder"
           header-align="center"
           align="center"
