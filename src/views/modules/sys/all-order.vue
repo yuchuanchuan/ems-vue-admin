@@ -149,6 +149,7 @@
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
+          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
           <!--<el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">取消订单</el-button>-->
         </template>
       </el-table-column>
@@ -356,6 +357,31 @@
         this.$nextTick(() => {
           this.$refs.addOrUpdate.init(id)
         })
+      },
+      cancelOrderStatus(id){
+        this.$confirm(`确定取消该订单吗?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
+            method: 'get'
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+                this.$message({
+                  message: '订单取消成功',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.getAllDataList()
+                  }
+                })
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+        }).catch(() => {})
       },
       // 取消订单
       // deleteHandle (id) {
