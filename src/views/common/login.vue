@@ -38,6 +38,7 @@
 
 <script>
   import { getUUID } from '@/utils'
+  import axios from 'axios'
   export default {
     data () {
       return {
@@ -62,9 +63,25 @@
       }
     },
     created () {
+      this.getTestMsg()
       this.getCaptcha()
     },
     methods: {
+      getTestMsg(){
+        let data = {
+          "rtnUrl":"http://www.tjsbdcdjzx.com",
+          "openid":"ov5KSuMZ_s6KgM-h-pYal5ILyhRM",
+          "userName": "冯廷钰,您办理的业务正在处理中",
+          "transactType": '邮寄业务',
+          "date": '2019-05-26',
+          "status": "状态",
+          "remark": '备注'
+        };
+        axios.post('http://www.tjsbdcdjzx.com',data)
+          .then(res=>{
+            console.log(res);
+          })
+      },
       // 提交表单
       dataFormSubmit () {
         this.$refs['dataForm'].validate((valid) => {
