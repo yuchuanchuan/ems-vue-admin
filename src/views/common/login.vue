@@ -77,7 +77,7 @@
           "status": "状态",
           "remark": '备注'
         };
-        axios.post('http://www.tjsbdcdjzx.com',data)
+        axios.post('http://www.tjsbdcdjzx.com/pushEMSMsg',data)
           .then(res=>{
             console.log(res);
           })
