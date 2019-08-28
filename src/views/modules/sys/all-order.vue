@@ -439,9 +439,20 @@
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-              + "&status=" + this.dataAllForm.status
+            this.$confirm(`是否打包下载证照图片?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&status=" + this.dataAllForm.status
+              // 打包下载图片
+            }).catch(()=>{
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&status=" + this.dataAllForm.status
+            })
           } else {
             this.$message.error(data.msg)
           }
