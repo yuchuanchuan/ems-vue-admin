@@ -444,14 +444,29 @@
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
-              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&status=" + this.dataAllForm.status
-              // 打包下载图片
+              this.$http({
+                url: this.$http.adornUrl('/sys/order/downFileZip'),
+                method: 'get',
+                params: this.$http.adornParams({
+                  'startOrderTime': this.dataAllForm.startOrderTime,
+                  'endOrderTime': this.dataAllForm.endOrderTime,
+                  'status': this.dataAllForm.status
+                })
+              }).then(({ data }) => {
+                  if(data.code === 0){
+                    window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                      + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                      + "&status=" + this.dataAllForm.status
+                    // 打包下载图片
+                  }else{
+                    this.$message.error(data.msg)
+                  }
+              })
             }).catch(()=>{
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
                 + "&status=" + this.dataAllForm.status
+                // + "&downZip=2"
             })
           } else {
             this.$message.error(data.msg)
