@@ -447,7 +447,13 @@
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
                 + "&status=" + this.dataAllForm.status
-              // 打包下载图片
+              setTimeout(()=>{
+                // 打包下载图片
+                window.location.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                  + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                  + "&status=" + this.dataAllForm.status
+              }, 1000)
+
             }).catch(()=>{
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
