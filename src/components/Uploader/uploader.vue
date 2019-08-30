@@ -2,6 +2,7 @@
   <el-upload
     class="avatar-uploader"
     :action="uploadUrl"
+    :data="otherParams"
     :show-file-list="false"
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload">
@@ -18,6 +19,9 @@
         return {
           uploadUrl: process.env.BASE_API + '/sys/file/uploadImg',
           imageUrl: '',
+          otherParams:{
+            'type': this.fileType
+          }
         }
       },
       props:{
@@ -26,6 +30,9 @@
         },
         imgUrl:{
           type: String
+        },
+        fileType:{
+          type: Number
         }
       },
       model: {
