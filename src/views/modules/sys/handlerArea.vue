@@ -1,18 +1,18 @@
 <template>
   <div class="mod-handlerArea">
     <el-form :inline="true" :model="dataForm">
-      <el-form-item>
-        <el-input v-model="dataForm.handleAddress" placeholder="受理地点名称" clearable></el-input>
-      </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataForm.areaId" placeholder="请选择" width="100%" clearable>
+        <el-select v-model="dataForm.areaId" placeholder="请选择受理大区" width="100%" clearable>
           <el-option
-            v-for="item in areaList"
+            v-for="item in areaType"
             :key="item.id"
             :label="item.name"
             :value="item.id">
           </el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataForm.handleArea" placeholder="受理地区名称" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -40,16 +40,29 @@
         label="ID">
       </el-table-column>
       <el-table-column
+        prop="handleArea"
+        header-align="center"
+        align="center"
+        label="受理地区">
+      </el-table-column>
+      <el-table-column
         prop="handleAddress"
         header-align="center"
         align="center"
         label="受理地点">
       </el-table-column>
       <el-table-column
-        prop="areaName"
+        prop="areaId"
         header-align="center"
         align="center"
-        label="受理地区">
+        label="所在大区">
+        <template slot-scope="scope">
+          <span v-if="scope.row.areaId === 1">市登记中心</span>
+          <span v-if="scope.row.areaId === 2">市内六区</span>
+          <span v-if="scope.row.areaId === 3">环城四区</span>
+          <span v-if="scope.row.areaId === 4">新五区</span>
+          <span v-if="scope.row.areaId === 5">滨海新区</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="systemNo"
@@ -97,6 +110,24 @@
   export default {
     data(){
       return{
+        areaType:[
+          {
+            'id': 1,
+            'name': '市登记中心'
+          },{
+            'id': 2,
+            'name': '市内六区'
+          },{
+            'id': 3,
+            'name': '环城四区'
+          },{
+            'id': 4,
+            'name': '新五区'
+          },{
+            'id': 5,
+            'name': '滨海新区'
+          }
+        ],
         addOrUpdateVisible: false,
         dataList: [],
         pageIndex: 1,
@@ -107,7 +138,8 @@
         areaList: [],
         dataForm:{
           areaId: '',
-          handleAddress: ''
+          // handleAddress: ''
+          handleArea: ''
         }
       }
     },
@@ -146,7 +178,7 @@
             'page': this.pageIndex,
             'limit': this.pageSize,
             'areaId': this.dataForm.areaId,
-            'handleAddress': this.dataForm.handleAddress
+            'handleArea': this.dataForm.handleArea
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

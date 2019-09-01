@@ -25,7 +25,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getOrderCount()">查询</el-button>
+        <el-button @click="getOrderCount()" v-if="type != 1">查询</el-button>
+        <el-button @click="getDataList()" v-if="type === 1">查询</el-button>
       </el-form-item>
     </el-form>
     <el-card class="box-card" v-if="type != 1">
@@ -219,6 +220,14 @@
         this.getDataList()
       },
       getDataList () {
+        if (this.createOrderTime && this.createOrderTime.length > 0) {
+          this.startOrderTime = this.createOrderTime[0]
+          this.endOrderTime = this.createOrderTime[1]
+        } else {
+          this.startOrderTime = ""
+          this.endOrderTime = ""
+        }
+
         this.dataListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/orderDataCount'),
@@ -276,20 +285,35 @@
 
       getAreaList() {
         this.$http({
-          url: this.$http.adornUrl('/sys/area/region'),
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({ data }) => {
           this.areaList = []
-          if (data && data.code === 0 && data.regionList && data.regionList.length > 0) {
-            data.regionList[0].childList.forEach((item) => {
+          if(data && data.code === 0){
+            data.regionList.forEach((item) => {
               this.areaList.push({
                 id: item.id,
-                name: item.name
+                name: item.handleArea
               })
             })
           }
         })
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/area/region'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   this.areaList = []
+        //   if (data && data.code === 0 && data.regionList && data.regionList.length > 0) {
+        //     data.regionList[0].childList.forEach((item) => {
+        //       this.areaList.push({
+        //         id: item.id,
+        //         name: item.name
+        //       })
+        //     })
+        //   }
+        // })
       },
     },
     components: {

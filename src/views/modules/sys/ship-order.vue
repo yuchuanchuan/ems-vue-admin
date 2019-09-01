@@ -321,8 +321,8 @@
           if(data && data.code === 0){
             data.regionList.forEach((item) => {
               this.areaList.push({
-                id: item.areaId,
-                name: item.areaName
+                id: item.id,
+                name: item.handleArea
               })
             })
           }

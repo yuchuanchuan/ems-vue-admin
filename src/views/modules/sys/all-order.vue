@@ -64,13 +64,15 @@
       border
       v-loading="dataAllListLoading"
       @selection-change="selectionAllChangeHandle"
+      :row-key="getRowKeys"
       style="width: 100%;">
-      <!--<el-table-column-->
-      <!--type="selection"-->
-      <!--header-align="center"-->
-      <!--align="center"-->
-      <!--width="50">-->
-      <!--</el-table-column>-->
+      <el-table-column
+        type="selection"
+        :reserve-selection="true"
+        header-align="center"
+        align="center"
+        width="50">
+      </el-table-column>
       <el-table-column
         prop="orderNumber"
         header-align="center"
@@ -347,6 +349,9 @@
         this.pageAllIndex = val
         this.getAllDataList()
       },
+      getRowKeys(row){
+        return row.orderId
+      },
       // 多选
       selectionAllChangeHandle (val) {
         this.dataAllListSelections = val
@@ -429,6 +434,15 @@
           this.dataAllForm.startOrderTime = ""
           this.dataAllForm.endOrderTime = ""
         }
+        let orderIdList = []
+        let orderIdStr = ""
+        this.dataAllListSelections.forEach((item) => {
+          orderIdList.push(item.orderId)
+        })
+        orderIdStr = orderIdList.join(',')
+        console.log("-------------------99-96666-----------")
+        console.log(orderIdList)
+        console.log(orderIdStr)
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -444,25 +458,24 @@
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
-              let aLink = document.createElement('a')
-              // aLink.download = "文件名"
-              aLink.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+              let zipLink = document.createElement('a')
+              zipLink.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&status=" + this.dataAllForm.status
-              document.body.appendChild(aLink)
-              aLink.click()
-              document.body.removeChild(aLink)
+                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
+              document.body.appendChild(zipLink)
+              zipLink.click()
+              document.body.removeChild(zipLink)
 
               setTimeout(()=>{
-                let zipLink = document.createElement('a')
-                zipLink.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                let aLink = document.createElement('a')
+                // aLink.download = "文件名"
+                aLink.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                   + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                  + "&status=" + this.dataAllForm.status
-                document.body.appendChild(zipLink)
-                zipLink.click()
-                document.body.removeChild(zipLink)
-              },3000)
-
+                  + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
+                document.body.appendChild(aLink)
+                aLink.click()
+                document.body.removeChild(aLink)
+              },1000)
               // window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
               //   + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
               //   + "&status=" + this.dataAllForm.status
@@ -493,7 +506,7 @@
             }).catch(()=>{
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&status=" + this.dataAllForm.status
+                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
                 // + "&downZip=2"
             })
           } else {
@@ -511,8 +524,8 @@
           if(data && data.code === 0){
             data.regionList.forEach((item) => {
               this.areaList.push({
-                id: item.areaId,
-                name: item.areaName
+                id: item.id,
+                name: item.handleArea
               })
             })
           }

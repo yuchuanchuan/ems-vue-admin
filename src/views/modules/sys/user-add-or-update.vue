@@ -116,6 +116,9 @@
           ],
           phone: [
             { validator: validateMobile, trigger: 'blur' }
+          ],
+          areaId: [
+            { required: true, message: '请选择地区', trigger: 'change' }
           ]
         }
       }
@@ -139,8 +142,8 @@
             if(data && data.code === 0){
               data.regionList.forEach((item) => {
                 this.areaList.push({
-                  id: item.areaId,
-                  name: item.areaName
+                  id: item.id,
+                  name: item.handleArea
                 })
               })
             }

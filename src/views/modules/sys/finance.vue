@@ -24,7 +24,7 @@
           align="right"
           unlink-panels
           range-separator="至"
-          start-placeholder="付款开发日期"
+          start-placeholder="付款开始日期"
           end-placeholder="付款结束日期"
           value-format="yyyy-MM-dd"
           :picker-options="pickerOptions">
@@ -341,8 +341,8 @@
           if(data && data.code === 0){
             data.regionList.forEach((item) => {
               this.areaList.push({
-                id: item.areaId,
-                name: item.areaName
+                id: item.id,
+                name: item.handleArea
               })
             })
           }
