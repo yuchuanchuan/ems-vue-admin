@@ -242,6 +242,9 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
+                this.dataForm.ownerPositive = decodeURIComponent(data.order.ownerPositive)
+                this.dataForm.ownerNegative = decodeURIComponent(data.order.ownerNegative)
+                this.dataForm.housingAuthority = decodeURIComponent(data.order.housingAuthority)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }
             })

@@ -25,7 +25,7 @@
         </el-form-item>
 
         <el-form-item label="产权人身份证正面" prop="ownerPositive">
-          <img :src="dataForm.ownerPositive" alt="" width="120" height="120" @click="fangda(dataForm.ownerPositive)">
+          <img :src="decodeURIComponent(dataForm.ownerPositive)" alt="" width="120" height="120" @click="fangda(dataForm.ownerPositive)">
         </el-form-item>
         <el-form-item label="产权人身份证反面" prop="ownerNegative">
           <img :src="dataForm.ownerNegative" alt="" width="120" height="120" @click="fangda(dataForm.ownerNegative)">
@@ -200,6 +200,11 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
+                this.dataForm.ownerPositive = decodeURIComponent(data.order.ownerPositive)
+                this.dataForm.ownerNegative = decodeURIComponent(data.order.ownerNegative)
+                this.dataForm.housingAuthority = decodeURIComponent(data.order.housingAuthority)
+                console.log('99999999999999--------------------------99999999999999')
+                console.log(this.dataForm.ownerPositive)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }
             })
