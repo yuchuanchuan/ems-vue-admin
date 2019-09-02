@@ -440,9 +440,7 @@
           orderIdList.push(item.orderId)
         })
         orderIdStr = orderIdList.join(',')
-        console.log("-------------------99-96666-----------")
-        console.log(orderIdList)
-        console.log(orderIdStr)
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',

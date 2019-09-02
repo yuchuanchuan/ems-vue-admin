@@ -20,7 +20,8 @@
           uploadUrl: process.env.BASE_API + '/sys/file/uploadImg',
           imageUrl: '',
           otherParams:{
-            'type': this.fileType
+            'type': this.fileType,
+            'name': this.name
           }
         }
       },
@@ -33,6 +34,9 @@
         },
         fileType:{
           type: Number
+        },
+        name:{
+          type: String
         }
       },
       model: {

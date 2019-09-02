@@ -21,15 +21,15 @@
         <el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>
       </el-form-item>
       <el-form-item label="产权人身份证正面" prop="ownerPositive">
-        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''" :fileType="1"></Uploader>
+        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''" :fileType="1" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="产权人身份证反面" prop="ownerNegative">
         <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
-        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="dataForm.ownerNegative?dataForm.ownerNegative:''" :fileType="1"></Uploader>
+        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="dataForm.ownerNegative?dataForm.ownerNegative:''" :fileType="1" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="房管局受理凭证" prop="housingAuthority">
         <!--<el-input v-model="dataForm.housingAuthority" placeholder="房管局受理凭证"></el-input>-->
-        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="dataForm.housingAuthority?dataForm.housingAuthority:''" :fileType="2"></Uploader>
+        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="dataForm.housingAuthority?dataForm.housingAuthority:''" :fileType="2" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="邮寄类型" prop="postType">
         <el-select v-model="dataForm.postType" placeholder="请选择" width="100%">
