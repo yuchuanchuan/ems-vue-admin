@@ -21,15 +21,15 @@
         <el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>
       </el-form-item>
       <el-form-item label="产权人身份证正面" prop="ownerPositive">
-        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="dataForm.ownerPositive?dataForm.ownerPositive:''" :fileType="1" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="idCardImg1" :fileType="1" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="产权人身份证反面" prop="ownerNegative">
         <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
-        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="dataForm.ownerNegative?dataForm.ownerNegative:''" :fileType="1" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="idCardImg2" :fileType="1" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="房管局受理凭证" prop="housingAuthority">
         <!--<el-input v-model="dataForm.housingAuthority" placeholder="房管局受理凭证"></el-input>-->
-        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="dataForm.housingAuthority?dataForm.housingAuthority:''" :fileType="2" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="houseImg" :fileType="2" :name="dataForm.name"></Uploader>
       </el-form-item>
       <el-form-item label="邮寄类型" prop="postType">
         <el-select v-model="dataForm.postType" placeholder="请选择" width="100%">
@@ -106,6 +106,9 @@
         }
       }
       return{
+        idCardImg1: '',
+        idCardImg2: '',
+        houseImg: '',
         visible: false,
         imageUrl: '',
         options: [],
@@ -174,66 +177,105 @@
       }
     },
     methods:{
-      init (orderId) {
-        this.dataForm.orderId = orderId || 0
+      listAll(){
         this.$http({
-          url: this.$http.adornUrl('/sys/area/list'),
+          url: this.$http.adornUrl('/sys/insured/listAll'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({ data }) => {
-          if(data && data.code === 0){
+          if (data && data.code === 0) {
             console.log(data)
-            this.options = []
-            data.areaList.forEach((item) => {
-              if(item.childList){
-                this.options.push(item)
-              }
+            this.postRiskList = []
+            data.list.forEach((item) => {
+              this.postRiskList.push({
+                id: item.insuredId,
+                text: item.insuredComment + '￥' + item.insuredAmount
+              })
+            })
+            this.dataForm.postRiskId = data.list[0].insuredId
+          }
+        })
+      },
+      allList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            this.postTypeList = []
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
+              })
             })
           }
+        })
+      },
+
+      init (orderId) {
+        this.dataForm.orderId = orderId || 0
+        this.$http({
+          url: this.$http.adornUrl('/sys/insured/listAll'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            console.log(data)
+            this.postRiskList = []
+            data.list.forEach((item) => {
+              this.postRiskList.push({
+                id: item.insuredId,
+                text: item.insuredComment + '￥' + item.insuredAmount
+              })
+            })
+            this.dataForm.postRiskId = data.list[0].insuredId
+          }
+        }).then(()=>{
+          this.$http({
+            url: this.$http.adornUrl('/sys/bussiness/allList'),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.postTypeList = []
+              data.list.forEach((item) => {
+                this.postTypeList.push({
+                  id: item.id,
+                  name: item.bussinessName
+                })
+              })
+            }
+          })
         }).then(()=>{
             this.$http({
-              url: this.$http.adornUrl('/sys/insured/listAll'),
+              url: this.$http.adornUrl('/sys/area/list'),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 console.log(data)
-                this.postRiskList = []
-                data.list.forEach((item) => {
-                  this.postRiskList.push({
-                    id: item.insuredId,
-                    text: item.insuredComment + '￥' + item.insuredAmount
-                  })
+                this.options = []
+                data.areaList.forEach((item) => {
+                  if (item.childList) {
+                    this.options.push(item)
+                  }
                 })
-                this.dataForm.postRiskId = data.list[0].insuredId
               }
-            }).then(()=>{
-
-              this.$http({
-                url: this.$http.adornUrl('/sys/bussiness/allList'),
-                method: 'get',
-                params: this.$http.adornParams()
-              }).then(({ data }) => {
-                if (data && data.code === 0) {
-                  this.postTypeList = []
-                  data.list.forEach((item) => {
-                    this.postTypeList.push({
-                      id: item.id,
-                      name: item.bussinessName
-                    })
-                  })
-                }
-              }).then(()=>{
-                this.visible = true
-                this.$nextTick(() => {
-                  this.$refs.uploadPositive.imageUrl = ''
-                  this.$refs.uploadNegative.imageUrl = ''
-                  this.$refs.uploadAuthority.imageUrl = ''
-                  this.$refs['dataForm'].resetFields()
-                })
-              })
             })
-        }).then(() => {
+        }).then(()=>{
+          this.visible = true
+          this.$nextTick(() => {
+            this.$refs.uploadPositive.imageUrl = ''
+            this.$refs.uploadNegative.imageUrl = ''
+            this.$refs.uploadAuthority.imageUrl = ''
+            this.idCardImg1 = ''
+            this.idCardImg2 = ''
+            this.houseImg = ''
+            this.$refs['dataForm'].resetFields()
+          })
+        }).then(()=>{
           if (this.dataForm.orderId) {
             this.$http({
               url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
@@ -242,15 +284,124 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
-                this.dataForm.ownerPositive = decodeURIComponent(data.order.ownerPositive)
-                this.dataForm.ownerNegative = decodeURIComponent(data.order.ownerNegative)
-                this.dataForm.housingAuthority = decodeURIComponent(data.order.housingAuthority)
+                this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
+                this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
+                this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }
             })
           }
         })
+
+
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/area/list'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   if (data && data.code === 0) {
+        //     console.log(data)
+        //     this.options = []
+        //     data.areaList.forEach((item) => {
+        //       if (item.childList) {
+        //         this.options.push(item)
+        //       }
+        //     })
+        //   }
+        // }).then(() => {
+        //   this.visible = true
+        //   this.$nextTick(() => {
+        //     this.$refs.uploadPositive.imageUrl = ''
+        //     this.$refs.uploadNegative.imageUrl = ''
+        //     this.$refs.uploadAuthority.imageUrl = ''
+        //     this.idCardImg1 = ''
+        //     this.idCardImg2 = ''
+        //     this.houseImg = ''
+        //     this.$refs['dataForm'].resetFields()
+        //   })
+        // }).then(() => {
+        //   if (this.dataForm.orderId) {
+        //     this.$http({
+        //       url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
+        //       method: 'get',
+        //       params: this.$http.adornParams()
+        //     }).then(({ data }) => {
+        //       if (data && data.code === 0) {
+        //         this.dataForm = data.order
+        //         this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
+        //         this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
+        //         this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+        //         this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
+        //       }
+        //     })
+        //   }
+        // })
       },
+      //
+      //   console.log('orderid==========' + orderId)
+      //   this.dataForm.orderId = orderId || 0
+      //   console.log('--------' + this.dataForm.orderId)
+      //   this.$http({
+      //     url: this.$http.adornUrl('/sys/area/list'),
+      //     method: 'get',
+      //     params: this.$http.adornParams()
+      //   }).then(({ data }) => {
+      //     if(data && data.code === 0){
+      //       console.log(data)
+      //       this.options = []
+      //       data.areaList.forEach((item) => {
+      //         if(item.childList){
+      //           this.options.push(item)
+      //         }
+      //       })
+      //     }
+      //   }).then(()=>{
+      //
+      //   }).then(()=>{
+      //
+      //
+      //   }).then(()=>{
+      //
+      //         })
+      //       })
+      //   }).then(() => {
+      //     if (this.dataForm.orderId) {
+      //       console.log('放奇怪  111')
+      //       this.$http({
+      //         url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
+      //         method: 'get',
+      //         params: this.$http.adornParams()
+      //       }).then(({ data }) => {
+      //         if (data && data.code === 0) {
+      //           // this.dataForm = data.order
+      //           this.dataForm.orderId = data.order.orderId
+      //           this.dataForm.name = data.order.name
+      //           this.dataForm.propertyNo = data.order.propertyNo
+      //
+      //             // propertyNo: '', // 身份证号
+      //             // idCard: '',
+      //             // phone: '',
+      //             // mobileCode: '',
+      //             // ownerPositive: '',
+      //             // ownerNegative: '',
+      //             // housingAuthority: '',
+      //             // postType: '',
+      //             // postRisk: 1,
+      //             // postRiskId: '',
+      //             // postProvinceId: '',
+      //             // postCityId: '',
+      //             // postCountyId: '',
+      //             // postAddress: '',
+      //
+      //           this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
+      //           this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
+      //           this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+      //           this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
+      //         }
+      //       })
+      //     }
+      //   })
+      // },
       dataFormSubmit(){
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
