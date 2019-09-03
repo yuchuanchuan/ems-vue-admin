@@ -200,9 +200,9 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
-                this.dataForm.ownerPositive = decodeURIComponent(data.order.ownerPositive)
-                this.dataForm.ownerNegative = decodeURIComponent(data.order.ownerNegative)
-                this.dataForm.housingAuthority = decodeURIComponent(data.order.housingAuthority)
+                this.dataForm.ownerPositive = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
+                this.dataForm.ownerNegative = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
+                this.dataForm.housingAuthority = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
                 console.log('99999999999999--------------------------99999999999999')
                 console.log(this.dataForm.ownerPositive)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
