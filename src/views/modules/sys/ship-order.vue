@@ -18,6 +18,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataShipForm.postType" placeholder="邮寄类型" width="100%" clearable>
+          <el-option
+            v-for="item in postTypeList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -104,6 +114,15 @@
         <!--</template>-->
       </el-table-column>
       <el-table-column
+        prop="postType"
+        header-align="center"
+        align="center"
+        label="邮寄类型">
+        <template slot-scope="scope">
+          <span v-for="(item,index) in postTypeList" :key="index" v-if="item.id == scope.row.postType">{{item.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -175,13 +194,15 @@
         },
         createOrderTime: [],
         areaList: [],
+        postTypeList: [],
         dataShipForm:{
           orderNumber: '',
           phone: '',
           status: 2,
           startOrderTime: '',
           endOrderTime: '',
-          areaId: ''
+          areaId: '',
+          postType: ''
         },
         dataShipList: [],
         pageShipIndex: 1,
@@ -194,10 +215,29 @@
       }
     },
     activated () {
-      this.getShipDataList()
+      this.getPostTypeList()
       this.getAreaInfo()
+      this.getShipDataList()
     },
     methods: {
+      // 邮寄类型
+      getPostTypeList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.postTypeList = []
+          if(data && data.code === 0){
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
+              })
+            })
+          }
+        })
+      },
       // 获取数据列表
       getShipDataList () {
         if(this.createOrderTime && this.createOrderTime.length > 0){
@@ -220,7 +260,8 @@
             'status': this.dataShipForm.status,
             'startOrderTime': this.dataShipForm.startOrderTime,
             'endOrderTime': this.dataShipForm.endOrderTime,
-            'areaId': this.dataShipForm.areaId
+            'areaId': this.dataShipForm.areaId,
+            'postType': this.dataShipForm.postType
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

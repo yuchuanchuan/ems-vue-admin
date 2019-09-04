@@ -18,6 +18,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataAllForm.postType" placeholder="邮寄类型" width="100%" clearable>
+          <el-option
+            v-for="item in postTypeList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-select v-model="dataAllForm.status" placeholder="状态" width="100%" clearable>
           <el-option
             v-for="item in statusList"
@@ -125,6 +135,15 @@
           <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">-->
         <!--</template>-->
       </el-table-column>
+        <el-table-column
+          prop="postType"
+          header-align="center"
+          align="center"
+          label="邮寄类型">
+          <template slot-scope="scope">
+            <span v-for="(item,index) in postTypeList" :key="index" v-if="item.id == scope.row.postType">{{item.name}}</span>
+          </template>
+        </el-table-column>
         <el-table-column
         prop="status"
         header-align="center"
@@ -234,13 +253,15 @@
         },
         createOrderTime: [],
         areaList: [],
+        postTypeList: [],
         dataAllForm:{
           orderNumber: '',
           phone: '',
           startOrderTime: '',
           endOrderTime: '',
           status: '',
-          areaId: ''
+          areaId: '',
+          postType: ''
         },
         dataAllList: [],
         pageAllIndex: 1,
@@ -253,10 +274,29 @@
       }
     },
     activated () {
-      this.getAllDataList()
+      this.getPostTypeList()
       this.getAreaInfo()
+      this.getAllDataList()
     },
     methods: {
+      // 邮寄类型
+      getPostTypeList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.postTypeList = []
+          if(data && data.code === 0){
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
+              })
+            })
+          }
+        })
+      },
       beforeImport(file){
         // console.log(file)
         // const isJPG = file.type === '.xls' || file.type === '.xlsx';
@@ -324,7 +364,8 @@
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.dataAllForm.status,
-            'areaId': this.dataAllForm.areaId
+            'areaId': this.dataAllForm.areaId,
+            'postType': this.dataAllForm.postType
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

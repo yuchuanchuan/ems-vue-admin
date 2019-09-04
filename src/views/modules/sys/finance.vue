@@ -76,7 +76,7 @@
         <!--</template>-->
       </el-table-column>
       <el-table-column
-        prop="areaName"
+        prop="handleArea"
         header-align="center"
         align="center"
         label="办理地区">

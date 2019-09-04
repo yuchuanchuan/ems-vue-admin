@@ -18,6 +18,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataPayForm.postType" placeholder="邮寄类型" width="100%" clearable>
+          <el-option
+            v-for="item in postTypeList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -95,6 +105,15 @@
         label="凭证编号">
       </el-table-column>
       <el-table-column
+        prop="postType"
+        header-align="center"
+        align="center"
+        label="邮寄类型">
+        <template slot-scope="scope">
+          <span v-for="(item,index) in postTypeList" :key="index" v-if="item.id == scope.row.postType">{{item.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -166,13 +185,15 @@
         },
         createOrderTime: [],
         areaList: [],
+        postTypeList: [],
         dataPayForm:{
           orderNumber: '',
           phone: '',
           status: 1,
           startOrderTime: '',
           endOrderTime: '',
-          areaId: ''
+          areaId: '',
+          postType: ''
         },
         dataCancelList: [],
         pageCancelIndex: 1,
@@ -185,10 +206,29 @@
       }
     },
     activated () {
-      this.getCancelDataList()
+      this.getPostTypeList()
       this.getAreaInfo()
+      this.getCancelDataList()
     },
     methods: {
+      // 邮寄类型
+      getPostTypeList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.postTypeList = []
+          if(data && data.code === 0){
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
+              })
+            })
+          }
+        })
+      },
       // 获取数据列表
       getCancelDataList () {
         if(this.createOrderTime && this.createOrderTime.length > 0){
@@ -212,7 +252,8 @@
             'startOrderTime': this.dataPayForm.startOrderTime,
             'endOrderTime': this.dataPayForm.endOrderTime,
             // 'status': this.dataPayForm.status,
-            'areaId': this.dataPayForm.areaId
+            'areaId': this.dataPayForm.areaId,
+            'postType': this.dataPayForm.postType
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

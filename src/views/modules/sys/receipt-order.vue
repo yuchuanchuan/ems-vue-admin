@@ -18,6 +18,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataReceiptForm.postType" placeholder="邮寄类型" width="100%" clearable>
+          <el-option
+            v-for="item in postTypeList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -97,10 +107,19 @@
         header-align="center"
         align="center"
         width="180"
-        label="凭证截图">
+        label="凭证编号">
         <!--<template slot-scope="scope">-->
           <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" >-->
         <!--</template>-->
+      </el-table-column>
+      <el-table-column
+        prop="postType"
+        header-align="center"
+        align="center"
+        label="邮寄类型">
+        <template slot-scope="scope">
+          <span v-for="(item,index) in postTypeList" :key="index" v-if="item.id == scope.row.postType">{{item.name}}</span>
+        </template>
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -172,13 +191,15 @@
         },
         createOrderTime: [],
         areaList: [],
+        postTypeList: [],
         dataReceiptForm:{
           orderNumber: '',
           phone: '',
           status: 3,
           startOrderTime: '',
           endOrderTime: '',
-          areaId: ''
+          areaId: '',
+          postType: ''
         },
         dataReceiptList: [],
         pageReceiptIndex: 1,
@@ -191,10 +212,29 @@
       }
     },
     activated () {
-      this.getReceiptDataList()
+      this.getPostTypeList()
       this.getAreaInfo()
+      this.getReceiptDataList()
     },
     methods: {
+      // 邮寄类型
+      getPostTypeList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.postTypeList = []
+          if(data && data.code === 0){
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
+              })
+            })
+          }
+        })
+      },
       // 获取数据列表
       getReceiptDataList () {
         if(this.createOrderTime && this.createOrderTime.length > 0){
@@ -217,7 +257,8 @@
             'startOrderTime': this.dataReceiptForm.startOrderTime,
             'endOrderTime': this.dataReceiptForm.endOrderTime,
             'status': this.dataReceiptForm.status,
-            'areaId': this.dataReceiptForm.areaId
+            'areaId': this.dataReceiptForm.areaId,
+            'postType': this.dataReceiptForm.postType
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
