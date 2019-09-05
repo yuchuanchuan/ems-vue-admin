@@ -497,24 +497,25 @@
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
+
               let zipLink = document.createElement('a')
               zipLink.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
                 + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
               document.body.appendChild(zipLink)
               zipLink.click()
-              document.body.removeChild(zipLink)
 
-              setTimeout(()=>{
-                let aLink = document.createElement('a')
-                // aLink.download = "文件名"
-                aLink.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-                  + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                  + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
-                document.body.appendChild(aLink)
-                aLink.click()
-                document.body.removeChild(aLink)
-              },1000)
+              let aLink = document.createElement('a')
+              // aLink.download = "文件名"
+              aLink.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
+              document.body.appendChild(aLink)
+              aLink.click()
+
+              // 删除链接
+              document.body.removeChild(zipLink)
+              document.body.removeChild(aLink)
               // window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
               //   + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
               //   + "&status=" + this.dataAllForm.status
