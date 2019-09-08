@@ -66,6 +66,18 @@
         label="快递单号">
       </el-table-column>
       <el-table-column
+        prop="payOrderId"
+        header-align="center"
+        align="center"
+        label="支付单号">
+      </el-table-column>
+      <el-table-column
+        prop="fundyPayId"
+        header-align="center"
+        align="center"
+        label="退款单号">
+      </el-table-column>
+      <el-table-column
         prop="idCard"
         header-align="center"
         align="center"
@@ -76,10 +88,20 @@
         <!--</template>-->
       </el-table-column>
       <el-table-column
-        prop="handleArea"
+        prop="areaName"
         header-align="center"
         align="center"
         label="办理地区">
+      </el-table-column>
+      <el-table-column
+        prop="payType"
+        header-align="center"
+        align="center"
+        label="交易类型">
+        <template slot-scope="scope">
+          <span v-if="scope.row.payType == 1">收入</span>
+          <span v-if="scope.row.payType == 2">支出</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="createPayTime"
@@ -88,32 +110,56 @@
         label="付款时间">
       </el-table-column>
       <el-table-column
-        prop="insuredAmount"
+        prop="fundyPayTime"
         header-align="center"
         align="center"
-        label="运费金额">
+        label="退款时间">
+      </el-table-column>
+      <el-table-column
+        prop="totalFee"
+        header-align="center"
+        align="center"
+        label="支付金额">
         <template slot-scope="scope">
-          <span>{{scope.row.insuredAmount / 100}}</span>
+          <span>{{scope.row.totalFee / 100}}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="insuredRated"
+        prop="fundyFee"
         header-align="center"
         align="center"
-        label="保费金额">
+        label="退款金额">
         <template slot-scope="scope">
-          <span>{{scope.row.insuredRated / 100}}</span>
+          <span>{{scope.row.fundyFee / 100}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="insuredTotal"
-        header-align="center"
-        align="center"
-        label="邮寄总金额">
-        <template slot-scope="scope">
-          <span>{{(scope.row.insuredAmount + scope.row.insuredRated) / 100}}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="insuredAmount"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--label="运费金额">-->
+        <!--<template slot-scope="scope">-->
+          <!--<span>{{scope.row.insuredAmount / 100}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
+      <!--<el-table-column-->
+        <!--prop="insuredRated"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--label="保费金额">-->
+        <!--<template slot-scope="scope">-->
+          <!--<span>{{scope.row.insuredRated / 100}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
+      <!--<el-table-column-->
+        <!--prop="insuredTotal"-->
+        <!--header-align="center"-->
+        <!--align="center"-->
+        <!--label="邮寄总金额">-->
+        <!--<template slot-scope="scope">-->
+          <!--<span>{{(scope.row.insuredAmount + scope.row.insuredRated) / 100}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
     </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
@@ -209,8 +255,8 @@
           }
           //this.closeList等等是后台返回的总的数据，然后取值到这里
           switch(column.property) {
-            case "insuredAmount":
-              insuredAmount = data.map(item => Number(item.insuredAmount / 100))
+            case "totalFee":
+              insuredAmount = data.map(item => Number(item.totalFee / 100))
               sums[index] = insuredAmount.reduce((prev, curr) => {
                 const value = Number(curr)
                 if(!isNaN(value)){
@@ -220,8 +266,8 @@
                 }
               }, 0)
               break;
-            case "insuredRated":
-              insuredRated = data.map(item => Number(item.insuredRated / 100))
+            case "fundyFee":
+              insuredRated = data.map(item => Number(item.fundyFee / 100))
               sums[index] = insuredRated.reduce((prev, curr) => {
                 const value = Number(curr)
                 if(!isNaN(value)){
@@ -231,20 +277,7 @@
                 }
               }, 0)
               break;
-            case "insuredTotal":
-              total = data.map(item => Number((item.insuredAmount + item.insuredRated) / 100))
-              sums[index] = total.reduce((prev, curr) => {
-                const value = Number(curr)
-                if(!isNaN(value)){
-                  return prev + curr
-                }else{
-                  return prev
-                }
-              }, 0)
-              break;
-            case "debugTime":
-              sums[index] = this.debugTimeList + ' h'
-              break;
+
             default:
               break;
           }
