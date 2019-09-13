@@ -256,11 +256,12 @@
           //this.closeList等等是后台返回的总的数据，然后取值到这里
           switch(column.property) {
             case "totalFee":
-              insuredAmount = data.map(item => Number(item.totalFee / 100))
+              insuredAmount = data.map(item => Number(item.totalFee / 100.00))
               sums[index] = insuredAmount.reduce((prev, curr) => {
                 const value = Number(curr)
+                console.log(value + '=========' + prev + "=========" + curr)
                 if(!isNaN(value)){
-                  return prev + curr
+                  return (parseInt(prev * 100) + parseInt(curr * 100)) / 100
                 }else{
                   return prev
                 }
@@ -271,7 +272,7 @@
               sums[index] = insuredRated.reduce((prev, curr) => {
                 const value = Number(curr)
                 if(!isNaN(value)){
-                  return prev + curr
+                  return (parseInt(prev * 100) + parseInt(curr * 100)) / 100
                 }else{
                   return prev
                 }
