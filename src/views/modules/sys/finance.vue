@@ -31,7 +31,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getShipDataList()">查询</el-button>
+        <el-button @click="getShipDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataReceiptListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -238,7 +238,7 @@
       }
     },
     activated () {
-      this.getShipDataList()
+      this.getShipDataList(1)
       this.getAreaInfo()
     },
     methods: {
@@ -259,7 +259,6 @@
               insuredAmount = data.map(item => Number(item.totalFee / 100.00))
               sums[index] = insuredAmount.reduce((prev, curr) => {
                 const value = Number(curr)
-                console.log(value + '=========' + prev + "=========" + curr)
                 if(!isNaN(value)){
                   return (parseInt(prev * 100) + parseInt(curr * 100)) / 100
                 }else{
@@ -289,7 +288,7 @@
         return sums;
       },
       // 获取数据列表
-      getShipDataList () {
+      getShipDataList (page) {
         if(this.createPayTime && this.createPayTime.length > 0){
           this.dataShipForm.startOrderTime = this.createPayTime[0]
           this.dataShipForm.endOrderTime = this.createPayTime[1]
@@ -303,7 +302,7 @@
           url: this.$http.adornUrl('/sys/order/financeList'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageShipIndex,
+            'page': page,
             'limit': this.pageShipSize,
             'orderNumber': this.dataShipForm.orderNumber,
             'phone': this.dataShipForm.phone,
@@ -327,12 +326,12 @@
       sizeChangeHandle (val) {
         this.pageShipSize = val
         this.pageShipIndex = 1
-        this.getShipDataList()
+        this.getShipDataList(this.pageShipIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageShipIndex = val
-        this.getShipDataList()
+        this.getShipDataList(this.pageShipIndex)
       },
       // 多选
       selectionShipChangeHandle (val) {

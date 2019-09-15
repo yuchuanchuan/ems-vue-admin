@@ -51,7 +51,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getAllDataList()">查询</el-button>
+        <el-button @click="getAllDataList(1)">查询</el-button>
         <el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataAllListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -191,7 +191,7 @@
     </el-pagination>
 
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getAllDataList"></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getAllDataList(1)"></add-or-update>
 
     <!-- 查看 -->
     <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
@@ -287,9 +287,20 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getAllDataList()
+      this.getAllDataList(1)
     },
     methods: {
+      // 批量下载
+      downloadFile(url){
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.style.height = 0;
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        setTimeout(()=>{
+          iframe.remove();
+        }, 3 * 60 * 1000)
+      },
       // 邮寄类型
       getPostTypeList(){
         this.$http({
@@ -336,7 +347,7 @@
             type: 'error',
             // duration: 3000,
             onClose: () => {
-              this.getAllDataList()
+              this.getAllDataList(1)
             }
           })
         }
@@ -353,7 +364,7 @@
       // },
 
       // 获取数据列表
-      getAllDataList () {
+      getAllDataList (page) {
         console.log("创建订单日期----------");
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataAllForm.startOrderTime = this.createOrderTime[0]
@@ -368,7 +379,7 @@
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageAllIndex,
+            'page': page,
             'limit': this.pageAllSize,
             'orderNumber': this.dataAllForm.orderNumber,
             'phone': this.dataAllForm.phone,
@@ -394,12 +405,12 @@
       sizeChangeHandle (val) {
         this.pageAllSize = val
         this.pageAllIndex = 1
-        this.getAllDataList()
+        this.getAllDataList(this.pageAllIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageAllIndex = val
-        this.getAllDataList()
+        this.getAllDataList(this.pageAllIndex)
       },
       getRowKeys(row){
         return row.orderId
@@ -431,7 +442,7 @@
                   type: 'success',
                   duration: 1500,
                   onClose: () => {
-                    this.getAllDataList()
+                    this.getAllDataList(this.pageAllIndex)
                   }
                 })
               } else {
@@ -508,50 +519,15 @@
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
-              let aLink = document.createElement('a')
-              aLink.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
-              document.body.appendChild(aLink)
-              aLink.click()
-              document.body.removeChild(aLink)
 
-              setTimeout(()=>{
-                let zipLink = document.createElement('a')
-                zipLink.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
-                  + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                  + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
-                document.body.appendChild(zipLink)
-                zipLink.click()
-                document.body.removeChild(zipLink)
-              },3000)
-              // window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              //   + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-              //   + "&status=" + this.dataAllForm.status
-              // setTimeout(()=>{
-              //   // 打包下载图片
-              //   window.location.href = this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
-              //     + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-              //     + "&status=" + this.dataAllForm.status
-              // }, 1000)
-              // this.$http({
-              //   url: this.$http.adornUrl('/sys/order/downFileZip'),
-              //   method: 'get',
-              //   params: this.$http.adornParams({
-              //     'startOrderTime': this.dataAllForm.startOrderTime,
-              //     'endOrderTime': this.dataAllForm.endOrderTime,
-              //     'status': this.dataAllForm.status
-              //   })
-              // }).then(({ data }) => {
-              //     if(data.code === 0){
-              //       window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              //         + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-              //         + "&status=" + this.dataAllForm.status
-              //       // 打包下载图片
-              //     }else{
-              //       this.$message.error(data.msg)
-              //     }
-              // })
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr)
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr)
+
             }).catch(()=>{
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime

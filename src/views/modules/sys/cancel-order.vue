@@ -41,7 +41,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getCancelDataList()">查询</el-button>
+        <el-button @click="getCancelDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCancelListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -215,7 +215,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getCancelDataList()
+      this.getCancelDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -237,7 +237,7 @@
         })
       },
       // 获取数据列表
-      getCancelDataList () {
+      getCancelDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataCancelForm.startOrderTime = this.createOrderTime[0]
           this.dataCancelForm.endOrderTime = this.createOrderTime[1]
@@ -251,7 +251,7 @@
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageCancelIndex,
+            'page': page,
             'limit': this.pageCancelSize,
             'orderNumber': this.dataCancelForm.orderNumber,
             'phone': this.dataCancelForm.phone,
@@ -276,12 +276,12 @@
       sizeChangeHandle (val) {
         this.pageCancelSize = val
         this.pageCancelIndex = 1
-        this.getCancelDataList()
+        this.getCancelDataList(this.pageCancelIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageCancelIndex = val
-        this.getCancelDataList()
+        this.getCancelDataList(this.pageCancelIndex)
       },
       // 多选
       selectionCancelChangeHandle (val) {
@@ -315,7 +315,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getCancelDataList()
+                  this.getCancelDataList(1)
                 }
               })
             } else {

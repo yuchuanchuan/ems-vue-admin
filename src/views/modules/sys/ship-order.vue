@@ -41,7 +41,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getShipDataList()">查询</el-button>
+        <el-button @click="getShipDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataReceiptListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -217,7 +217,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getShipDataList()
+      this.getShipDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -239,7 +239,7 @@
         })
       },
       // 获取数据列表
-      getShipDataList () {
+      getShipDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataShipForm.startOrderTime = this.createOrderTime[0]
           this.dataShipForm.endOrderTime = this.createOrderTime[1]
@@ -253,7 +253,7 @@
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageShipIndex,
+            'page': page,
             'limit': this.pageShipSize,
             'orderNumber': this.dataShipForm.orderNumber,
             'phone': this.dataShipForm.phone,
@@ -278,12 +278,12 @@
       sizeChangeHandle (val) {
         this.pageShipSize = val
         this.pageShipIndex = 1
-        this.getShipDataList()
+        this.getShipDataList(this.pageShipIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageShipIndex = val
-        this.getShipDataList()
+        this.getShipDataList(this.pageShipIndex)
       },
       // 多选
       selectionShipChangeHandle (val) {
@@ -317,7 +317,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getShipDataList()
+                  this.getShipDataList(1)
                 }
               })
             } else {

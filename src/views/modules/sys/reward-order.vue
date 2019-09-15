@@ -41,7 +41,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getRewardDataList()">查询</el-button>
+        <el-button @click="getRewardDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataRewardListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -215,7 +215,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getRewardDataList()
+      this.getRewardDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -237,7 +237,7 @@
         })
       },
       // 获取数据列表
-      getRewardDataList () {
+      getRewardDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataRewardForm.startOrderTime = this.createOrderTime[0]
           this.dataRewardForm.endOrderTime = this.createOrderTime[1]
@@ -251,7 +251,7 @@
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageRewardIndex,
+            'page': page,
             'limit': this.pageRewardSize,
             'orderNumber': this.dataRewardForm.orderNumber,
             'phone': this.dataRewardForm.phone,
@@ -276,12 +276,12 @@
       sizeChangeHandle (val) {
         this.pageRewardSize = val
         this.pageRewardIndex = 1
-        this.getRewardDataList()
+        this.getRewardDataList(this.pageRewardIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageRewardIndex = val
-        this.getRewardDataList()
+        this.getRewardDataList(this.pageRewardIndex)
       },
       // 多选
       selectionRewardChangeHandle (val) {
@@ -315,7 +315,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getRewardDataList()
+                  this.getRewardDataList(1)
                 }
               })
             } else {

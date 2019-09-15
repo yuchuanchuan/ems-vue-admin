@@ -41,7 +41,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getReceiptDataList()">查询</el-button>
+        <el-button @click="getReceiptDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
       </el-form-item>
       <el-form-item>
@@ -214,7 +214,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getReceiptDataList()
+      this.getReceiptDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -236,7 +236,7 @@
         })
       },
       // 获取数据列表
-      getReceiptDataList () {
+      getReceiptDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataReceiptForm.startOrderTime = this.createOrderTime[0]
           this.dataReceiptForm.endOrderTime = this.createOrderTime[1]
@@ -250,7 +250,7 @@
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
-            'page': this.pageReceiptIndex,
+            'page': page,
             'limit': this.pageReceiptSize,
             'orderNumber': this.dataReceiptForm.orderNumber,
             'phone': this.dataReceiptForm.phone,
@@ -275,12 +275,12 @@
       sizeChangeHandle (val) {
         this.pageReceiptSize = val
         this.pageReceiptIndex = 1
-        this.getReceiptDataList()
+        this.getReceiptDataList(this.pageReceiptIndex)
       },
       // 当前页
       currentChangeHandle (val) {
         this.pageReceiptIndex = val
-        this.getReceiptDataList()
+        this.getReceiptDataList(this.pageReceiptIndex)
       },
       // 多选
       selectionReceiptChangeHandle (val) {
@@ -314,7 +314,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getReceiptDataList()
+                  this.getReceiptDataList(1)
                 }
               })
             } else {
