@@ -96,6 +96,18 @@
         label="快递单号">
       </el-table-column>
       <el-table-column
+        prop="applyName"
+        header-align="center"
+        align="center"
+        label="申请人">
+      </el-table-column>
+      <el-table-column
+        prop="applyPhone"
+        header-align="center"
+        align="center"
+        label="申请人电话">
+      </el-table-column>
+      <el-table-column
         prop="name"
         header-align="center"
         align="center"
@@ -105,7 +117,7 @@
         prop="phone"
         header-align="center"
         align="center"
-        label="电话">
+        label="收货人电话">
       </el-table-column>
       <el-table-column
         prop="postAddress"
