@@ -45,9 +45,9 @@
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCancelListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="exportExcel">导出</el-button>
-      </el-form-item>
+      <!--<el-form-item>-->
+        <!--<el-button type="primary" @click="exportExcel">导出</el-button>-->
+      <!--</el-form-item>-->
     </el-form>
     <el-table
       :data="dataCancelList"
