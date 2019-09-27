@@ -5,6 +5,7 @@ const config = require('../config')
 const { VueLoaderPlugin } = require('vue-loader')
 const vueLoaderConfig = require('./vue-loader.conf')
 const webpack = require("webpack")
+require("babel-polyfill")
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
@@ -24,7 +25,8 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    // app: './src/main.js'
+    app:["babel-polyfill","./src/main.js"]
   },
   output: {
     path: config.build.assetsRoot,
@@ -100,7 +102,7 @@ module.exports = {
       }
     ]
   },
- 
+
   plugins: [new VueLoaderPlugin()],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue

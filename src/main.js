@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
+import 'babel-polyfill'
 import VueCookie from 'vue-cookie' // api: https://github.com/alfhen/vue-cookie
 import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
 import { isAuth } from '@/utils'
