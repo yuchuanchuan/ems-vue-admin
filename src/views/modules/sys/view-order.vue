@@ -144,7 +144,6 @@
           params: this.$http.adornParams()
         }).then(({ data }) => {
           if(data && data.code === 0){
-            console.log(data)
             this.options = []
             data.areaList.forEach((item) => {
               if(item.childList){
@@ -169,27 +168,27 @@
               })
               this.dataForm.postRiskId = data.list[0].insuredId
             }
-          }).then(()=>{
-            this.$http({
-              url: this.$http.adornUrl('/sys/bussiness/allList'),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({ data }) => {
-              if (data && data.code === 0) {
-                this.postTypeList = []
-                data.list.forEach((item) => {
-                  this.postTypeList.push({
-                    id: item.id,
-                    name: item.bussinessName
-                  })
+          })
+        }).then(()=>{
+          this.$http({
+            url: this.$http.adornUrl('/sys/bussiness/allList'),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.postTypeList = []
+              data.list.forEach((item) => {
+                this.postTypeList.push({
+                  id: item.id,
+                  name: item.bussinessName
                 })
-              }
-            }).then(()=>{
-              this.visible = true
-              this.$nextTick(() => {
-                this.$refs['dataForm'].resetFields()
               })
-            })
+            }
+          })
+        }).then(()=>{
+          this.visible = true
+          this.$nextTick(() => {
+            this.$refs['dataForm'].resetFields()
           })
         }).then(() => {
           if (this.dataForm.orderId) {
@@ -199,7 +198,33 @@
               params: this.$http.adornParams()
             }).then(({ data }) => {
               if (data && data.code === 0) {
+                console.log("执行-----------111111111111111111------------")
+                console.log(data.order)
+
+                console.log(data.order.name +"---"+ data.order.phone)
+                // this.dataForm.orderId = data.order.orderId
+                // this.dataForm.name = data.order.name
+                // this.dataForm.propertyNo = data.order.propertyNo // 身份证号
+                // this.dataForm.idCard = data.order.idCard
+                // this.dataForm.phone = data.order.phone
+                  // mobileCode: '',
+                  // ownerPositive: '',
+                  // ownerNegative: '',
+                  // housingAuthority: '',
+                  // postType: '',
+                  // postRisk: 1,
+                  // postRiskId: '',
+                  // postProvinceId: '',
+                  // postCityId: '',
+                  // postCountyId: '',
+                  // postAddress: '',
+                  // addressList: []
                 this.dataForm = data.order
+
+
+                console.log(this.dataForm.name + "9999" + this.dataForm.phone)
+
+
                 this.dataForm.ownerPositive = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
                 this.dataForm.ownerNegative = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
                 this.dataForm.housingAuthority = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)

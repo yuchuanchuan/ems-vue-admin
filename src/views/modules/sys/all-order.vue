@@ -5,7 +5,19 @@
         <el-input v-model="dataAllForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataAllForm.idCard" placeholder="受理凭证号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataAllForm.applyName" placeholder="申请人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataAllForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataAllForm.name" placeholder="收货人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataAllForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataAllForm.areaId" placeholder="办理地区" width="100%" clearable>
@@ -165,7 +177,7 @@
             <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
             <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>
             <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
-            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">妥投</el-tag>
+            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
             <el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>
             <el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>
@@ -225,18 +237,18 @@
         statusList:[
           {id:1,name:'待支付'},
           {id:2,name:'已支付'},
-          {id:6,name:'已受理'},
-          {id:7,name:'已审核'},
-          {id:8,name:'已领证'},
-          // {id:9,name:'已发证'},
-          {id:9,name:'待发货'},
+          // {id:6,name:'已受理'},
+          // {id:7,name:'已审核'},
+          // {id:8,name:'已领证'},
+          // // {id:9,name:'已发证'},
+          {id:9,name:'已出证'},
           {id:3,name:'已发货'},
-          {id:13,name:'派件中'},
-          {id:4,name:'妥投'},
-          {id:11,name:'他人代签'},
-          {id:12,name:'未妥投'},
-          {id:5,name:'已取消'},
-          {id:10,name:'其他'}
+          // {id:13,name:'派件中'},
+          {id:4,name:'已妥投'},
+          // {id:11,name:'他人代签'},
+          // {id:12,name:'未妥投'},
+          {id:5,name:'已取消'}
+          // {id:10,name:'其他'}
         ],
         pickerOptions: {
           shortcuts: [
@@ -279,6 +291,10 @@
         postTypeList: [],
         dataAllForm:{
           orderNumber: '',
+          idCard: '',
+          applyName: '',
+          applyPhone: '',
+          name: '',
           phone: '',
           startOrderTime: '',
           endOrderTime: '',
@@ -394,6 +410,10 @@
             'page': page,
             'limit': this.pageAllSize,
             'orderNumber': this.dataAllForm.orderNumber,
+            'idCard': this.dataAllForm.idCard,
+            'applyName': this.dataAllForm.applyName,
+            'applyPhone': this.dataAllForm.applyPhone,
+            'name': this.dataAllForm.name,
             'phone': this.dataAllForm.phone,
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,

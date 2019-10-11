@@ -5,7 +5,19 @@
         <el-input v-model="dataRewardForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataRewardForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataRewardForm.idCard" placeholder="受理凭证号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataRewardForm.applyName" placeholder="申请人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataRewardForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataRewardForm.name" placeholder="收货人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataRewardForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataRewardForm.areaId" placeholder="办理地区" width="100%" clearable>
@@ -207,6 +219,10 @@
         postTypeList: [],
         dataRewardForm:{
           orderNumber: '',
+          idCard: '',
+          applyName: '',
+          applyPhone: '',
+          name: '',
           phone: '',
           status: 4,
           startOrderTime: '',
@@ -266,6 +282,10 @@
             'page': page,
             'limit': this.pageRewardSize,
             'orderNumber': this.dataRewardForm.orderNumber,
+            'idCard': this.dataRewardForm.idCard,
+            'applyName': this.dataRewardForm.applyName,
+            'applyPhone': this.dataRewardForm.applyPhone,
+            'name': this.dataRewardForm.name,
             'phone': this.dataRewardForm.phone,
             'status': this.dataRewardForm.status,
             'startOrderTime': this.dataRewardForm.startOrderTime,

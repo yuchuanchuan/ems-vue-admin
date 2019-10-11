@@ -5,7 +5,19 @@
         <el-input v-model="dataReceiptForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataReceiptForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataReceiptForm.idCard" placeholder="受理凭证号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataReceiptForm.applyName" placeholder="申请人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataReceiptForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataReceiptForm.name" placeholder="收货人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataReceiptForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataReceiptForm.areaId" placeholder="办理地区" width="100%" clearable>
@@ -206,6 +218,10 @@
         postTypeList: [],
         dataReceiptForm:{
           orderNumber: '',
+          idCard: '',
+          applyName: '',
+          applyPhone: '',
+          name: '',
           phone: '',
           status: 3,
           startOrderTime: '',
@@ -265,6 +281,10 @@
             'page': page,
             'limit': this.pageReceiptSize,
             'orderNumber': this.dataReceiptForm.orderNumber,
+            'idCard': this.dataReceiptForm.idCard,
+            'applyName': this.dataReceiptForm.applyName,
+            'applyPhone': this.dataReceiptForm.applyPhone,
+            'name': this.dataReceiptForm.name,
             'phone': this.dataReceiptForm.phone,
             'startOrderTime': this.dataReceiptForm.startOrderTime,
             'endOrderTime': this.dataReceiptForm.endOrderTime,

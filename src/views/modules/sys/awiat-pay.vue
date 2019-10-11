@@ -5,7 +5,19 @@
         <el-input v-model="dataPayForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataPayForm.idCard" placeholder="受理凭证号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataPayForm.applyName" placeholder="申请人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataPayForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataPayForm.name" placeholder="收货人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataPayForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataPayForm.areaId" placeholder="办理地区" width="100%" clearable>
@@ -200,6 +212,10 @@
         postTypeList: [],
         dataPayForm:{
           orderNumber: '',
+          idCard: '',
+          applyName: '',
+          applyPhone: '',
+          name: '',
           phone: '',
           status: 1,
           startOrderTime: '',
@@ -259,6 +275,10 @@
             'page': page,
             'limit': this.pageCancelSize,
             'orderNumber': this.dataPayForm.orderNumber,
+            'idCard': this.dataPayForm.idCard,
+            'applyName': this.dataPayForm.applyName,
+            'applyPhone': this.dataPayForm.applyPhone,
+            'name': this.dataPayForm.name,
             'phone': this.dataPayForm.phone,
             'status': this.dataPayForm.status,
             'startOrderTime': this.dataPayForm.startOrderTime,

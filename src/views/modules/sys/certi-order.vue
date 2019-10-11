@@ -1,26 +1,26 @@
 <template>
-  <div class="ship-order">
-    <el-form :inline="true" :model="dataShipForm">
+  <div class="reward-order">
+    <el-form :inline="true" :model="dataCertiForm">
       <el-form-item>
-        <el-input v-model="dataShipForm.orderNumber" placeholder="订单号" clearable></el-input>
+        <el-input v-model="dataCertiForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataShipForm.idCard" placeholder="受理凭证号" clearable></el-input>
+        <el-input v-model="dataCertiForm.idCard" placeholder="受理凭证号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataShipForm.applyName" placeholder="申请人姓名" clearable></el-input>
+        <el-input v-model="dataCertiForm.applyName" placeholder="申请人姓名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataShipForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+        <el-input v-model="dataCertiForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataShipForm.name" placeholder="收货人姓名" clearable></el-input>
+        <el-input v-model="dataCertiForm.name" placeholder="收货人姓名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataShipForm.phone" placeholder="收货人手机号" clearable></el-input>
+        <el-input v-model="dataCertiForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataShipForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataCertiForm.areaId" placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -30,7 +30,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="dataShipForm.postType" placeholder="邮寄类型" width="100%" clearable>
+        <el-select v-model="dataCertiForm.postType" placeholder="邮寄类型" width="100%" clearable>
           <el-option
             v-for="item in postTypeList"
             :key="item.id"
@@ -53,19 +53,19 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getShipDataList(1)">查询</el-button>
+        <el-button @click="getCertiDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
-        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataReceiptListSelections.length <= 0">批量删除</el-button>-->
+        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCertiListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="exportExcel">导出</el-button>
-      </el-form-item>
+      <!--<el-form-item>-->
+      <!--<el-button type="primary" @click="exportExcel">导出</el-button>-->
+      <!--</el-form-item>-->
     </el-form>
     <el-table
-      :data="dataShipList"
+      :data="dataCertiList"
       border
-      v-loading="dataShipListLoading"
-      @selection-change="selectionShipChangeHandle"
+      v-loading="dataCertiListLoading"
+      @selection-change="selectionCertiChangeHandle"
       style="width: 100%;">
       <!--<el-table-column-->
       <!--type="selection"-->
@@ -134,7 +134,7 @@
         width="180"
         label="凭证编号">
         <!--<template slot-scope="scope">-->
-          <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100">-->
+        <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" >-->
         <!--</template>-->
       </el-table-column>
       <el-table-column
@@ -154,7 +154,6 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <!-- 查看 -->
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
         </template>
       </el-table-column>
@@ -162,13 +161,12 @@
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
-      :current-page="pageShipIndex"
+      :current-page="pageCertiIndex"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageShipSize"
-      :total="totalShipPage"
+      :page-size="pageCertiSize"
+      :total="totalCertiPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-
     <!-- 查看 -->
     <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
@@ -179,7 +177,7 @@
   export default {
     data(){
       return{
-        activeName: 'third',
+        activeName: 'fifth',
         pickerOptions: {
           shortcuts: [
             {
@@ -219,25 +217,25 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
-        dataShipForm:{
+        dataCertiForm:{
           orderNumber: '',
           idCard: '',
           applyName: '',
           applyPhone: '',
           name: '',
           phone: '',
-          status: 2,
+          status: 9,
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
           postType: ''
         },
-        dataShipList: [],
-        pageShipIndex: 1,
-        pageShipSize: 10,
-        totalShipPage: 0,
-        dataShipListLoading: false,
-        dataReceiptListSelections: [],
+        dataCertiList: [],
+        pageCertiIndex: 1,
+        pageCertiSize: 10,
+        totalCertiPage: 0,
+        dataCertiListLoading: false,
+        dataCertiListSelections: [],
         addOrUpdateVisible: false,
         viewOrderVisible: false
       }
@@ -245,7 +243,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getShipDataList(1)
+      this.getCertiDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -267,59 +265,59 @@
         })
       },
       // 获取数据列表
-      getShipDataList (page) {
+      getCertiDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataShipForm.startOrderTime = this.createOrderTime[0]
-          this.dataShipForm.endOrderTime = this.createOrderTime[1]
+          this.dataCertiForm.startOrderTime = this.createOrderTime[0]
+          this.dataCertiForm.endOrderTime = this.createOrderTime[1]
         }else{
-          this.dataShipForm.startOrderTime = ""
-          this.dataShipForm.endOrderTime = ""
+          this.dataCertiForm.startOrderTime = ""
+          this.dataCertiForm.endOrderTime = ""
         }
 
-        this.dataShipListLoading = true
+        this.dataCertiListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': page,
-            'limit': this.pageShipSize,
-            'orderNumber': this.dataShipForm.orderNumber,
-            'idCard': this.dataShipForm.idCard,
-            'applyName': this.dataShipForm.applyName,
-            'applyPhone': this.dataShipForm.applyPhone,
-            'name': this.dataShipForm.name,
-            'phone': this.dataShipForm.phone,
-            'status': this.dataShipForm.status,
-            'startOrderTime': this.dataShipForm.startOrderTime,
-            'endOrderTime': this.dataShipForm.endOrderTime,
-            'areaId': this.dataShipForm.areaId,
-            'postType': this.dataShipForm.postType
+            'limit': this.pageCertiSize,
+            'orderNumber': this.dataCertiForm.orderNumber,
+            'idCard': this.dataCertiForm.idCard,
+            'applyName': this.dataCertiForm.applyName,
+            'applyPhone': this.dataCertiForm.applyPhone,
+            'name': this.dataCertiForm.name,
+            'phone': this.dataCertiForm.phone,
+            'status': this.dataCertiForm.status,
+            'startOrderTime': this.dataCertiForm.startOrderTime,
+            'endOrderTime': this.dataCertiForm.endOrderTime,
+            'areaId': this.dataCertiForm.areaId,
+            'postType': this.dataCertiForm.postType
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            this.dataShipList = data.page.list
-            this.totalShipPage = data.page.totalCount
+            this.dataCertiList = data.page.list
+            this.totalCertiPage = data.page.totalCount
           } else {
-            this.dataShipList = []
-            this.totalShipPage = 0
+            this.dataCertiList = []
+            this.totalCertiPage = 0
           }
-          this.dataShipListLoading = false
+          this.dataCertiListLoading = false
         })
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.pageShipSize = val
-        this.pageShipIndex = 1
-        this.getShipDataList(this.pageShipIndex)
+        this.pageCertiSize = val
+        this.pageCertiIndex = 1
+        this.getCertiDataList(this.pageCertiIndex)
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageShipIndex = val
-        this.getShipDataList(this.pageShipIndex)
+        this.pageCertiIndex = val
+        this.getCertiDataList(this.pageCertiIndex)
       },
       // 多选
-      selectionShipChangeHandle (val) {
-        this.dataReceiptListSelections = val
+      selectionCertiChangeHandle (val) {
+        this.dataCertiListSelections = val
       },
       // 新增 / 修改
       addOrUpdateHandle (id) {
@@ -330,7 +328,7 @@
       },
       // 删除
       deleteHandle (id) {
-        var userIds = id ? [id] : this.dataReceiptListSelections.map(item => {
+        var userIds = id ? [id] : this.dataCertiListSelections.map(item => {
           return item.userId
         })
         this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
@@ -349,7 +347,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getShipDataList(1)
+                  this.getCertiDataList(1)
                 }
               })
             } else {
@@ -358,27 +356,34 @@
           })
         }).catch(() => {})
       },
+      // 查看订单
+      viewOrder(id){
+        this.viewOrderVisible = true
+        this.$nextTick(() => {
+          this.$refs.viewOrder.init(id)
+        })
+      },
       exportExcel(){
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataShipForm.startOrderTime = this.createOrderTime[0]
-          this.dataShipForm.endOrderTime = this.createOrderTime[1]
+          this.dataCertiForm.startOrderTime = this.createOrderTime[0]
+          this.dataCertiForm.endOrderTime = this.createOrderTime[1]
         }else {
-          this.dataShipForm.startOrderTime = ""
-          this.dataShipForm.endOrderTime = ""
+          this.dataCertiForm.startOrderTime = ""
+          this.dataCertiForm.endOrderTime = ""
         }
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
           params: this.$http.adornParams({
-            'startOrderTime': this.dataShipForm.startOrderTime,
-            'endOrderTime': this.dataShipForm.endOrderTime,
-            'status': this.dataShipForm.status
+            'startOrderTime': this.dataCertiForm.startOrderTime,
+            'endOrderTime': this.dataCertiForm.endOrderTime,
+            'status': this.dataCertiForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
             window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataShipForm.startOrderTime + "&endOrderTime=" + this.dataShipForm.endOrderTime
-              + "&status=" + this.dataShipForm.status
+              + this.dataCertiForm.startOrderTime + "&endOrderTime=" + this.dataCertiForm.endOrderTime
+              + "&status=" + this.dataCertiForm.status
           } else {
             this.$message.error(data.msg)
           }
@@ -399,13 +404,6 @@
               })
             })
           }
-        })
-      },
-      // 查看订单
-      viewOrder(id){
-        this.viewOrderVisible = true
-        this.$nextTick(() => {
-          this.$refs.viewOrder.init(id)
         })
       }
     },

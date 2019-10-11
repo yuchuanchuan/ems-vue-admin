@@ -5,7 +5,19 @@
         <el-input v-model="dataCancelForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataCancelForm.phone" placeholder="手机号" clearable></el-input>
+        <el-input v-model="dataCancelForm.idCard" placeholder="受理凭证号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataCancelForm.applyName" placeholder="申请人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataCancelForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataCancelForm.name" placeholder="收货人姓名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="dataCancelForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataCancelForm.areaId" placeholder="办理地区" width="100%" clearable>
@@ -207,6 +219,10 @@
         postTypeList: [],
         dataCancelForm:{
           orderNumber: '',
+          idCard: '',
+          applyName: '',
+          applyPhone: '',
+          name: '',
           phone: '',
           status: 5,
           startOrderTime: '',
@@ -266,6 +282,10 @@
             'page': page,
             'limit': this.pageCancelSize,
             'orderNumber': this.dataCancelForm.orderNumber,
+            'idCard': this.dataCancelForm.idCard,
+            'applyName': this.dataCancelForm.applyName,
+            'applyPhone': this.dataCancelForm.applyPhone,
+            'name': this.dataCancelForm.name,
             'phone': this.dataCancelForm.phone,
             'status': this.dataCancelForm.status,
             'startOrderTime': this.dataCancelForm.startOrderTime,
