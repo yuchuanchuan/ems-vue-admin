@@ -70,8 +70,14 @@
         ></el-cascader>
       </el-form-item>
 
-      <el-form-item label="详细地址" prop="postAddress">
-        <el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>
+      <!--<el-form-item label="详细地址" prop="postAddress">-->
+        <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="街道/路" prop="postAddress">
+        <el-input v-model="dataForm.street" placeholder="街道/路"></el-input>
+      </el-form-item>
+      <el-form-item label="门牌号" prop="postAddress">
+        <el-input v-model="dataForm.houseNum" placeholder="门牌号"></el-input>
       </el-form-item>
 
     </el-form>
@@ -137,7 +143,9 @@
           postCityId: '',
           postCountyId: '',
           postAddress: '',
-          addressList: []
+          addressList: [],
+          street: '',
+          houseNum: ''
         },
         dataRule: {
           name: [

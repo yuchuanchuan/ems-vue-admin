@@ -71,8 +71,14 @@
           ></el-cascader>
         </el-form-item>
 
-        <el-form-item label="详细地址" prop="postAddress">
-          <el-input v-model="dataForm.postAddress" placeholder="详细地址" :disabled="true"></el-input>
+        <!--<el-form-item label="详细地址" prop="postAddress">-->
+          <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址" :disabled="true"></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="街道/路" prop="postAddress">
+          <el-input v-model="dataForm.street" placeholder="街道/路" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="门牌号" prop="postAddress">
+          <el-input v-model="dataForm.houseNum" placeholder="门牌号" :disabled="true"></el-input>
         </el-form-item>
 
       </el-form>
@@ -118,7 +124,9 @@
           postCityId: '',
           postCountyId: '',
           postAddress: '',
-          addressList: []
+          addressList: [],
+          street: '',
+          houseNum: ''
         },
       }
     },
@@ -134,9 +142,6 @@
         $("body").css("overflow","hidden");
       },
       init (orderId) {
-        console.log("--------------")
-        console.log(orderId)
-
         this.dataForm.orderId = orderId || 0
         this.$http({
           url: this.$http.adornUrl('/sys/area/list'),
@@ -198,33 +203,7 @@
               params: this.$http.adornParams()
             }).then(({ data }) => {
               if (data && data.code === 0) {
-                console.log("执行-----------111111111111111111------------")
-                console.log(data.order)
-
-                console.log(data.order.name +"---"+ data.order.phone)
-                // this.dataForm.orderId = data.order.orderId
-                // this.dataForm.name = data.order.name
-                // this.dataForm.propertyNo = data.order.propertyNo // 身份证号
-                // this.dataForm.idCard = data.order.idCard
-                // this.dataForm.phone = data.order.phone
-                  // mobileCode: '',
-                  // ownerPositive: '',
-                  // ownerNegative: '',
-                  // housingAuthority: '',
-                  // postType: '',
-                  // postRisk: 1,
-                  // postRiskId: '',
-                  // postProvinceId: '',
-                  // postCityId: '',
-                  // postCountyId: '',
-                  // postAddress: '',
-                  // addressList: []
                 this.dataForm = data.order
-
-
-                console.log(this.dataForm.name + "9999" + this.dataForm.phone)
-
-
                 this.dataForm.ownerPositive = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
                 this.dataForm.ownerNegative = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
                 this.dataForm.housingAuthority = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
