@@ -4,5 +4,5 @@
 (function() {
   window.SITE_CONFIG = {}
   // api接口请求地址
-  window.SITE_CONFIG['baseUrl'] = 'http://ems.jujinkeji.net/ems'
+  window.SITE_CONFIG['baseUrl'] = 'http://ems.tjeasytech.cn/ems'
 })()

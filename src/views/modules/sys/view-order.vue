@@ -204,9 +204,9 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
-                this.dataForm.ownerPositive = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
-                this.dataForm.ownerNegative = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
-                this.dataForm.housingAuthority = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+                this.dataForm.ownerPositive = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
+                this.dataForm.ownerNegative = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
+                this.dataForm.housingAuthority = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }
             })

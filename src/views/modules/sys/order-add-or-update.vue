@@ -73,10 +73,10 @@
       <!--<el-form-item label="详细地址" prop="postAddress">-->
         <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>-->
       <!--</el-form-item>-->
-      <el-form-item label="街道/路" prop="postAddress">
+      <el-form-item label="街道/路" prop="street">
         <el-input v-model="dataForm.street" placeholder="街道/路"></el-input>
       </el-form-item>
-      <el-form-item label="门牌号" prop="postAddress">
+      <el-form-item label="门牌号" prop="houseNum">
         <el-input v-model="dataForm.houseNum" placeholder="门牌号"></el-input>
       </el-form-item>
 
@@ -175,8 +175,14 @@
           postType: [
             { required: true, message: '请选择邮寄类型', trigger: 'change'}
           ],
-          postAddress: [
-            { required: true, message: '详细地址不能为空', trigger: 'blur'}
+          // postAddress: [
+          //   { required: true, message: '详细地址不能为空', trigger: 'blur'}
+          // ],
+          street: [
+            { required: true, message: '街道/路不能为空', trigger: 'blur'}
+          ],
+          houseNum: [
+            { required: true, message: '门牌号不能为空', trigger: 'blur'}
           ],
           addressList: [
             { required: true, message: '收件地址不能为空', trigger: 'change', type:'array'}
@@ -292,9 +298,9 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
-                this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
-                this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
-                this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+                this.idCardImg1 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
+                this.idCardImg2 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
+                this.houseImg = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }
             })
@@ -336,9 +342,9 @@
         //     }).then(({ data }) => {
         //       if (data && data.code === 0) {
         //         this.dataForm = data.order
-        //         this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
-        //         this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
-        //         this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+        //         this.idCardImg1 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
+        //         this.idCardImg2 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
+        //         this.houseImg = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
         //         this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
         //       }
         //     })
@@ -401,9 +407,9 @@
       //             // postCountyId: '',
       //             // postAddress: '',
       //
-      //           this.idCardImg1 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerPositive)
-      //           this.idCardImg2 = decodeURIComponent("http://ems.jujinkeji.net/" + data.order.ownerNegative)
-      //           this.houseImg = decodeURIComponent("http://ems.jujinkeji.net/zip/受理凭证/" + data.order.housingAuthority)
+      //           this.idCardImg1 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
+      //           this.idCardImg2 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
+      //           this.houseImg = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
       //           this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
       //         }
       //       })

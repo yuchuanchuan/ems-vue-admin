@@ -230,7 +230,7 @@
     data(){
       return{
         importExcel: process.env.BASE_API + '/sys/order/import',
-				// url:'ems.jujinkeji.net/',
+				// url:'ems.tjeasytech.cn/',
 				show_img:'',
         activeName: 'first',
         show:true,
