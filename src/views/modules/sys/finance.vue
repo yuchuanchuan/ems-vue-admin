@@ -4,9 +4,9 @@
       <el-form-item>
         <el-input v-model="dataShipForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
-      <!--<el-form-item>-->
-        <!--<el-input v-model="dataShipForm.phone" placeholder="手机号" clearable></el-input>-->
-      <!--</el-form-item>-->
+      <el-form-item>
+        <el-input v-model="dataShipForm.mailNum" placeholder="快递单号" clearable></el-input>
+      </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataShipForm.areaId" placeholder="办理地区" width="100%" clearable>
           <el-option
@@ -225,7 +225,8 @@
           status: 2,
           startOrderTime: '',
           endOrderTime: '',
-          areaId: ''
+          areaId: '',
+          mailNum: ''
         },
         dataShipList: [],
         pageShipIndex: 1,
@@ -309,7 +310,8 @@
             'status': this.dataShipForm.status,
             'startOrderTime': this.dataShipForm.startOrderTime,
             'endOrderTime': this.dataShipForm.endOrderTime,
-            'areaId': this.dataShipForm.areaId
+            'areaId': this.dataShipForm.areaId,
+            'mailNum': this.dataShipForm.mailNum
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

@@ -20,7 +20,7 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:user:save') && type == 1" type="primary" @click="addOrUpdateHandle(1)">新增区管理员</el-button>
-        <el-button v-if="isAuth('sys:user:save')" type="success" @click="addOrUpdateHandle(2)">新增信息管理员</el-button>
+        <el-button v-if="isAuth('sys:user:save')" type="success" @click="addOrUpdateHandle(2)">新增网点管理员</el-button>
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
     </el-form>
@@ -67,7 +67,7 @@
         align="center"
         label="用户类型">
         <template slot-scope="scope">
-          <span>{{ scope.row.type === 1 ? '总部管理员': (scope.row.type === 2 ? '区管理员' : (scope.row.type === 3 ? '区信息管理员' : '--'))}}</span>
+          <span>{{ scope.row.type === 1 ? '总部管理员': (scope.row.type === 2 ? '区管理员' : (scope.row.type === 3 ? '网点管理员' : '--'))}}</span>
         </template>
       </el-table-column>
       <el-table-column

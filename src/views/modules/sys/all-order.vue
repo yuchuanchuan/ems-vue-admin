@@ -179,14 +179,14 @@
             <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
             <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
-            <el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>
-            <el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>
-            <el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>
-            <el-tag v-else-if="scope.row.status === 9" size="small" type="info">待发货</el-tag>
-            <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>
-            <el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>
-            <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
-            <el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>
+            <!--<el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>-->
+            <el-tag v-else-if="scope.row.status === 9" size="small" type="info">已出证</el-tag>
+            <!--<el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>-->
           </template>
       </el-table-column>
       <el-table-column
@@ -199,8 +199,8 @@
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
-          <!--<el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">取消订单</el-button>-->
+          <el-button v-if="isAuth('sys:order:update') && type === 1" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
+          <el-button v-if="isAuth('sys:order:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -483,36 +483,36 @@
             })
         }).catch(() => {})
       },
-      // 取消订单
-      // deleteHandle (id) {
-      //   var userIds = id ? [id] : this.dataAllListSelections.map(item => {
-      //     return item.userId
-      //   })
-      //   this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     this.$http({
-      //       url: this.$http.adornUrl('/sys/order/delete'),
-      //       method: 'post',
-      //       data: this.$http.adornData(userIds, false)
-      //     }).then(({ data }) => {
-      //       if (data && data.code === 0) {
-      //         this.$message({
-      //           message: '操作成功',
-      //           type: 'success',
-      //           duration: 1500,
-      //           onClose: () => {
-      //             this.getAllDataList()
-      //           }
-      //         })
-      //       } else {
-      //         this.$message.error(data.msg)
-      //       }
-      //     })
-      //   }).catch(() => {})
-      // },
+      // 删除订单
+      deleteHandle (id) {
+        var userIds = id ? [id] : this.dataAllListSelections.map(item => {
+          return item.userId
+        })
+        this.$confirm(`确定对所选订单进行删除操作?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: this.$http.adornUrl('/sys/order/delete'),
+            method: 'post',
+            data: this.$http.adornData(userIds, false)
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  this.getAllDataList()
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }).catch(() => {})
+      },
 
       // 查看订单
       viewOrder(id){
