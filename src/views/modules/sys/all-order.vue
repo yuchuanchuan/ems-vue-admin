@@ -174,19 +174,32 @@
         align="center"
         label="订单状态">
           <template slot-scope="scope">
+            <!--<el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 9" size="small" type="info">已出证</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>-->
+            <!--<el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>-->
             <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
             <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>
             <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
             <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
-            <!--<el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>-->
-            <el-tag v-else-if="scope.row.status === 9" size="small" type="info">已出证</el-tag>
-            <!--<el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>-->
+            <el-tag v-else-if="scope.row.status === 6" size="small" type="warning">已支付</el-tag>
+            <el-tag v-else-if="scope.row.status === 7" size="small" type="warning">已支付</el-tag>
+            <el-tag v-else-if="scope.row.status === 8" size="small" type="success">已出证</el-tag>
+            <el-tag v-else-if="scope.row.status === 9" size="small" type="success">已出证</el-tag>
+            <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>
+            <el-tag v-else-if="scope.row.status === 11" size="small" type="success">已妥投</el-tag>
+            <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
+            <el-tag v-else-if="scope.row.status === 13" size="small" type="info">已发货</el-tag>
           </template>
       </el-table-column>
       <el-table-column
