@@ -40,6 +40,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataCertiForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+          <el-option
+            v-for="item in postRiskList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -57,9 +67,9 @@
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
         <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCertiListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
-      <!--<el-form-item>-->
-      <!--<el-button type="primary" @click="exportExcel">导出</el-button>-->
-      <!--</el-form-item>-->
+      <el-form-item>
+        <el-button type="primary" @click="exportExcel">导出</el-button>
+      </el-form-item>
     </el-form>
     <el-table
       :data="dataCertiList"
@@ -147,6 +157,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="postRisk"
+        header-align="center"
+        align="center"
+        label="保价客户">
+        <template slot-scope="scope">
+          <span v-if="scope.row.postRisk === 1">是</span>
+          <span v-if="scope.row.postRisk === 2">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -217,6 +237,13 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        postRiskList: [{
+          id: 1,
+          name: '是'
+        },{
+          id: 2,
+          name: '否'
+        }],
         dataCertiForm:{
           orderNumber: '',
           idCard: '',
@@ -224,11 +251,12 @@
           applyPhone: '',
           name: '',
           phone: '',
-          status: 9,
+          status: '8,9',
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
-          postType: ''
+          postType: '',
+          postRisk: ''
         },
         dataCertiList: [],
         pageCertiIndex: 1,
@@ -291,7 +319,8 @@
             'startOrderTime': this.dataCertiForm.startOrderTime,
             'endOrderTime': this.dataCertiForm.endOrderTime,
             'areaId': this.dataCertiForm.areaId,
-            'postType': this.dataCertiForm.postType
+            'postType': this.dataCertiForm.postType,
+            'postRisk': this.dataCertiForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -371,6 +400,13 @@
           this.dataCertiForm.startOrderTime = ""
           this.dataCertiForm.endOrderTime = ""
         }
+        let orderIdList = []
+        let orderIdStr = ""
+        this.dataCertiListSelections.forEach((item) => {
+          orderIdList.push(item.orderId)
+        })
+        orderIdStr = orderIdList.join(',')
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -381,9 +417,26 @@
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataCertiForm.startOrderTime + "&endOrderTime=" + this.dataCertiForm.endOrderTime
-              + "&status=" + this.dataCertiForm.status
+            this.$confirm(`是否打包下载证照图片?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataCertiForm.startOrderTime + "&endOrderTime=" + this.dataCertiForm.endOrderTime
+                + "&status=" + this.dataCertiForm.status + "&orderIdStr=" + orderIdStr)
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                + this.dataCertiForm.startOrderTime + "&endOrderTime=" + this.dataCertiForm.endOrderTime
+                + "&status=" + this.dataCertiForm.status + "&orderIdStr=" + orderIdStr)
+
+            }).catch(()=>{
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataCertiForm.startOrderTime + "&endOrderTime=" + this.dataCertiForm.endOrderTime
+                + "&status=" + this.dataCertiForm.status + "&orderIdStr=" + orderIdStr
+              // + "&downZip=2"
+            })
           } else {
             this.$message.error(data.msg)
           }

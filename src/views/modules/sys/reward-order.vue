@@ -40,6 +40,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataRewardForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+          <el-option
+            v-for="item in postRiskList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -147,6 +157,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="postRisk"
+        header-align="center"
+        align="center"
+        label="保价客户">
+        <template slot-scope="scope">
+          <span v-if="scope.row.postRisk === 1">是</span>
+          <span v-if="scope.row.postRisk === 2">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -217,6 +237,13 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        postRiskList: [{
+          id: 1,
+          name: '是'
+        },{
+          id: 2,
+          name: '否'
+        }],
         dataRewardForm:{
           orderNumber: '',
           idCard: '',
@@ -224,11 +251,12 @@
           applyPhone: '',
           name: '',
           phone: '',
-          status: 4,
+          status: '4,11',
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
-          postType: ''
+          postType: '',
+          postRisk: ''
         },
         dataRewardList: [],
         pageRewardIndex: 1,
@@ -291,7 +319,8 @@
             'startOrderTime': this.dataRewardForm.startOrderTime,
             'endOrderTime': this.dataRewardForm.endOrderTime,
             'areaId': this.dataRewardForm.areaId,
-            'postType': this.dataRewardForm.postType
+            'postType': this.dataRewardForm.postType,
+            'postRisk': this.dataRewardForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -371,6 +400,13 @@
           this.dataRewardForm.startOrderTime = ""
           this.dataRewardForm.endOrderTime = ""
         }
+        let orderIdList = []
+        let orderIdStr = ""
+        this.dataRewardListSelections.forEach((item) => {
+          orderIdList.push(item.orderId)
+        })
+        orderIdStr = orderIdList.join(',')
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -381,9 +417,26 @@
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
-              + "&status=" + this.dataRewardForm.status
+            this.$confirm(`是否打包下载证照图片?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
+                + "&status=" + this.dataRewardForm.status + "&orderIdStr=" + orderIdStr)
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
+                + "&status=" + this.dataRewardForm.status + "&orderIdStr=" + orderIdStr)
+
+            }).catch(()=>{
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataRewardForm.startOrderTime + "&endOrderTime=" + this.dataRewardForm.endOrderTime
+                + "&status=" + this.dataRewardForm.status + "&orderIdStr=" + orderIdStr
+              // + "&downZip=2"
+            })
           } else {
             this.$message.error(data.msg)
           }

@@ -18,6 +18,9 @@
     <el-tab-pane label="已妥投" name="fifth">
       <RewardOrder ref="rewardOrder"/>
     </el-tab-pane>
+    <el-tab-pane label="未妥投" name="eighth">
+      <NotReceiveOrder ref="notReceiveOrder"/>
+    </el-tab-pane>
     <el-tab-pane label="已取消" name="sixth">
       <CancelOrder ref="cancelOrder"/>
     </el-tab-pane>
@@ -32,6 +35,7 @@
   import CancelOrder from './cancel-order.vue'
   import AwiatPay from './awiat-pay.vue'
   import CertiOrder from './certi-order.vue'
+  import NotReceiveOrder from './not-receive-order.vue'
   export default {
     data(){
       return{
@@ -45,7 +49,8 @@
       RewardOrder,
       CancelOrder,
       AwiatPay,
-      CertiOrder
+      CertiOrder,
+      NotReceiveOrder
     },
     methods:{
       handleClick(tab, event){
@@ -66,6 +71,9 @@
         }
         if(tab.name === 'seventh'){
           this.$refs.certiOrder.getCertiDataList()
+        }
+        if(tab.name === 'eighth'){
+          this.$refs.notReceiveOrder.getNotReceiveDataList()
         }
       }
     }

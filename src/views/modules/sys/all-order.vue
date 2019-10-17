@@ -40,6 +40,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataAllForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+          <el-option
+            v-for="item in postRiskList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-select v-model="dataAllForm.status" placeholder="状态" width="100%" clearable>
           <el-option
             v-for="item in statusList"
@@ -169,6 +179,16 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="postRisk"
+          header-align="center"
+          align="center"
+          label="保价客户">
+          <template slot-scope="scope">
+            <span v-if="scope.row.postRisk === 1">是</span>
+            <span v-if="scope.row.postRisk === 2">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column
         prop="status"
         header-align="center"
         align="center"
@@ -196,7 +216,7 @@
             <el-tag v-else-if="scope.row.status === 7" size="small" type="warning">已支付</el-tag>
             <el-tag v-else-if="scope.row.status === 8" size="small" type="success">已出证</el-tag>
             <el-tag v-else-if="scope.row.status === 9" size="small" type="success">已出证</el-tag>
-            <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>
+            <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">未妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 11" size="small" type="success">已妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
             <el-tag v-else-if="scope.row.status === 13" size="small" type="info">已发货</el-tag>
@@ -259,7 +279,7 @@
           // {id:13,name:'派件中'},
           {id:4,name:'已妥投'},
           // {id:11,name:'他人代签'},
-          // {id:12,name:'未妥投'},
+          {id:12,name:'未妥投'},
           {id:5,name:'已取消'}
           // {id:10,name:'其他'}
         ],
@@ -302,6 +322,13 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        postRiskList: [{
+          id: 1,
+          name: '是'
+        },{
+          id: 2,
+          name: '否'
+        }],
         dataAllForm:{
           orderNumber: '',
           idCard: '',
@@ -313,7 +340,8 @@
           endOrderTime: '',
           status: '',
           areaId: '',
-          postType: ''
+          postType: '',
+          postRisk: ''
         },
         dataAllList: [],
         pageAllIndex: 1,
@@ -432,7 +460,8 @@
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.dataAllForm.status,
             'areaId': this.dataAllForm.areaId,
-            'postType': this.dataAllForm.postType
+            'postType': this.dataAllForm.postType,
+            'postRisk': this.dataAllForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

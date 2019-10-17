@@ -40,6 +40,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataCancelForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+          <el-option
+            v-for="item in postRiskList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -147,6 +157,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="postRisk"
+        header-align="center"
+        align="center"
+        label="保价客户">
+        <template slot-scope="scope">
+          <span v-if="scope.row.postRisk === 1">是</span>
+          <span v-if="scope.row.postRisk === 2">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -217,6 +237,13 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        postRiskList: [{
+          id: 1,
+          name: '是'
+        },{
+          id: 2,
+          name: '否'
+        }],
         dataCancelForm:{
           orderNumber: '',
           idCard: '',
@@ -224,11 +251,12 @@
           applyPhone: '',
           name: '',
           phone: '',
-          status: 5,
+          status: '5',
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
-          postType: ''
+          postType: '',
+          postRisk: ''
         },
         dataCancelList: [],
         pageCancelIndex: 1,
@@ -291,7 +319,8 @@
             'startOrderTime': this.dataCancelForm.startOrderTime,
             'endOrderTime': this.dataCancelForm.endOrderTime,
             'areaId': this.dataCancelForm.areaId,
-            'postType': this.dataCancelForm.postType
+            'postType': this.dataCancelForm.postType,
+            'postRisk': this.dataCancelForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

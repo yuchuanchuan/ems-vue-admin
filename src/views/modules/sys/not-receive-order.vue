@@ -1,26 +1,26 @@
 <template>
-  <div class="cancel-order">
-    <el-form :inline="true" :model="dataPayForm">
+  <div class="reward-order">
+    <el-form :inline="true" :model="dataNotReceiveForm">
       <el-form-item>
-        <el-input v-model="dataPayForm.orderNumber" placeholder="订单号" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.orderNumber" placeholder="订单号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.idCard" placeholder="受理凭证号" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.idCard" placeholder="受理凭证号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.applyName" placeholder="申请人姓名" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.applyName" placeholder="申请人姓名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.name" placeholder="收货人姓名" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.name" placeholder="收货人姓名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataPayForm.phone" placeholder="收货人手机号" clearable></el-input>
+        <el-input v-model="dataNotReceiveForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataPayForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataNotReceiveForm.areaId" placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -30,7 +30,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="dataPayForm.postType" placeholder="邮寄类型" width="100%" clearable>
+        <el-select v-model="dataNotReceiveForm.postType" placeholder="邮寄类型" width="100%" clearable>
           <el-option
             v-for="item in postTypeList"
             :key="item.id"
@@ -40,7 +40,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="dataPayForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+        <el-select v-model="dataNotReceiveForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
           <el-option
             v-for="item in postRiskList"
             :key="item.id"
@@ -63,19 +63,19 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getCancelDataList(1)">查询</el-button>
+        <el-button @click="getNotReceiveDataList(1)">查询</el-button>
         <!--<el-button v-if="isAuth('sys:order:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
-        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataCancelListSelections.length <= 0">批量删除</el-button>-->
+        <!--<el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataNotReceiveListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
-      <!--<el-form-item>-->
-        <!--<el-button type="primary" @click="exportExcel">导出</el-button>-->
-      <!--</el-form-item>-->
+      <el-form-item>
+        <el-button type="primary" @click="exportExcel">导出</el-button>
+      </el-form-item>
     </el-form>
     <el-table
-      :data="dataCancelList"
+      :data="dataNotReceiveList"
       border
-      v-loading="dataCancelListLoading"
-      @selection-change="selectionCancelChangeHandle"
+      v-loading="dataNotReceiveListLoading"
+      @selection-change="selectionRewardChangeHandle"
       style="width: 100%;">
       <!--<el-table-column-->
       <!--type="selection"-->
@@ -88,6 +88,12 @@
         header-align="center"
         align="center"
         label="订单号">
+      </el-table-column>
+      <el-table-column
+        prop="mailNum"
+        header-align="center"
+        align="center"
+        label="快递单号">
       </el-table-column>
       <el-table-column
         prop="applyName"
@@ -137,6 +143,9 @@
         align="center"
         width="180"
         label="凭证编号">
+        <!--<template slot-scope="scope">-->
+        <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" >-->
+        <!--</template>-->
       </el-table-column>
       <el-table-column
         prop="postType"
@@ -161,11 +170,10 @@
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="100"
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">支付</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
         </template>
       </el-table-column>
@@ -173,13 +181,12 @@
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
-      :current-page="pageCancelIndex"
+      :current-page="pageNotReceiveIndex"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageCancelSize"
-      :total="totalCancelPage"
+      :page-size="pageNotReceiveSize"
+      :total="totalNotReceivePage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-
     <!-- 查看 -->
     <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
   </div>
@@ -190,7 +197,7 @@
   export default {
     data(){
       return{
-        activeName: 'second',
+        activeName: 'fifth',
         pickerOptions: {
           shortcuts: [
             {
@@ -237,26 +244,26 @@
           id: 2,
           name: '否'
         }],
-        dataPayForm:{
+        dataNotReceiveForm:{
           orderNumber: '',
           idCard: '',
           applyName: '',
           applyPhone: '',
           name: '',
           phone: '',
-          status: 1,
+          status: '10,12',
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
           postType: '',
           postRisk: ''
         },
-        dataCancelList: [],
-        pageCancelIndex: 1,
-        pageCancelSize: 10,
-        totalCancelPage: 0,
-        dataCancelListLoading: false,
-        dataCancelListSelections: [],
+        dataNotReceiveList: [],
+        pageNotReceiveIndex: 1,
+        pageNotReceiveSize: 10,
+        totalNotReceivePage: 0,
+        dataNotReceiveListLoading: false,
+        dataNotReceiveListSelections: [],
         addOrUpdateVisible: false,
         viewOrderVisible: false
       }
@@ -264,7 +271,7 @@
     activated () {
       this.getPostTypeList()
       this.getAreaInfo()
-      this.getCancelDataList(1)
+      this.getNotReceiveDataList(1)
     },
     methods: {
       // 邮寄类型
@@ -286,111 +293,71 @@
         })
       },
       // 获取数据列表
-      getCancelDataList (page) {
+      getNotReceiveDataList (page) {
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataPayForm.startOrderTime = this.createOrderTime[0]
-          this.dataPayForm.endOrderTime = this.createOrderTime[1]
+          this.dataNotReceiveForm.startOrderTime = this.createOrderTime[0]
+          this.dataNotReceiveForm.endOrderTime = this.createOrderTime[1]
         }else{
-          this.dataPayForm.startOrderTime = ""
-          this.dataPayForm.endOrderTime = ""
+          this.dataNotReceiveForm.startOrderTime = ""
+          this.dataNotReceiveForm.endOrderTime = ""
         }
 
-        this.dataCancelListLoading = true
+        this.dataNotReceiveListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': page,
-            'limit': this.pageCancelSize,
-            'orderNumber': this.dataPayForm.orderNumber,
-            'idCard': this.dataPayForm.idCard,
-            'applyName': this.dataPayForm.applyName,
-            'applyPhone': this.dataPayForm.applyPhone,
-            'name': this.dataPayForm.name,
-            'phone': this.dataPayForm.phone,
-            'status': this.dataPayForm.status,
-            'startOrderTime': this.dataPayForm.startOrderTime,
-            'endOrderTime': this.dataPayForm.endOrderTime,
-            // 'status': this.dataPayForm.status,
-            'areaId': this.dataPayForm.areaId,
-            'postType': this.dataPayForm.postType,
-            'postRisk': this.dataPayForm.postRisk
+            'limit': this.pageNotReceiveSize,
+            'orderNumber': this.dataNotReceiveForm.orderNumber,
+            'idCard': this.dataNotReceiveForm.idCard,
+            'applyName': this.dataNotReceiveForm.applyName,
+            'applyPhone': this.dataNotReceiveForm.applyPhone,
+            'name': this.dataNotReceiveForm.name,
+            'phone': this.dataNotReceiveForm.phone,
+            'status': this.dataNotReceiveForm.status,
+            'startOrderTime': this.dataNotReceiveForm.startOrderTime,
+            'endOrderTime': this.dataNotReceiveForm.endOrderTime,
+            'areaId': this.dataNotReceiveForm.areaId,
+            'postType': this.dataNotReceiveForm.postType,
+            'postRisk': this.dataNotReceiveForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            this.dataCancelList = data.page.list
-            this.totalCancelPage = data.page.totalCount
+            this.dataNotReceiveList = data.page.list
+            this.totalNotReceivePage = data.page.totalCount
           } else {
-            this.dataCancelList = []
-            this.totalCancelPage = 0
+            this.dataNotReceiveList = []
+            this.totalNotReceivePage = 0
           }
-          this.dataCancelListLoading = false
+          this.dataNotReceiveListLoading = false
         })
       },
       // 每页数
       sizeChangeHandle (val) {
-        this.pageCancelSize = val
-        this.pageCancelIndex = 1
-        this.getCancelDataList(this.pageCancelIndex)
+        this.pageNotReceiveSize = val
+        this.pageNotReceiveIndex = 1
+        this.getNotReceiveDataList(this.pageNotReceiveIndex)
       },
       // 当前页
       currentChangeHandle (val) {
-        this.pageCancelIndex = val
-        this.getCancelDataList(this.pageCancelIndex)
+        this.pageNotReceiveIndex = val
+        this.getNotReceiveDataList(this.pageNotReceiveIndex)
       },
       // 多选
-      selectionCancelChangeHandle (val) {
-        this.dataCancelListSelections = val
+      selectionRewardChangeHandle (val) {
+        this.dataNotReceiveListSelections = val
       },
-      // 支付
+      // 新增 / 修改
       addOrUpdateHandle (id) {
-        this.$http({
-          url: this.$http.adornUrl('/sys/order/findOrderMoney'),
-          method: 'get',
-          params: this.$http.adornParams({
-            'orderId': id
-          })
-        }).then(({ data }) => {
-          if (data && data.code === 0) {
-            let title = ''
-            if(data.totalRate == ''){
-              title = "订单号" + data.orderNum  +"，姓名为" + data.name+ "的客户,请在柜台前支付运费共计" + data.totalAmount + "元"
-            }else{
-              title = "订单号" + data.orderNum  +"，姓名为" + data.name+ "的客户,请在柜台前支付费用共计" + (data.totalAmount + data.totalRate) + "元," +
-                "其中包含运费" + data.totalAmount +"元和保险费用" + data.totalRate +"元"
-            }
-            this.$confirm(title, '提示', {
-              confirmButtonText: '支付完成',
-              // cancelButtonText: '取消',
-              type: 'info'
-            }).then(() => {
-              this.$http({
-                url: this.$http.adornUrl('/sys/order/updateOrderState'),
-                method: 'get',
-                params: this.$http.adornParams({
-                  'orderId': data.orderId
-                })
-              }).then(({ data }) => {
-                if (data && data.code === 0) {
-                  this.$message({
-                    message: '操作成功',
-                    type: 'success',
-                    duration: 1500,
-                    onClose: () => {
-                      this.getCancelDataList(this.pageCancelIndex)
-                    }
-                  })
-                }
-              })
-            }).catch(()=>{
-
-            })
-          }
+        this.addOrUpdateVisible = true
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id)
         })
       },
       // 删除
       deleteHandle (id) {
-        var userIds = id ? [id] : this.dataCancelListSelections.map(item => {
+        var userIds = id ? [id] : this.dataNotReceiveListSelections.map(item => {
           return item.userId
         })
         this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
@@ -409,7 +376,7 @@
                 type: 'success',
                 duration: 1500,
                 onClose: () => {
-                  this.getCancelDataList(1)
+                  this.getNotReceiveDataList(1)
                 }
               })
             } else {
@@ -427,25 +394,49 @@
       },
       exportExcel(){
         if(this.createOrderTime && this.createOrderTime.length > 0){
-          this.dataPayForm.startOrderTime = this.createOrderTime[0]
-          this.dataPayForm.endOrderTime = this.createOrderTime[1]
+          this.dataNotReceiveForm.startOrderTime = this.createOrderTime[0]
+          this.dataNotReceiveForm.endOrderTime = this.createOrderTime[1]
         }else {
-          this.dataPayForm.startOrderTime = ""
-          this.dataPayForm.endOrderTime = ""
+          this.dataNotReceiveForm.startOrderTime = ""
+          this.dataNotReceiveForm.endOrderTime = ""
         }
+        let orderIdList = []
+        let orderIdStr = ""
+        this.dataNotReceiveListSelections.forEach((item) => {
+          orderIdList.push(item.orderId)
+        })
+        orderIdStr = orderIdList.join(',')
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
           params: this.$http.adornParams({
-            'startOrderTime': this.dataPayForm.startOrderTime,
-            'endOrderTime': this.dataPayForm.endOrderTime,
-            'status': this.dataPayForm.status
+            'startOrderTime': this.dataNotReceiveForm.startOrderTime,
+            'endOrderTime': this.dataNotReceiveForm.endOrderTime,
+            'status': this.dataNotReceiveForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataPayForm.startOrderTime + "&endOrderTime=" + this.dataPayForm.endOrderTime
-              + "&status=" + this.dataPayForm.status
+            this.$confirm(`是否打包下载证照图片?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataNotReceiveForm.startOrderTime + "&endOrderTime=" + this.dataNotReceiveForm.endOrderTime
+                + "&status=" + this.dataNotReceiveForm.status + "&orderIdStr=" + orderIdStr)
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                + this.dataNotReceiveForm.startOrderTime + "&endOrderTime=" + this.dataNotReceiveForm.endOrderTime
+                + "&status=" + this.dataNotReceiveForm.status + "&orderIdStr=" + orderIdStr)
+
+            }).catch(()=>{
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataNotReceiveForm.startOrderTime + "&endOrderTime=" + this.dataNotReceiveForm.endOrderTime
+                + "&status=" + this.dataNotReceiveForm.status + "&orderIdStr=" + orderIdStr
+              // + "&downZip=2"
+            })
           } else {
             this.$message.error(data.msg)
           }

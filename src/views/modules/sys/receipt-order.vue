@@ -40,6 +40,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="dataReceiptForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
+          <el-option
+            v-for="item in postRiskList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-date-picker
           v-model="createOrderTime"
           type="daterange"
@@ -146,6 +156,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="postRisk"
+        header-align="center"
+        align="center"
+        label="保价客户">
+        <template slot-scope="scope">
+          <span v-if="scope.row.postRisk === 1">是</span>
+          <span v-if="scope.row.postRisk === 2">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -216,6 +236,13 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        postRiskList: [{
+          id: 1,
+          name: '是'
+        },{
+          id: 2,
+          name: '否'
+        }],
         dataReceiptForm:{
           orderNumber: '',
           idCard: '',
@@ -223,11 +250,12 @@
           applyPhone: '',
           name: '',
           phone: '',
-          status: 3,
+          status: '3,13',
           startOrderTime: '',
           endOrderTime: '',
           areaId: '',
-          postType: ''
+          postType: '',
+          postRisk: ''
         },
         dataReceiptList: [],
         pageReceiptIndex: 1,
@@ -290,7 +318,8 @@
             'endOrderTime': this.dataReceiptForm.endOrderTime,
             'status': this.dataReceiptForm.status,
             'areaId': this.dataReceiptForm.areaId,
-            'postType': this.dataReceiptForm.postType
+            'postType': this.dataReceiptForm.postType,
+            'postRisk': this.dataReceiptForm.postRisk
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -371,6 +400,13 @@
           this.dataReceiptForm.startOrderTime = ""
           this.dataReceiptForm.endOrderTime = ""
         }
+        let orderIdList = []
+        let orderIdStr = ""
+        this.dataReceiptListSelections.forEach((item) => {
+          orderIdList.push(item.orderId)
+        })
+        orderIdStr = orderIdList.join(',')
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -381,9 +417,26 @@
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-              + this.dataReceiptForm.startOrderTime + "&endOrderTime=" + this.dataReceiptForm.endOrderTime
-              + "&status=" + this.dataReceiptForm.status
+            this.$confirm(`是否打包下载证照图片?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info'
+            }).then(() => {
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataReceiptForm.startOrderTime + "&endOrderTime=" + this.dataReceiptForm.endOrderTime
+                + "&status=" + this.dataReceiptForm.status + "&orderIdStr=" + orderIdStr)
+
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
+                + this.dataReceiptForm.startOrderTime + "&endOrderTime=" + this.dataReceiptForm.endOrderTime
+                + "&status=" + this.dataReceiptForm.status + "&orderIdStr=" + orderIdStr)
+
+            }).catch(()=>{
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
+                + this.dataReceiptForm.startOrderTime + "&endOrderTime=" + this.dataReceiptForm.endOrderTime
+                + "&status=" + this.dataReceiptForm.status + "&orderIdStr=" + orderIdStr
+              // + "&downZip=2"
+            })
           } else {
             this.$message.error(data.msg)
           }

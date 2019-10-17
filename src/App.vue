@@ -6,6 +6,19 @@
 
 <script>
 export default{
-  name: 'App'
+  created(){
+    this.getOrderListCancel()
+  },
+  methods:{
+    getOrderListCancel(){
+      this.$http({
+        url: this.$http.adornUrl('/sys/order/allList'),
+        method: 'get',
+        params: this.$http.adornParams()
+      }).then(({ data }) => {
+
+      })
+    },
+  }
 }
 </script>
