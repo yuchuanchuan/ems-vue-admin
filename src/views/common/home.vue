@@ -15,7 +15,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="areaId" placeholder="请选择" width="100%" clearable>
+        <el-select v-model="areaId" multiple placeholder="请选择" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -129,7 +129,7 @@
         createOrderTime: [],
         startOrderTime: '',
         endOrderTime: '',
-        areaId: '',
+        areaId: [],
         pickerOptions: {
           shortcuts: [
             {
@@ -228,6 +228,11 @@
           this.endOrderTime = ""
         }
 
+        let multiAreaId = ''
+        if(this.areaId && this.areaId.length > 0){
+          multiAreaId = this.areaId.join(',')
+        }
+
         this.dataListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/orderDataCount'),
@@ -235,7 +240,7 @@
           params: this.$http.adornParams({
             'startOrderTime': this.startOrderTime,
             'endOrderTime': this.endOrderTime,
-            'areaId': this.areaId
+            'areaId': multiAreaId
           })
         }).then(({ data }) => {
           console.log(data)

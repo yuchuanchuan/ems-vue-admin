@@ -20,7 +20,7 @@
         <el-input v-model="dataCertiForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataCertiForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataCertiForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -254,7 +254,7 @@
           status: '8,9',
           startOrderTime: '',
           endOrderTime: '',
-          areaId: '',
+          areaId: [],
           postType: '',
           postRisk: ''
         },
@@ -302,6 +302,12 @@
           this.dataCertiForm.endOrderTime = ""
         }
 
+        // 数据多选地区转换
+        let multiAreaId = ''
+        if(this.dataCertiForm.areaId && this.dataCertiForm.areaId.length > 0){
+          multiAreaId = this.dataCertiForm.areaId.join(',')
+        }
+
         this.dataCertiListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
@@ -318,7 +324,7 @@
             'status': this.dataCertiForm.status,
             'startOrderTime': this.dataCertiForm.startOrderTime,
             'endOrderTime': this.dataCertiForm.endOrderTime,
-            'areaId': this.dataCertiForm.areaId,
+            'areaId': multiAreaId,
             'postType': this.dataCertiForm.postType,
             'postRisk': this.dataCertiForm.postRisk
           })

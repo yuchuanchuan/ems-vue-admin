@@ -20,7 +20,7 @@
         <el-input v-model="dataAllForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataAllForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataAllForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -230,10 +230,10 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)" :disabled="scope.row.status !== 1">修改</el-button>
+          <el-button v-if="isAuth('sys:order:update') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
-          <el-button v-if="isAuth('sys:order:update') && type === 1" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
-          <el-button v-if="isAuth('sys:order:delete')" type="text" size="small" @click="deleteHandle(scope.row.orderId)">删除</el-button>
+          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
+          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text" size="small" @click="deleteHandle(scope.row.orderId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -340,7 +340,7 @@
           startOrderTime: '',
           endOrderTime: '',
           status: '',
-          areaId: '',
+          areaId: [],
           postType: '',
           postRisk: ''
         },
@@ -462,6 +462,12 @@
           this.statusStr = this.dataAllForm.status
         }
 
+        // 数据多选地区转换
+        let multiAreaId = ''
+        if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
+          multiAreaId = this.dataAllForm.areaId.join(',')
+        }
+
         this.dataAllListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
@@ -478,7 +484,7 @@
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.statusStr,
-            'areaId': this.dataAllForm.areaId,
+            'areaId': multiAreaId,
             'postType': this.dataAllForm.postType,
             'postRisk': this.dataAllForm.postRisk
           })

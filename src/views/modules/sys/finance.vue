@@ -8,7 +8,7 @@
         <el-input v-model="dataShipForm.mailNum" placeholder="快递单号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataShipForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataShipForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -225,7 +225,7 @@
           status: 2,
           startOrderTime: '',
           endOrderTime: '',
-          areaId: '',
+          areaId: [],
           mailNum: ''
         },
         dataShipList: [],
@@ -298,6 +298,12 @@
           this.dataShipForm.endOrderTime = ""
         }
 
+        // 数据转换 办理地区
+        let multiAreaId = ''
+        if(this.dataShipForm.areaId && this.dataShipForm.areaId.length > 0){
+          multiAreaId = this.dataShipForm.areaId.join(',')
+        }
+
         this.dataShipListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/financeList'),
@@ -310,7 +316,7 @@
             'status': this.dataShipForm.status,
             'startOrderTime': this.dataShipForm.startOrderTime,
             'endOrderTime': this.dataShipForm.endOrderTime,
-            'areaId': this.dataShipForm.areaId,
+            'areaId': multiAreaId,
             'mailNum': this.dataShipForm.mailNum
           })
         }).then(({ data }) => {

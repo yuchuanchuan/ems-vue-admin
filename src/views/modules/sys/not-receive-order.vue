@@ -20,7 +20,7 @@
         <el-input v-model="dataNotReceiveForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataNotReceiveForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataNotReceiveForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -254,7 +254,7 @@
           status: '10,12',
           startOrderTime: '',
           endOrderTime: '',
-          areaId: '',
+          areaId: [],
           postType: '',
           postRisk: ''
         },
@@ -302,6 +302,12 @@
           this.dataNotReceiveForm.endOrderTime = ""
         }
 
+        // 数据多选地区转换
+        let multiAreaId = ''
+        if(this.dataNotReceiveForm.areaId && this.dataNotReceiveForm.areaId.length > 0){
+          multiAreaId = this.dataNotReceiveForm.areaId.join(',')
+        }
+
         this.dataNotReceiveListLoading = true
         this.$http({
           url: this.$http.adornUrl('/sys/order/list'),
@@ -318,7 +324,7 @@
             'status': this.dataNotReceiveForm.status,
             'startOrderTime': this.dataNotReceiveForm.startOrderTime,
             'endOrderTime': this.dataNotReceiveForm.endOrderTime,
-            'areaId': this.dataNotReceiveForm.areaId,
+            'areaId': multiAreaId,
             'postType': this.dataNotReceiveForm.postType,
             'postRisk': this.dataNotReceiveForm.postRisk
           })

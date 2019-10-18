@@ -8,7 +8,7 @@
         <el-input v-model="dataForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataForm.areaId" placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -135,7 +135,7 @@
         dataForm: {
           userName: '',
           phone: '',
-          areaId: ''
+          areaId: []
         },
         dataList: [],
         areaList: [],
@@ -158,6 +158,12 @@
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
+        // 数据转换 areaId
+        let multiAreaId = ''
+        if(this.dataForm.areaId && this.dataForm.areaId.length > 0){
+          multiAreaId = this.dataForm.areaId.join(',')
+        }
+
         this.$http({
           url: this.$http.adornUrl('/sys/user/list'),
           method: 'get',
@@ -166,7 +172,7 @@
             'limit': this.pageSize,
             'userName': this.dataForm.userName,
             'phone': this.dataForm.phone,
-            'areaId': this.dataForm.areaId
+            'areaId': multiAreaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
