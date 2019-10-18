@@ -268,7 +268,7 @@
         activeName: 'first',
         show:true,
         statusList:[
-          {id:1,name:'待支付'},
+          {id: 1,name:'待支付'},
           {id:2,name:'已支付'},
           // {id:6,name:'已受理'},
           // {id:7,name:'已审核'},
@@ -322,6 +322,7 @@
         createOrderTime: [],
         areaList: [],
         postTypeList: [],
+        statusStr: '',
         postRiskList: [{
           id: 1,
           name: '是'
@@ -434,13 +435,31 @@
 
       // 获取数据列表
       getAllDataList (page) {
-        console.log("创建订单日期----------");
         if(this.createOrderTime && this.createOrderTime.length > 0){
           this.dataAllForm.startOrderTime = this.createOrderTime[0]
           this.dataAllForm.endOrderTime = this.createOrderTime[1]
         }else{
           this.dataAllForm.startOrderTime = ""
           this.dataAllForm.endOrderTime = ""
+        }
+
+        // 更改状态查询
+        if(this.dataAllForm.status === 1){
+          this.statusStr = '1'
+        }else if(this.dataAllForm.status === 2){
+          this.statusStr = '2,6,7'
+        }else if(this.dataAllForm.status === 9){
+          this.statusStr = '8,9'
+        }else if(this.dataAllForm.status === 3){
+          this.statusStr = '3,13'
+        }else if(this.dataAllForm.status === 4){
+          this.statusStr = '4,11'
+        }else if(this.dataAllForm.status === 12){
+          this.statusStr = '10,12'
+        }else if(this.dataAllForm.status === 5){
+          this.statusStr = '5'
+        }else{
+          this.statusStr = this.dataAllForm.status
         }
 
         this.dataAllListLoading = true
@@ -458,7 +477,7 @@
             'phone': this.dataAllForm.phone,
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
-            'status': this.dataAllForm.status,
+            'status': this.statusStr,
             'areaId': this.dataAllForm.areaId,
             'postType': this.dataAllForm.postType,
             'postRisk': this.dataAllForm.postRisk
