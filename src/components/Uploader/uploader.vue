@@ -20,8 +20,8 @@
           uploadUrl: process.env.BASE_API + '/sys/file/uploadImg',
           imageUrl: '',
           otherParams:{
-            'type': this.fileType,
-            'name': this.name
+            'applyName': '',
+            'type': this.fileType
           }
         }
       },
@@ -35,7 +35,7 @@
         fileType:{
           type: Number
         },
-        name:{
+        applyName:{
           type: String
         }
       },
@@ -45,13 +45,11 @@
       },
       methods:{
         handleAvatarSuccess(res, file) {
-          console.log("----调用====")
-          console.log(file)
-          console.log(res)
           this.imageUrl = URL.createObjectURL(file.raw);
           this.$emit('handle', res.fileName);
         },
         beforeAvatarUpload(file) {
+          this.otherParams.applyName = this.applyName
           const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
           const isLt2M = file.size / 1024 / 1024 < 10;
 
@@ -65,8 +63,7 @@
         },
       },
       created(){
-          console.log("24454554''''''''");
-          console.log(this.imageUrl+"----------------"+this.url)
+
       }
     }
 </script>

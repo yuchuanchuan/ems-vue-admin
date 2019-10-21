@@ -99,7 +99,7 @@
         prop="applyName"
         header-align="center"
         align="center"
-        label="申请人">
+        label="产权人">
       </el-table-column>
       <el-table-column
         prop="applyPhone"

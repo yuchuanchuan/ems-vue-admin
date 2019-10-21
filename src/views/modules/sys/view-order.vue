@@ -11,8 +11,11 @@
       :close-on-click-modal="false"
       :visible.sync="visible">
       <el-form :model="dataForm" ref="dataForm" label-width="135px">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
+        <el-form-item label="产权人姓名" prop="applyName">
+          <el-input v-model="dataForm.applyName" placeholder="产权人姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="产权人手机号" prop="applyPhone">
+          <el-input v-model="dataForm.applyPhone" placeholder="产权人手机号"></el-input>
         </el-form-item>
         <el-form-item label="身份证号" prop="propertyNo">
           <el-input v-model="dataForm.propertyNo" placeholder="身份证号" :disabled="true"></el-input>
@@ -20,10 +23,6 @@
         <el-form-item label="凭证编号" prop="idCard">
           <el-input v-model="dataForm.idCard" placeholder="凭证编号" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="dataForm.phone" placeholder="手机号" :disabled="true"></el-input>
-        </el-form-item>
-
         <el-form-item label="产权人身份证正面" prop="ownerPositive">
           <img :src="decodeURIComponent(dataForm.ownerPositive)" alt="" width="120" height="120" @click="fangda(dataForm.ownerPositive)">
         </el-form-item>
@@ -32,6 +31,27 @@
         </el-form-item>
         <el-form-item label="房管局受理凭证" prop="housingAuthority">
           <img :src="dataForm.housingAuthority" alt="" width="120" height="120" @click="fangda(dataForm.housingAuthority)">
+        </el-form-item>
+        <el-form-item label="收货人姓名" prop="name">
+          <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="收货人手机号" prop="phone">
+          <el-input v-model="dataForm.phone" placeholder="手机号" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="收件地址" prop="addressList">
+          <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
+          <el-cascader :disabled="true"
+                       v-model="dataForm.addressList"
+                       :options="options"
+                       :props="props"
+                       clearable
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="街道/路" prop="postAddress">
+          <el-input v-model="dataForm.street" placeholder="街道/路" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="门牌号" prop="postAddress">
+          <el-input v-model="dataForm.houseNum" placeholder="门牌号" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="邮寄类型" prop="postType">
           <el-select v-model="dataForm.postType" placeholder="请选择" width="100%" :disabled="true">
@@ -59,27 +79,20 @@
           </el-radio-group>
         </el-form-item>
 
-
-
-        <el-form-item label="收件地址" prop="addressList">
-          <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
-          <el-cascader :disabled="true"
-                       v-model="dataForm.addressList"
-                       :options="options"
-                       :props="props"
-                       clearable
-          ></el-cascader>
+        <el-form-item label="办理地区" v-if="type == 1" size="mini" prop="areaId">
+          <el-select v-model="dataForm.handleAreaId" placeholder="办理地区" width="100%" clearable disabled="">
+            <el-option
+              v-for="item in areaList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <!--<el-form-item label="详细地址" prop="postAddress">-->
           <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址" :disabled="true"></el-input>-->
         <!--</el-form-item>-->
-        <el-form-item label="街道/路" prop="postAddress">
-          <el-input v-model="dataForm.street" placeholder="街道/路" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="门牌号" prop="postAddress">
-          <el-input v-model="dataForm.houseNum" placeholder="门牌号" :disabled="true"></el-input>
-        </el-form-item>
 
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -107,8 +120,11 @@
         },
         childOptions: [],
         postTypeList:[],
+        areaList: [],
         dataForm:{
           orderId: 0,
+          applyName: '',
+          applyPhone: '',
           name: '',
           propertyNo: '', // 身份证号
           idCard: '',
@@ -126,7 +142,9 @@
           postAddress: '',
           addressList: [],
           street: '',
-          houseNum: ''
+          houseNum: '',
+          areaId: '',
+          handleAreaId: ''
         },
       }
     },
@@ -191,6 +209,22 @@
             }
           })
         }).then(()=>{
+          this.$http({
+            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            this.areaList = []
+            if(data && data.code === 0){
+              data.regionList.forEach((item) => {
+                this.areaList.push({
+                  id: item.id,
+                  name: item.handleArea
+                })
+              })
+            }
+          })
+        }).then(()=>{
           this.visible = true
           this.$nextTick(() => {
             this.$refs['dataForm'].resetFields()
@@ -216,6 +250,11 @@
     },
     components:{
       Uploader
+    },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
+      }
     }
   }
 </script>

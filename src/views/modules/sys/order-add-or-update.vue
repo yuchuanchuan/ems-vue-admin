@@ -4,8 +4,11 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="135px">
-      <el-form-item label="姓名" prop="name">
-        <el-input v-model="dataForm.name" placeholder="姓名"></el-input>
+      <el-form-item label="产权人姓名" prop="applyName">
+        <el-input v-model="dataForm.applyName" placeholder="产权人姓名"></el-input>
+      </el-form-item>
+      <el-form-item label="产权人手机号" prop="applyPhone">
+        <el-input v-model="dataForm.applyPhone" placeholder="产权人手机号"></el-input>
       </el-form-item>
       <el-form-item label="身份证号" prop="propertyNo">
         <el-input v-model="dataForm.propertyNo" placeholder="身份证号"></el-input>
@@ -13,24 +16,51 @@
       <el-form-item label="凭证编号" prop="idCard">
         <el-input v-model="dataForm.idCard" placeholder="凭证编号"></el-input>
       </el-form-item>
-      <el-form-item label="手机号" prop="phone">
-        <el-input v-model="dataForm.phone" placeholder="手机号"></el-input>
-      </el-form-item>
-      <el-form-item label="验证码" prop="mobileCode">
-        <el-input v-model="dataForm.mobileCode" placeholder="手机验证码"></el-input>
-        <el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>
-      </el-form-item>
+
       <el-form-item label="产权人身份证正面" prop="ownerPositive">
-        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="idCardImg1" :fileType="1" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="idCardImg1" :applyName="dataForm.applyName" :fileType="1"></Uploader>
       </el-form-item>
       <el-form-item label="产权人身份证反面" prop="ownerNegative">
         <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
-        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="idCardImg2" :fileType="1" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="idCardImg2" :fileType="1" :applyName="dataForm.applyName"></Uploader>
       </el-form-item>
       <el-form-item label="房管局受理凭证" prop="housingAuthority">
         <!--<el-input v-model="dataForm.housingAuthority" placeholder="房管局受理凭证"></el-input>-->
-        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="houseImg" :fileType="2" :name="dataForm.name"></Uploader>
+        <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="houseImg" :fileType="2" :applyName="dataForm.applyName"></Uploader>
       </el-form-item>
+
+      <el-form-item label="收货人姓名" prop="name">
+        <el-input v-model="dataForm.name" placeholder="收货人姓名"></el-input>
+      </el-form-item>
+      <el-form-item label="收货人手机号" prop="phone">
+        <el-input v-model="dataForm.phone" placeholder="收货人手机号"></el-input>
+      </el-form-item>
+      <el-form-item label="收件地址" prop="addressList">
+        <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
+        <el-cascader
+          v-model="dataForm.addressList"
+          :options="options"
+          @active-item-change="handleItemChange"
+          :props="props"
+          clearable
+        ></el-cascader>
+      </el-form-item>
+
+      <!--<el-form-item label="详细地址" prop="postAddress">-->
+      <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="街道/路" prop="street">
+        <el-input v-model="dataForm.street" placeholder="街道/路"></el-input>
+      </el-form-item>
+      <el-form-item label="门牌号" prop="houseNum">
+        <el-input v-model="dataForm.houseNum" placeholder="门牌号"></el-input>
+      </el-form-item>
+      <!---->
+      <!--<el-form-item label="验证码" prop="mobileCode">-->
+        <!--<el-input v-model="dataForm.mobileCode" placeholder="手机验证码"></el-input>-->
+        <!--<el-button type="primary" style="margin-top:20px;" @click="sendMsg">获取手机验证码</el-button>-->
+      <!--</el-form-item>-->
+
       <el-form-item label="邮寄类型" prop="postType">
         <el-select v-model="dataForm.postType" placeholder="请选择" width="100%">
           <el-option
@@ -57,27 +87,15 @@
         </el-radio-group>
       </el-form-item>
 
-
-
-      <el-form-item label="收件地址" prop="addressList">
-        <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
-        <el-cascader
-          v-model="dataForm.addressList"
-          :options="options"
-          @active-item-change="handleItemChange"
-          :props="props"
-          clearable
-        ></el-cascader>
-      </el-form-item>
-
-      <!--<el-form-item label="详细地址" prop="postAddress">-->
-        <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>-->
-      <!--</el-form-item>-->
-      <el-form-item label="街道/路" prop="street">
-        <el-input v-model="dataForm.street" placeholder="街道/路"></el-input>
-      </el-form-item>
-      <el-form-item label="门牌号" prop="houseNum">
-        <el-input v-model="dataForm.houseNum" placeholder="门牌号"></el-input>
+      <el-form-item label="办理地区" v-if="type == 1" size="mini" prop="areaId">
+        <el-select v-model="dataForm.handleAreaId" placeholder="办理地区" width="100%" clearable>
+          <el-option
+            v-for="item in areaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
 
     </el-form>
@@ -102,11 +120,20 @@
           callback()
         }
       }
+      var validateApplyMobile = (rule, value, callback) => {
+        if (!/\S/.test(value)) {
+          callback(new Error('产权人手机号不能为空'))
+        } else if (!isMobile(value)) {
+          callback(new Error('产权人手机号码格式不正确'))
+        } else {
+          callback()
+        }
+      }
       var validateMobile = (rule, value, callback) => {
         if (!/\S/.test(value)) {
-          callback(new Error('手机号不能为空'))
+          callback(new Error('收货人手机号不能为空'))
         } else if (!isMobile(value)) {
-          callback(new Error('手机号码格式不正确'))
+          callback(new Error('收货人手机号码格式不正确'))
         } else {
           callback()
         }
@@ -125,6 +152,7 @@
           children: "childList"
         },
         childOptions: [],
+        areaList: [],
         postTypeList:[],
         dataForm:{
           orderId: 0,
@@ -132,7 +160,7 @@
           propertyNo: '', // 身份证号
           idCard: '',
           phone: '',
-          mobileCode: '',
+          // mobileCode: '',
           ownerPositive: '',
           ownerNegative: '',
           housingAuthority: '',
@@ -145,11 +173,15 @@
           postAddress: '',
           addressList: [],
           street: '',
-          houseNum: ''
+          houseNum: '',
+          areaId: '',
+          handleAreaId: '',
+          applyName: '',
+          applyPhone: ''
         },
         dataRule: {
           name: [
-            { required: true, message: '姓名不能为空', trigger: 'blur' }
+            { required: true, message: '收货人姓名不能为空', trigger: 'blur' }
           ],
           propertyNo:[
             { required: true, validator: validateComfirmIdCard, trigger: 'blur' }
@@ -160,9 +192,9 @@
           phone: [
             { required: true, validator: validateMobile, trigger: 'blur' }
           ],
-          mobileCode: [
-            { required: true, message: '手机验证码不能为空', trigger: 'blur' }
-          ],
+          // mobileCode: [
+          //   { required: true, message: '手机验证码不能为空', trigger: 'blur' }
+          // ],
           ownerPositive: [
             { required: true, message: '请上传产权人身份证正面', trigger: 'blur'}
           ],
@@ -186,48 +218,56 @@
           ],
           addressList: [
             { required: true, message: '收件地址不能为空', trigger: 'change', type:'array'}
+          ],
+          applyName: [
+            { required: true, message: '产权人信息不能为空', trigger: 'blur'}
+          ],
+          applyPhone: [
+            { required: true, validator: validateApplyMobile, trigger: 'blur' }
+          ],
+          areaId: [
+            { required: true, message: '请选择办理地区', trigger: 'change'}
           ]
         }
       }
     },
     methods:{
-      listAll(){
-        this.$http({
-          url: this.$http.adornUrl('/sys/insured/listAll'),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({ data }) => {
-          if (data && data.code === 0) {
-            console.log(data)
-            this.postRiskList = []
-            data.list.forEach((item) => {
-              this.postRiskList.push({
-                id: item.insuredId,
-                text: item.insuredComment + '￥' + item.insuredAmount
-              })
-            })
-            this.dataForm.postRiskId = data.list[0].insuredId
-          }
-        })
-      },
-      allList(){
-        this.$http({
-          url: this.$http.adornUrl('/sys/bussiness/allList'),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({ data }) => {
-          if (data && data.code === 0) {
-            this.postTypeList = []
-            data.list.forEach((item) => {
-              this.postTypeList.push({
-                id: item.id,
-                name: item.bussinessName
-              })
-            })
-          }
-        })
-      },
-
+      // listAll(){
+      //   this.$http({
+      //     url: this.$http.adornUrl('/sys/insured/listAll'),
+      //     method: 'get',
+      //     params: this.$http.adornParams()
+      //   }).then(({ data }) => {
+      //     if (data && data.code === 0) {
+      //       console.log(data)
+      //       this.postRiskList = []
+      //       data.list.forEach((item) => {
+      //         this.postRiskList.push({
+      //           id: item.insuredId,
+      //           text: item.insuredComment + '￥' + item.insuredAmount
+      //         })
+      //       })
+      //       this.dataForm.postRiskId = data.list[0].insuredId
+      //     }
+      //   })
+      // },
+      // allList(){
+      //   this.$http({
+      //     url: this.$http.adornUrl('/sys/bussiness/allList'),
+      //     method: 'get',
+      //     params: this.$http.adornParams()
+      //   }).then(({ data }) => {
+      //     if (data && data.code === 0) {
+      //       this.postTypeList = []
+      //       data.list.forEach((item) => {
+      //         this.postTypeList.push({
+      //           id: item.id,
+      //           name: item.bussinessName
+      //         })
+      //       })
+      //     }
+      //   })
+      // },
       init (orderId) {
         this.dataForm.orderId = orderId || 0
         this.$http({
@@ -278,6 +318,22 @@
                 })
               }
             })
+        }).then(()=>{
+          this.$http({
+            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            this.areaList = []
+            if(data && data.code === 0){
+              data.regionList.forEach((item) => {
+                this.areaList.push({
+                  id: item.id,
+                  name: item.handleArea
+                })
+              })
+            }
+          })
         }).then(()=>{
           this.visible = true
           this.$nextTick(() => {
@@ -508,6 +564,11 @@
           }
         })
       },
+    },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
+      }
     },
     components:{
       Uploader

@@ -8,10 +8,10 @@
         <el-input v-model="dataAllForm.idCard" placeholder="受理凭证号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.applyName" placeholder="申请人姓名" clearable></el-input>
+        <el-input v-model="dataAllForm.applyName" placeholder="产权人姓名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.applyPhone" placeholder="申请人手机号" clearable></el-input>
+        <el-input v-model="dataAllForm.applyPhone" placeholder="产权人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-input v-model="dataAllForm.name" placeholder="收货人姓名" clearable></el-input>
@@ -121,7 +121,7 @@
         prop="applyName"
         header-align="center"
         align="center"
-        label="申请人">
+        label="产权人">
       </el-table-column>
       <el-table-column
         prop="applyPhone"
@@ -232,7 +232,7 @@
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:order:update') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
-          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId)" :disabled="scope.row.status !== 1 && scope.row.status !== 2">取消</el-button>
+          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId, scope.row.openid)">取消</el-button>
           <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text" size="small" @click="deleteHandle(scope.row.orderId)">删除</el-button>
         </template>
       </el-table-column>
@@ -525,17 +525,18 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
-      cancelOrderStatus(id){
-        this.$confirm(`确定取消该订单吗?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
-            method: 'get'
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
+      cancelOrderStatus(id, openid){
+        if(openid == undefined || openid == ''){
+          this.$confirm(`该订单付款方式不是微信在线付款，所以不支持微信在线退款，只能更改订单的取消状态，是否继续?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$http({
+              url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
+              method: 'get'
+            }).then(({ data }) => {
+              if (data && data.code === 0) {
                 this.$message({
                   message: '订单取消成功',
                   type: 'success',
@@ -548,7 +549,32 @@
                 this.$message.error(data.msg)
               }
             })
-        }).catch(() => {})
+          }).catch(() => {})
+        }else{
+          this.$confirm(`确定取消该订单并进行微信在线退款么?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$http({
+              url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
+              method: 'get'
+            }).then(({ data }) => {
+              if (data && data.code === 0) {
+                this.$message({
+                  message: '订单取消成功',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.getAllDataList(this.pageAllIndex)
+                  }
+                })
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+          }).catch(() => {})
+        }
       },
       // 删除订单
       deleteHandle (id) {
