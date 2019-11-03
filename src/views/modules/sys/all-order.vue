@@ -233,7 +233,7 @@
           <el-button v-if="isAuth('sys:order:update') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
           <el-button v-if="isAuth('sys:order:delete') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId, scope.row.openid)">取消</el-button>
-          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text" size="small" @click="deleteHandle(scope.row.orderId)">删除</el-button>
+          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text" size="small" @click="deleteHandle(scope.row.orderId)" disabled>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
