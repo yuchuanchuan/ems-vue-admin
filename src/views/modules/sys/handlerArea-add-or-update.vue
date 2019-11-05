@@ -4,7 +4,7 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="180px">
-      <el-form-item label="受理大区" prop="areaId">
+      <el-form-item label="办理大区" prop="areaId">
         <!--<el-input v-model="dataForm.areaId" placeholder="受理地点名称"></el-input>-->
         <el-select v-model="dataForm.areaId" placeholder="请选择" width="100%" clearable>
           <el-option
@@ -15,10 +15,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="受理地区" prop="handleArea">
+      <el-form-item label="办理网点" prop="handleArea">
         <el-input v-model="dataForm.handleArea" placeholder="受理地区名称"></el-input>
       </el-form-item>
-      <el-form-item label="受理地点" prop="handleAddress">
+      <el-form-item label="网点地址" prop="handleAddress">
         <el-input v-model="dataForm.handleAddress" placeholder="受理地点名称"></el-input>
       </el-form-item>
       <el-form-item label="不动产登记系统地区代号" prop="systemNo">
@@ -37,24 +37,7 @@
     data(){
       return{
         visible: false,
-        areaType:[
-          {
-            'id': 1,
-            'name': '市登记中心'
-          },{
-            'id': 2,
-            'name': '市内六区'
-          },{
-            'id': 3,
-            'name': '环城四区'
-          },{
-            'id': 4,
-            'name': '新五区'
-          },{
-            'id': 5,
-            'name': '滨海新区'
-          }
-        ],
+        areaType:[],
         areaList: [],
         dataForm: {
           id: 0,
@@ -83,14 +66,14 @@
       init (id) {
         this.dataForm.id = id || 0
         this.$http({
-          url: this.$http.adornUrl('/sys/area/region'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({ data }) => {
-          this.areaList = []
-          if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
-            data.regionList[0].childList.forEach((item) => {
-              this.areaList.push({
+          this.areaType = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.areaType.push({
                 id: item.id,
                 name: item.name
               })

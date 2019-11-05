@@ -2,7 +2,7 @@
   <div class="mod-handlerArea">
     <el-form :inline="true" :model="dataForm">
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataForm.areaId" placeholder="请选择受理大区" width="100%" clearable>
+        <el-select v-model="dataForm.areaId" placeholder="请选择办理大区" width="100%" clearable>
           <el-option
             v-for="item in areaType"
             :key="item.id"
@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataForm.handleArea" placeholder="受理地区名称" clearable></el-input>
+        <el-input v-model="dataForm.handleArea" placeholder="办理网点名称" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -43,26 +43,19 @@
         prop="handleArea"
         header-align="center"
         align="center"
-        label="受理地区">
+        label="办理网点名称">
       </el-table-column>
       <el-table-column
         prop="handleAddress"
         header-align="center"
         align="center"
-        label="受理地点">
+        label="网点地址">
       </el-table-column>
       <el-table-column
-        prop="areaId"
+        prop="areaName"
         header-align="center"
         align="center"
-        label="所在大区">
-        <template slot-scope="scope">
-          <span v-if="scope.row.areaId === 1">市登记中心</span>
-          <span v-if="scope.row.areaId === 2">市内六区</span>
-          <span v-if="scope.row.areaId === 3">环城四区</span>
-          <span v-if="scope.row.areaId === 4">新五区</span>
-          <span v-if="scope.row.areaId === 5">滨海新区</span>
-        </template>
+        label="所属大区">
       </el-table-column>
       <el-table-column
         prop="systemNo"
@@ -110,24 +103,7 @@
   export default {
     data(){
       return{
-        areaType:[
-          {
-            'id': 1,
-            'name': '市登记中心'
-          },{
-            'id': 2,
-            'name': '市内六区'
-          },{
-            'id': 3,
-            'name': '环城四区'
-          },{
-            'id': 4,
-            'name': '新五区'
-          },{
-            'id': 5,
-            'name': '滨海新区'
-          }
-        ],
+        areaType:[],
         addOrUpdateVisible: false,
         dataList: [],
         pageIndex: 1,
@@ -146,14 +122,14 @@
     methods:{
       getAreaList(){
         this.$http({
-          url: this.$http.adornUrl('/sys/area/region'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({ data }) => {
-          this.areaList = []
-          if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
-            data.regionList[0].childList.forEach((item) => {
-              this.areaList.push({
+          this.areaType = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.areaType.push({
                 id: item.id,
                 name: item.name
               })

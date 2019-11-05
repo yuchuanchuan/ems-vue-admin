@@ -24,8 +24,18 @@
           <!--<el-radio v-for="role in roleList" :key="role.roleId" :label="role.roleId">{{ role.roleName }}</el-radio>-->
         <!--</el-radio-group>-->
       <!--</el-form-item>-->
-      <el-form-item label="所属区域" prop="areaId" v-if="type == 1">
-        <el-select v-model="dataForm.areaId" placeholder="请选择" width="100%">
+      <el-form-item label="所属区域" prop="bigAreaId" v-if="type == 1">
+        <el-select v-model="dataForm.bigAreaId" clearable placeholder="请选择" width="100%" @change="selectAreaList">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="所属网点" prop="areaId" v-if="dataForm.type === 3 && dataForm.bigAreaId">
+        <el-select v-model="dataForm.areaId" clearable placeholder="请选择" width="100%">
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -86,6 +96,7 @@
         visible: false,
         roleList: [],
         areaList: [],
+        bigAreaList: [],
         // roleId: 1,
         // type: '',
         dataForm: {
@@ -99,7 +110,8 @@
           areaId: '',
           type: '',
           roleIdList: [],
-          status: 1
+          status: 1,
+          bigAreaId: ''
         },
         dataRule: {
           userName: [
@@ -117,13 +129,36 @@
           phone: [
             { validator: validateMobile, trigger: 'blur' }
           ],
-          areaId: [
+          bigAreaId: [
             { required: true, message: '请选择地区', trigger: 'change' }
+          ],
+          areaId: [
+            { required: true, message: '请选择办理网点', trigger: 'change' }
           ]
         }
       }
     },
     methods: {
+      selectAreaList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.dataForm.bigAreaId
+          })
+        }).then(({ data }) => {
+          this.dataForm.areaId = ''
+          this.areaList = []
+          if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.id,
+                name: item.handleArea
+              })
+            })
+          }
+        })
+      },
       init (type,id) {
         this.dataForm.id = id || 0
         this.$http({
@@ -134,16 +169,16 @@
           this.roleList = data && data.code === 0 ? data.list : []
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+            url: this.$http.adornUrl('/sys/bigarea/allList'),
             method: 'get',
             params: this.$http.adornParams()
           }).then(({ data }) => {
-            this.areaList = []
-            if(data && data.code === 0){
-              data.regionList.forEach((item) => {
-                this.areaList.push({
+            this.bigAreaList = []
+            if(data && data.code === 0 && data.list && data.list.length > 0){
+              data.list.forEach((item) => {
+                this.bigAreaList.push({
                   id: item.id,
-                  name: item.handleArea
+                  name: item.name
                 })
               })
             }
@@ -153,6 +188,22 @@
             this.dataForm.type = 2  //  2代表区管理员
           }
           if(type === 2){
+            this.dataForm.bigAreaId = 1
+            this.$http({
+              url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+              method: 'get',
+              params: this.$http.adornParams()
+            }).then(({ data }) => {
+              this.areaList = []
+              if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
+                data.regionList.forEach((item) => {
+                  this.areaList.push({
+                    id: item.id,
+                    name: item.handleArea
+                  })
+                })
+              }
+            })
             this.dataForm.type = 3   // 3代表区域信息管理员
           }
           this.visible = true

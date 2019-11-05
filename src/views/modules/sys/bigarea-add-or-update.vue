@@ -8,10 +8,10 @@
         <el-input v-model="dataForm.name" placeholder="大区名称"></el-input>
       </el-form-item>
       <el-form-item label="大区代号">
-        <el-input v-model="dataForm.code" :maxlength="500" type="textarea" placeholder="大区代号"></el-input>
+        <el-input v-model="dataForm.code" placeholder="大区代号"></el-input>
       </el-form-item>
       <el-form-item label="大区地点">
-        <el-input v-model="dataForm.address" :maxlength="500" type="textarea" placeholder="大区地点"></el-input>
+        <el-input v-model="dataForm.address" placeholder="大区地点"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -45,6 +45,9 @@
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
+          this.dataForm.name =''
+          this.dataForm.code = ''
+          this.dataForm.address = ''
         })
         if (this.dataForm.id) {
           this.$http({
