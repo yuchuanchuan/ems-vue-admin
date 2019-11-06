@@ -8,7 +8,17 @@
         <el-input v-model="dataForm.phone" placeholder="手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataForm.bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="(type == 2 || type == 1) && dataForm.bigAreaId != ''">
+        <el-select v-model="dataForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -71,10 +81,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="bigAreaName"
+        header-align="center"
+        align="center"
+        label="所属大区">
+      </el-table-column>
+      <el-table-column
         prop="areaName"
         header-align="center"
         align="center"
-        label="所属区域">
+        label="所属网点">
       </el-table-column>
       <el-table-column
         prop="status"
@@ -135,10 +151,12 @@
         dataForm: {
           userName: '',
           phone: '',
-          areaId: []
+          areaId: [],
+          bigAreaId: []
         },
         dataList: [],
         areaList: [],
+        bigAreaList: [],
         pageIndex: 1,
         pageSize: 10,
         totalPage: 0,
@@ -152,6 +170,7 @@
     },
     activated () {
       this.getDataList()
+      this.getBigAreaInfo()
       this.getAreaInfo()
     },
     methods: {
@@ -237,11 +256,51 @@
           })
         }).catch(() => {})
       },
-      getAreaInfo(){
+      getBigAreaInfo(){
         this.$http({
-          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      },
+      getAreaInfo(){
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   this.areaList = []
+        //   if(data && data.code === 0){
+        //     data.regionList.forEach((item) => {
+        //       this.areaList.push({
+        //         id: item.id,
+        //         name: item.handleArea
+        //       })
+        //     })
+        //   }
+        // })
+        let url = ""
+        if(this.type === 1){
+          url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+        }else{
+          url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
+        }
+        this.$http({
+          url: url,
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.type === 1 ? this.dataForm.bigAreaId.join(',') : ''
+          })
         }).then(({ data }) => {
           this.areaList = []
           if(data && data.code === 0){

@@ -34,7 +34,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="所属网点" prop="areaId" v-if="dataForm.type === 3 && dataForm.bigAreaId">
+      <el-form-item label="所属网点" prop="areaId" v-if="(dataForm.type === 3 && dataForm.bigAreaId) || type == 2">
         <el-select v-model="dataForm.areaId" clearable placeholder="请选择" width="100%">
           <el-option
             v-for="item in areaList"
@@ -188,7 +188,6 @@
             this.dataForm.type = 2  //  2代表区管理员
           }
           if(type === 2){
-            this.dataForm.bigAreaId = 1
             this.$http({
               url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
               method: 'get',
@@ -225,6 +224,7 @@
                 this.dataForm.areaId = data.user.areaId
                 this.dataForm.roleIdList = data.user.roleIdList
                 this.dataForm.status = data.user.status
+                this.dataForm.bigAreaId = data.user.bigAreaId
               }
             })
           }
@@ -249,7 +249,8 @@
                 'areaId': this.dataForm.areaId,
                 'type': this.dataForm.type,
                 'status': this.dataForm.status,
-                'roleIdList': this.dataForm.roleIdList
+                'roleIdList': this.dataForm.roleIdList,
+                'bigAreaId': this.dataForm.bigAreaId
               })
             }).then(({ data }) => {
               if (data && data.code === 0) {
