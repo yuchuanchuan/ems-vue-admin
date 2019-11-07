@@ -17,7 +17,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item v-if="(type == 2 || type == 1) && dataForm.bigAreaId != ''">
+      <el-form-item v-if="(type == 1  && dataForm.bigAreaId != '') || type == 2">
         <el-select v-model="dataForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
@@ -177,10 +177,18 @@
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
+        if(this.dataForm.bigAreaId.length === 0){
+          this.dataForm.areaId = []
+        }
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataForm.areaId && this.dataForm.areaId.length > 0){
           multiAreaId = this.dataForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataForm.bigAreaId && this.dataForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataForm.bigAreaId.join(',')
         }
 
         this.$http({
@@ -191,7 +199,8 @@
             'limit': this.pageSize,
             'userName': this.dataForm.userName,
             'phone': this.dataForm.phone,
-            'areaId': multiAreaId
+            'areaId': multiAreaId,
+            'bigAreaId': multiBigAreaId
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {

@@ -20,7 +20,17 @@
         <el-input v-model="dataAllForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataAllForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataAllForm.bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="(type == 1  && dataAllForm.bigAreaId != '') || type == 2">
+        <el-select v-model="dataAllForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -341,6 +351,7 @@
           endOrderTime: '',
           status: '',
           areaId: [],
+          bigAreaId: [],
           postType: '',
           postRisk: ''
         },
@@ -356,10 +367,28 @@
     },
     activated () {
       this.getPostTypeList()
+      this.getBigAreaInfo()
       this.getAreaInfo()
       this.getAllDataList(1)
     },
     methods: {
+      getBigAreaInfo(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      },
       // 批量下载
       downloadFile(url){
         const iframe = document.createElement("iframe");
@@ -462,10 +491,18 @@
           this.statusStr = this.dataAllForm.status
         }
 
-        // 数据多选地区转换
+        if(this.dataAllForm.bigAreaId.length === 0){
+          this.dataAllForm.areaId = []
+        }
+        // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
           multiAreaId = this.dataAllForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataAllForm.bigAreaId.join(',')
         }
 
         this.dataAllListLoading = true
@@ -484,7 +521,8 @@
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.statusStr,
-            'areaId': multiAreaId,
+            'areaId': multiBigAreaId,  // 大区
+            'handleAreaId': multiAreaId, // 网点
             'postType': this.dataAllForm.postType,
             'postRisk': this.dataAllForm.postRisk
           })
@@ -665,10 +703,33 @@
         })
       },
       getAreaInfo(){
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   this.areaList = []
+        //   if(data && data.code === 0){
+        //     data.regionList.forEach((item) => {
+        //       this.areaList.push({
+        //         id: item.id,
+        //         name: item.handleArea
+        //       })
+        //     })
+        //   }
+        // })
+        let url = ""
+        if(this.type === 1){
+          url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+        }else{
+          url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
+        }
         this.$http({
-          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          url: url,
           method: 'get',
-          params: this.$http.adornParams()
+          params: this.$http.adornParams({
+            'areaId': this.type === 1 ? this.dataAllForm.bigAreaId.join(',') : ''
+          })
         }).then(({ data }) => {
           this.areaList = []
           if(data && data.code === 0){
@@ -680,7 +741,7 @@
             })
           }
         })
-      },
+      }
     },
     components: {
       AddOrUpdate,
