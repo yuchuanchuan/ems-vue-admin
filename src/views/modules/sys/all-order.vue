@@ -158,10 +158,16 @@
         label="收货地址">
       </el-table-column>
       <el-table-column
+        prop="bigAreaName"
+        header-align="center"
+        align="center"
+        label="办理大区">
+      </el-table-column>
+      <el-table-column
         prop="areaName"
         header-align="center"
         align="center"
-        label="办理地区">
+        label="办理网点">
       </el-table-column>
       <el-table-column
         prop="createOrderTime"
@@ -331,6 +337,7 @@
         },
         createOrderTime: [],
         areaList: [],
+        bigAreaList: [],
         postTypeList: [],
         statusStr: '',
         postRiskList: [{
@@ -667,6 +674,39 @@
         })
         orderIdStr = orderIdList.join(',')
 
+        // 更改状态查询
+        if(this.dataAllForm.status === 1){
+          this.statusStr = '1'
+        }else if(this.dataAllForm.status === 2){
+          this.statusStr = '2,6,7'
+        }else if(this.dataAllForm.status === 9){
+          this.statusStr = '8,9'
+        }else if(this.dataAllForm.status === 3){
+          this.statusStr = '3,13'
+        }else if(this.dataAllForm.status === 4){
+          this.statusStr = '4,11'
+        }else if(this.dataAllForm.status === 12){
+          this.statusStr = '10,12'
+        }else if(this.dataAllForm.status === 5){
+          this.statusStr = '5'
+        }else{
+          this.statusStr = this.dataAllForm.status
+        }
+
+        if(this.dataAllForm.bigAreaId.length === 0){
+          this.dataAllForm.areaId = []
+        }
+        // 数据转换 areaId
+        let multiAreaId = ''
+        if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
+          multiAreaId = this.dataAllForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataAllForm.bigAreaId.join(',')
+        }
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -682,18 +722,32 @@
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
-
               this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr)
+                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
+                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
+                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
+                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
+                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
+                + "&status=" + this.statusStr + "&orderIdStr=" + orderIdStr)
 
               this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
+                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
+                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
+                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
+                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
                 + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr)
 
             }).catch(()=>{
               window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
                 + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
+                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
+                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
+                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
+                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
+                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
                 + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
                 // + "&downZip=2"
             })

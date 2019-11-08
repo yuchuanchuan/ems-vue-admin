@@ -8,7 +8,17 @@
         <el-input v-model="dataShipForm.mailNum" placeholder="快递单号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataShipForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataShipForm.bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="(type == 1  && dataShipForm.bigAreaId != '') || type == 2">
+        <el-select v-model="dataShipForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -88,10 +98,16 @@
         <!--</template>-->
       </el-table-column>
       <el-table-column
+        prop="bigAreaName"
+        header-align="center"
+        align="center"
+        label="办理大区">
+      </el-table-column>
+      <el-table-column
         prop="areaName"
         header-align="center"
         align="center"
-        label="办理地区">
+        label="办理网点">
       </el-table-column>
       <el-table-column
         prop="payType"
@@ -219,6 +235,7 @@
         },
         createPayTime: [],
         areaList: [],
+        bigAreaList: [],
         dataShipForm:{
           orderNumber: '',
           phone: '',
@@ -226,6 +243,7 @@
           startOrderTime: '',
           endOrderTime: '',
           areaId: [],
+          bigAreaId: [],
           mailNum: ''
         },
         dataShipList: [],
@@ -240,6 +258,7 @@
     },
     activated () {
       this.getShipDataList(1)
+      this.getBigAreaInfo()
       this.getAreaInfo()
     },
     methods: {
@@ -285,7 +304,6 @@
 
 
         });
-        console.log(sums)
         return sums;
       },
       // 获取数据列表
@@ -297,11 +315,18 @@
           this.dataShipForm.startOrderTime = ""
           this.dataShipForm.endOrderTime = ""
         }
-
-        // 数据转换 办理地区
+        if(this.dataShipForm.bigAreaId.length === 0){
+          this.dataShipForm.areaId = []
+        }
+        // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataShipForm.areaId && this.dataShipForm.areaId.length > 0){
           multiAreaId = this.dataShipForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataShipForm.bigAreaId && this.dataShipForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataShipForm.bigAreaId.join(',')
         }
 
         this.dataShipListLoading = true
@@ -316,7 +341,8 @@
             'status': this.dataShipForm.status,
             'startOrderTime': this.dataShipForm.startOrderTime,
             'endOrderTime': this.dataShipForm.endOrderTime,
-            'areaId': multiAreaId,
+            'areaId': multiBigAreaId,  // 大区
+            'handleAreaId': multiAreaId, // 网点
             'mailNum': this.dataShipForm.mailNum
           })
         }).then(({ data }) => {
@@ -354,6 +380,16 @@
           this.dataShipForm.startOrderTime = ""
           this.dataShipForm.endOrderTime = ""
         }
+        // 数据转换 areaId
+        let multiAreaId = ''
+        if(this.dataShipForm.areaId && this.dataShipForm.areaId.length > 0){
+          multiAreaId = this.dataShipForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataShipForm.bigAreaId && this.dataShipForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataShipForm.bigAreaId.join(',')
+        }
         this.$http({
           url: this.$http.adornUrl('/sys/order/exportInfo'),
           method: 'get',
@@ -364,19 +400,62 @@
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
-            window.location.href = this.$http.adornUrl('/sys/order/exportOrderFinance') + "?startOrderTime="
-              + this.dataShipForm.startOrderTime + "&endOrderTime=" + this.dataShipForm.endOrderTime
-              + "&status=" + this.dataShipForm.status
+            window.location.href = this.$http.adornUrl('/sys/order/exportOrderFinance') + "?orderNumber="
+              + this.dataShipForm.orderNumber + "&mailNum="
+              + this.dataShipForm.mailNum + "&startOrderTime="
+              + this.dataShipForm.startOrderTime + "&endOrderTime="
+              + this.dataShipForm.endOrderTime + "&areaId="
+              + multiBigAreaId + "handleAreaId=" + multiAreaId
           } else {
             this.$message.error(data.msg)
           }
         })
       },
-      getAreaInfo(){
+      getBigAreaInfo(){
         this.$http({
-          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      },
+      getAreaInfo(){
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   this.areaList = []
+        //   if(data && data.code === 0){
+        //     data.regionList.forEach((item) => {
+        //       this.areaList.push({
+        //         id: item.id,
+        //         name: item.handleArea
+        //       })
+        //     })
+        //   }
+        // })
+        let url = ""
+        if(this.type === 1){
+          url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+        }else{
+          url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
+        }
+        this.$http({
+          url: url,
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.type === 1 ? this.dataShipForm.bigAreaId.join(',') : ''
+          })
         }).then(({ data }) => {
           this.areaList = []
           if(data && data.code === 0){

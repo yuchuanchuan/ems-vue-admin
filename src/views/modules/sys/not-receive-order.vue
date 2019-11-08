@@ -20,7 +20,17 @@
         <el-input v-model="dataNotReceiveForm.phone" placeholder="收货人手机号" clearable></el-input>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="dataNotReceiveForm.areaId" multiple placeholder="办理地区" width="100%" clearable>
+        <el-select v-model="dataNotReceiveForm.bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="(type == 1  && dataNotReceiveForm.bigAreaId != '') || type == 2">
+        <el-select v-model="dataNotReceiveForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -126,10 +136,16 @@
         label="收货地址">
       </el-table-column>
       <el-table-column
+        prop="bigAreaName"
+        header-align="center"
+        align="center"
+        label="办理大区">
+      </el-table-column>
+      <el-table-column
         prop="areaName"
         header-align="center"
         align="center"
-        label="办理地区">
+        label="办理网点">
       </el-table-column>
       <el-table-column
         prop="createOrderTime"
@@ -236,6 +252,7 @@
         },
         createOrderTime: [],
         areaList: [],
+        bigAreaList: [],
         postTypeList: [],
         postRiskList: [{
           id: 1,
@@ -255,6 +272,7 @@
           startOrderTime: '',
           endOrderTime: '',
           areaId: [],
+          bigAreaId: [],
           postType: '',
           postRisk: ''
         },
@@ -270,6 +288,7 @@
     },
     activated () {
       this.getPostTypeList()
+      this.getBigAreaInfo()
       this.getAreaInfo()
       this.getNotReceiveDataList(1)
     },
@@ -302,10 +321,18 @@
           this.dataNotReceiveForm.endOrderTime = ""
         }
 
-        // 数据多选地区转换
+        if(this.dataNotReceiveForm.bigAreaId.length === 0){
+          this.dataNotReceiveForm.areaId = []
+        }
+        // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataNotReceiveForm.areaId && this.dataNotReceiveForm.areaId.length > 0){
           multiAreaId = this.dataNotReceiveForm.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.dataNotReceiveForm.bigAreaId && this.dataNotReceiveForm.bigAreaId.length > 0){
+          multiBigAreaId = this.dataNotReceiveForm.bigAreaId.join(',')
         }
 
         this.dataNotReceiveListLoading = true
@@ -324,7 +351,8 @@
             'status': this.dataNotReceiveForm.status,
             'startOrderTime': this.dataNotReceiveForm.startOrderTime,
             'endOrderTime': this.dataNotReceiveForm.endOrderTime,
-            'areaId': multiAreaId,
+            'areaId': multiBigAreaId,  // 大区
+            'handleAreaId': multiAreaId, // 网点
             'postType': this.dataNotReceiveForm.postType,
             'postRisk': this.dataNotReceiveForm.postRisk
           })
@@ -448,11 +476,51 @@
           }
         })
       },
-      getAreaInfo(){
+      getBigAreaInfo(){
         this.$http({
-          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      },
+      getAreaInfo(){
+        // this.$http({
+        //   url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+        //   method: 'get',
+        //   params: this.$http.adornParams()
+        // }).then(({ data }) => {
+        //   this.areaList = []
+        //   if(data && data.code === 0){
+        //     data.regionList.forEach((item) => {
+        //       this.areaList.push({
+        //         id: item.id,
+        //         name: item.handleArea
+        //       })
+        //     })
+        //   }
+        // })
+        let url = ""
+        if(this.type === 1){
+          url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+        }else{
+          url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
+        }
+        this.$http({
+          url: url,
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.type === 1 ? this.dataNotReceiveForm.bigAreaId.join(',') : ''
+          })
         }).then(({ data }) => {
           this.areaList = []
           if(data && data.code === 0){
