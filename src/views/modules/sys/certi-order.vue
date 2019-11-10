@@ -321,10 +321,6 @@
           this.dataCertiForm.endOrderTime = ""
         }
 
-        if(this.dataCertiForm.bigAreaId.length === 0){
-          this.dataCertiForm.areaId = []
-        }
-
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataCertiForm.areaId && this.dataCertiForm.areaId.length > 0){
@@ -513,6 +509,9 @@
         let url = ""
         if(this.type === 1){
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+          if(this.dataCertiForm.bigAreaId.length === 0){
+            this.dataCertiForm.areaId = []
+          }
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }

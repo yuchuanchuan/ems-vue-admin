@@ -320,11 +320,6 @@
           this.dataRewardForm.startOrderTime = ""
           this.dataRewardForm.endOrderTime = ""
         }
-
-        if(this.dataRewardForm.bigAreaId.length === 0){
-          this.dataRewardForm.areaId = []
-        }
-
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataRewardForm.areaId && this.dataRewardForm.areaId.length > 0){
@@ -513,6 +508,9 @@
         let url = ""
         if(this.type === 1){
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+          if(this.dataRewardForm.bigAreaId.length === 0){
+            this.dataRewardForm.areaId = []
+          }
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }

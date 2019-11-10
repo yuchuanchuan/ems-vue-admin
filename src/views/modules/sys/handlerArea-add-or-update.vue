@@ -4,7 +4,7 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="180px">
-      <el-form-item label="办理大区" prop="areaId">
+      <el-form-item label="办理大区" prop="areaId" v-if="type == 1">
         <!--<el-input v-model="dataForm.areaId" placeholder="受理地点名称"></el-input>-->
         <el-select v-model="dataForm.areaId" placeholder="请选择" width="100%" clearable>
           <el-option
@@ -23,6 +23,12 @@
       </el-form-item>
       <el-form-item label="不动产登记系统地区代号" prop="systemNo">
         <el-input v-model="dataForm.systemNo" placeholder="不动产登记系统地区代号"></el-input>
+      </el-form-item>
+      <el-form-item label="是否收取邮寄费用" size="mini">
+        <el-radio-group v-model="dataForm.hasFree">
+          <el-radio :label="1">是</el-radio>
+          <el-radio :label="2">否</el-radio>
+        </el-radio-group>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -44,7 +50,8 @@
           areaId: '',
           handleAddress: '',
           systemNo: '',
-          handleArea: ''
+          handleArea: '',
+          hasFree: 1,
         },
         dataRule: {
           areaId: [
@@ -95,7 +102,8 @@
                 this.dataForm.areaId = data.handleAreaEntity.areaId
                 this.dataForm.handleAddress = data.handleAreaEntity.handleAddress
                 this.dataForm.systemNo = data.handleAreaEntity.systemNo
-                this.dataForm.handleArea = data.handleAreaEntity.handleArea
+                this.dataForm.handleArea = data.handleAreaEntity.handleArea,
+                this.dataForm.hasFree = data.handleAreaEntity.hasFree
               }
             })
           }
@@ -112,7 +120,8 @@
                 'areaId': this.dataForm.areaId,
                 'handleAddress': this.dataForm.handleAddress,
                 'systemNo': this.dataForm.systemNo,
-                'handleArea': this.dataForm.handleArea
+                'handleArea': this.dataForm.handleArea,
+                'hasFree': this.dataForm.hasFree
               })
             }).then(({ data }) => {
               if (data && data.code === 0) {
@@ -131,6 +140,11 @@
             })
           }
         })
+      }
+    },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
       }
     }
   }

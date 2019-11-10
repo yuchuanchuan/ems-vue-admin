@@ -87,8 +87,29 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="办理地区" v-if="type == 1" size="mini" prop="areaId">
-        <el-select v-model="dataForm.handleAreaId" placeholder="办理地区" width="100%" clearable>
+      <!--<el-form-item label="办理地区" v-if="type == 1" size="mini" prop="areaId">-->
+        <!--<el-select v-model="dataForm.handleAreaId" placeholder="办理地区" width="100%" clearable>-->
+          <!--<el-option-->
+            <!--v-for="item in areaList"-->
+            <!--:key="item.id"-->
+            <!--:label="item.name"-->
+            <!--:value="item.id">-->
+          <!--</el-option>-->
+        <!--</el-select>-->
+      <!--</el-form-item>-->
+
+      <el-form-item label="所属区域" prop="areaId" v-if="type == 1">
+        <el-select v-model="dataForm.areaId" clearable placeholder="请选择" width="100%" @change="selectAreaList">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="所属网点" prop="handleAreaId" v-if="(type == 1 && dataForm.areaId) || type == 2">
+        <el-select v-model="dataForm.handleAreaId" clearable placeholder="请选择" width="100%">
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -153,6 +174,7 @@
         },
         childOptions: [],
         areaList: [],
+        bigAreaList: [],
         postTypeList:[],
         dataForm:{
           orderId: 0,
@@ -227,11 +249,34 @@
           ],
           areaId: [
             { required: true, message: '请选择办理地区', trigger: 'change'}
+          ],
+          handleAreaId: [
+            { required: true, message: '请选择办理网点', trigger: 'change'}
           ]
         }
       }
     },
     methods:{
+      selectAreaList(){
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.dataForm.areaId
+          })
+        }).then(({ data }) => {
+          this.dataForm.handleAreaId = ''
+          this.areaList = []
+          if(data && data.code === 0 && data.regionList && data.regionList.length > 0){
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.id,
+                name: item.handleArea
+              })
+            })
+          }
+        })
+      },
       // listAll(){
       //   this.$http({
       //     url: this.$http.adornUrl('/sys/insured/listAll'),
@@ -303,37 +348,40 @@
             }
           })
         }).then(()=>{
+          if(this.type === 1){
             this.$http({
-              url: this.$http.adornUrl('/sys/area/list'),
+              url: this.$http.adornUrl('/sys/bigarea/allList'),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({ data }) => {
-              if (data && data.code === 0) {
-                console.log(data)
-                this.options = []
-                data.areaList.forEach((item) => {
-                  if (item.childList) {
-                    this.options.push(item)
-                  }
+              this.bigAreaList = []
+              if(data && data.code === 0 && data.list && data.list.length > 0){
+                data.list.forEach((item) => {
+                  this.bigAreaList.push({
+                    id: item.id,
+                    name: item.name
+                  })
                 })
               }
             })
-        }).then(()=>{
-          this.$http({
-            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            this.areaList = []
-            if(data && data.code === 0){
-              data.regionList.forEach((item) => {
-                this.areaList.push({
-                  id: item.id,
-                  name: item.handleArea
+          }
+          if(this.type === 2){
+            this.$http({
+              url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+              method: 'get',
+              params: this.$http.adornParams()
+            }).then(({ data }) => {
+              this.areaList = []
+              if(data && data.code === 0){
+                data.regionList.forEach((item) => {
+                  this.areaList.push({
+                    id: item.id,
+                    name: item.handleArea
+                  })
                 })
-              })
-            }
-          })
+              }
+            })
+          }
         }).then(()=>{
           this.visible = true
           this.$nextTick(() => {

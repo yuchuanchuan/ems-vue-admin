@@ -79,8 +79,18 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="办理地区" v-if="type == 1" size="mini" prop="areaId">
-          <el-select v-model="dataForm.handleAreaId" placeholder="办理地区" width="100%" clearable disabled="">
+        <el-form-item label="所属区域" prop="areaId">
+          <el-select v-model="dataForm.areaId" clearable placeholder="请选择" width="100%" disabled>
+            <el-option
+              v-for="item in bigAreaList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属网点" prop="handleAreaId">
+          <el-select v-model="dataForm.handleAreaId" clearable placeholder="请选择" width="100%" disabled>
             <el-option
               v-for="item in areaList"
               :key="item.id"
@@ -121,6 +131,7 @@
         childOptions: [],
         postTypeList:[],
         areaList: [],
+        bigAreaList: [],
         dataForm:{
           orderId: 0,
           applyName: '',
@@ -204,6 +215,22 @@
                 this.postTypeList.push({
                   id: item.id,
                   name: item.bussinessName
+                })
+              })
+            }
+          })
+        }).then(()=>{
+          this.$http({
+            url: this.$http.adornUrl('/sys/bigarea/allList'),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            this.bigAreaList = []
+            if(data && data.code === 0 && data.list && data.list.length > 0){
+              data.list.forEach((item) => {
+                this.bigAreaList.push({
+                  id: item.id,
+                  name: item.name
                 })
               })
             }

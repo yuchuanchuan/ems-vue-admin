@@ -320,10 +320,6 @@
           this.dataNotReceiveForm.startOrderTime = ""
           this.dataNotReceiveForm.endOrderTime = ""
         }
-
-        if(this.dataNotReceiveForm.bigAreaId.length === 0){
-          this.dataNotReceiveForm.areaId = []
-        }
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataNotReceiveForm.areaId && this.dataNotReceiveForm.areaId.length > 0){
@@ -512,6 +508,9 @@
         let url = ""
         if(this.type === 1){
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+          if(this.dataNotReceiveForm.bigAreaId.length === 0){
+            this.dataNotReceiveForm.areaId = []
+          }
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }

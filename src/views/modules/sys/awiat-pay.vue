@@ -313,10 +313,6 @@
           this.dataPayForm.startOrderTime = ""
           this.dataPayForm.endOrderTime = ""
         }
-
-        if(this.dataPayForm.bigAreaId.length === 0){
-          this.dataPayForm.areaId = []
-        }
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataPayForm.areaId && this.dataPayForm.areaId.length > 0){
@@ -521,6 +517,9 @@
         let url = ""
         if(this.type === 1){
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+          if(this.dataPayForm.bigAreaId.length === 0){
+            this.dataPayForm.areaId = []
+          }
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }

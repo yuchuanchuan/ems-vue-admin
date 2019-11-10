@@ -57,6 +57,7 @@
         label="修改时间">
       </el-table-column>
       <el-table-column
+        v-if="type == 1"
         fixed="right"
         header-align="center"
         align="center"
@@ -179,6 +180,11 @@
             }
           })
         }).catch(() => {})
+      }
+    },
+    computed: {
+      type: {
+        get () { return this.$store.state.user.type }
       }
     }
   }

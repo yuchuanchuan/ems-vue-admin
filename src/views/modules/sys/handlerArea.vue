@@ -64,6 +64,16 @@
         label="不动产预约系统地区代号">
       </el-table-column>
       <el-table-column
+        prop="hasFree"
+        header-align="center"
+        align="center"
+        label="是否收取邮寄费用">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.hasFree === 1" size="small">是</el-tag>
+          <el-tag v-else size="small" type="danger">否</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
@@ -76,7 +86,6 @@
         align="center"
         width="150"
         label="操作"
-        v-if="type == 1"
       >
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:handlerArea:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>

@@ -15,7 +15,17 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item v-if="type == 1">
-        <el-select v-model="areaId" multiple placeholder="请选择" width="100%" clearable>
+        <el-select v-model="bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
+          <el-option
+            v-for="item in bigAreaList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="(type == 1  && bigAreaId != '') || type == 2">
+        <el-select v-model="areaId" multiple placeholder="办理网点" width="100%" clearable>
           <el-option
             v-for="item in areaList"
             :key="item.id"
@@ -130,6 +140,7 @@
         startOrderTime: '',
         endOrderTime: '',
         areaId: [],
+        bigAreaId: [],
         pickerOptions: {
           shortcuts: [
             {
@@ -167,6 +178,7 @@
             }]
         },
         areaList: [],
+        bigAreaList: [],
         options: {
           title: 'EMS邮寄系统柱状图单数统计',
           fillColor: '#17B3A3',
@@ -203,9 +215,10 @@
         this.getOrderCount()
       }
       if(this.$store.state.user.type == 1){
-        this.getAreaList()
+        this.getBigAreaInfo()
         this.getDataList()
       }
+      this.getAreaInfo()
     },
     methods: {
       // 每页数
@@ -228,9 +241,15 @@
           this.endOrderTime = ""
         }
 
+        // 数据转换 areaId
         let multiAreaId = ''
         if(this.areaId && this.areaId.length > 0){
           multiAreaId = this.areaId.join(',')
+        }
+        // 数据转换，大区bigAreaId
+        let multiBigAreaId = ''
+        if(this.bigAreaId && this.bigAreaId.length > 0){
+          multiBigAreaId = this.bigAreaId.join(',')
         }
 
         this.dataListLoading = true
@@ -240,16 +259,16 @@
           params: this.$http.adornParams({
             'startOrderTime': this.startOrderTime,
             'endOrderTime': this.endOrderTime,
-            'areaId': multiAreaId
+            'areaId': multiBigAreaId,  // 大区
+            'handleAreaId': multiAreaId // 网点
           })
         }).then(({ data }) => {
-          console.log(data)
-
           if (data && data.code === 0) {
             this.dataList = data.countOrderList
             // this.totalPage = data.page.totalCount
           } else {
             this.dataList = []
+            this.$message.error(data.msg)
             // this.totalPage = 0
           }
           this.dataListLoading = false
@@ -265,13 +284,19 @@
           this.endOrderTime = ""
         }
 
+        // 数据转换 areaId
+        let multiAreaId = ''
+        if(this.areaId && this.areaId.length > 0){
+          multiAreaId = this.areaId.join(',')
+        }
+
         this.$http({
           url: this.$http.adornUrl('/sys/order/dataCount'),
           method: 'get',
           params: this.$http.adornParams({
             'startOrderTime': this.startOrderTime,
             'endOrderTime': this.endOrderTime,
-            'areaId': this.areaId
+            'handleAreaId': multiAreaId // 网点
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
@@ -287,12 +312,39 @@
           }
         })
       },
-
-      getAreaList() {
+      getBigAreaInfo(){
         this.$http({
-          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if(data && data.code === 0 && data.list && data.list.length > 0){
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      },
+      getAreaInfo() {
+        let url = ""
+        if(this.type === 1){
+          if(this.bigAreaId.length === 0){
+            this.areaId = []
+          }
+          url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+        }else{
+          url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
+        }
+        this.$http({
+          url: url,
+          method: 'get',
+          params: this.$http.adornParams({
+            'areaId': this.type === 1 ? this.bigAreaId.join(',') : ''
+          })
         }).then(({ data }) => {
           this.areaList = []
           if(data && data.code === 0){
@@ -304,21 +356,6 @@
             })
           }
         })
-        // this.$http({
-        //   url: this.$http.adornUrl('/sys/area/region'),
-        //   method: 'get',
-        //   params: this.$http.adornParams()
-        // }).then(({ data }) => {
-        //   this.areaList = []
-        //   if (data && data.code === 0 && data.regionList && data.regionList.length > 0) {
-        //     data.regionList[0].childList.forEach((item) => {
-        //       this.areaList.push({
-        //         id: item.id,
-        //         name: item.name
-        //       })
-        //     })
-        //   }
-        // })
       },
     },
     components: {

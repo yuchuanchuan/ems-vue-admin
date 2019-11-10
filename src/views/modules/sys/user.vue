@@ -177,9 +177,6 @@
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
-        if(this.dataForm.bigAreaId.length === 0){
-          this.dataForm.areaId = []
-        }
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataForm.areaId && this.dataForm.areaId.length > 0){
@@ -300,6 +297,9 @@
         // })
         let url = ""
         if(this.type === 1){
+          if(this.dataForm.bigAreaId.length === 0){
+            this.dataForm.areaId = []
+          }
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')

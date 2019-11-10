@@ -497,10 +497,6 @@
         }else{
           this.statusStr = this.dataAllForm.status
         }
-
-        if(this.dataAllForm.bigAreaId.length === 0){
-          this.dataAllForm.areaId = []
-        }
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
@@ -775,6 +771,9 @@
         let url = ""
         if(this.type === 1){
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
+          if(this.dataAllForm.bigAreaId.length === 0){
+            this.dataAllForm.areaId = []
+          }
         }else{
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }
