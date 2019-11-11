@@ -402,7 +402,7 @@
               + this.dataShipForm.mailNum + "&startOrderTime="
               + this.dataShipForm.startOrderTime + "&endOrderTime="
               + this.dataShipForm.endOrderTime + "&areaId="
-              + multiBigAreaId + "handleAreaId=" + multiAreaId
+              + multiBigAreaId + "&handleAreaId=" + multiAreaId
           } else {
             this.$message.error(data.msg)
           }
