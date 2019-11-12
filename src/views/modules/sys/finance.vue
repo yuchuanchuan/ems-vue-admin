@@ -392,8 +392,8 @@
           method: 'get',
           params: this.$http.adornParams({
             'startOrderTime': this.dataShipForm.startOrderTime,
-            'endOrderTime': this.dataShipForm.endOrderTime,
-            'status': this.dataShipForm.status
+            'endOrderTime': this.dataShipForm.endOrderTime
+            // 'status': this.dataShipForm.status
           })
         }).then(({ data }) => {
           if (data && data.code === 0) {
