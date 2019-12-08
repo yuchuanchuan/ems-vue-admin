@@ -67,6 +67,7 @@
     <div v-if="type == 1">
       <el-table
         show-summary
+        :summary-method="getSummaries"
         :data="dataList"
         border
         v-loading="dataListLoading"
@@ -102,6 +103,12 @@
           label="已投递保险单数">
         </el-table-column>
         <el-table-column
+          prop="hasRevice"
+          header-align="center"
+          align="center"
+          label="已妥投单数">
+        </el-table-column>
+        <el-table-column
           prop="reviceRate"
           header-align="center"
           align="center"
@@ -133,6 +140,7 @@
 
 <script>
   import Schart from 'vue-schart';
+  import {exchangeCurrentDate} from '../../utils/validate.js'
   export default {
     data() {
       return {
@@ -211,6 +219,7 @@
       }
     },
     created(){
+      this.createOrderTime = [exchangeCurrentDate(),exchangeCurrentDate()]
       if(this.$store.state.user.type != 1){
         this.getOrderCount()
       }
@@ -221,6 +230,55 @@
       this.getAreaInfo()
     },
     methods: {
+      getSummaries(param) {
+        const { columns, data } = param;
+        const sums = [];
+        let hasRiskCount = []
+        let noRiskCount = []
+        let hasReviceCount = []
+        let countOrderTotal = []
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '合计';
+            return;
+          }
+          //this.closeList等等是后台返回的总的数据，然后取值到这里
+          switch(column.property) {
+            case "noRisk":
+              noRiskCount = data.map(item => item.noRisk)
+              sums[index] = noRiskCount.reduce((prev, curr) => {
+                return parseInt(prev) + parseInt(curr)
+              }, 0)
+              break;
+            case "hasRisk":
+              hasRiskCount = data.map(item => item.hasRisk)
+              sums[index] = hasRiskCount.reduce((prev, curr) => {
+                return parseInt(prev) + parseInt(curr)
+              }, 0)
+              break;
+            case "hasRevice":
+              hasReviceCount = data.map(item => item.hasRevice)
+              sums[index] = hasReviceCount.reduce((prev, curr) => {
+                return parseInt(prev) + parseInt(curr)
+              }, 0)
+              break;
+            case "countOrder":
+              countOrderTotal = data.map(item => item.countOrder)
+              sums[index] = countOrderTotal.reduce((prev, curr) => {
+                return parseInt(prev) + parseInt(curr)
+              }, 0)
+              break;
+            default:
+              break;
+          }
+
+          if(index === 6){
+            sums[5] = (sums[4] / sums[6]).toFixed(2)
+            return
+          }
+        });
+        return sums;
+      },
       // 每页数
       sizeChangeHandle (val) {
         this.pageSize = val
@@ -241,6 +299,8 @@
           this.endOrderTime = ""
         }
 
+        console.log("------------------------------------")
+        console.log(this.startOrderTime + "-----------" +this.endOrderTime)
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.areaId && this.areaId.length > 0){
@@ -283,7 +343,6 @@
           this.startOrderTime = ""
           this.endOrderTime = ""
         }
-
         // 数据转换 areaId
         let multiAreaId = ''
         if(this.areaId && this.areaId.length > 0){

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * Created by jiachenpan on 16/11/18.
  */
@@ -73,4 +75,11 @@ export function isURL (s) {
 
 export function isNum2(value) {
   return /^(?!0+(?:\.0+)?$)(?:[1-9]\d*|0)(?:\.\d{1,2})?$/.test(value)
+}
+
+/**
+ * 当前日期格式化
+ */
+export function exchangeCurrentDate() {
+  return moment().format('YYYY-MM-DD');
 }
