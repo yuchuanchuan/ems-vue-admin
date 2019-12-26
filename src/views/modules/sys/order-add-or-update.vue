@@ -315,6 +315,7 @@
       // },
       init (orderId) {
         this.dataForm.orderId = orderId || 0
+
         this.$http({
           url: this.$http.adornUrl('/sys/insured/listAll'),
           method: 'get',
@@ -331,6 +332,21 @@
             })
             this.dataForm.postRiskId = data.list[0].insuredId
           }
+        }).then(()=>{
+            this.$http({
+              url: this.$http.adornUrl('/sys/area/list'),
+              method: 'get',
+              params: this.$http.adornParams()
+            }).then(({ data }) => {
+              if(data && data.code === 0){
+                this.options = []
+                data.areaList.forEach((item) => {
+                  if(item.childList){
+                    this.options.push(item)
+                  }
+                })
+              }
+            })
         }).then(()=>{
           this.$http({
             url: this.$http.adornUrl('/sys/bussiness/allList'),
