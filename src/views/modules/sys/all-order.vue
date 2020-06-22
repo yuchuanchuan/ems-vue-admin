@@ -2,85 +2,51 @@
   <div class="all-order">
     <el-form :inline="true" :model="dataAllForm">
       <el-form-item>
-        <el-input v-model="dataAllForm.orderNumber" placeholder="订单号" clearable></el-input>
+        <el-input v-model="dataAllForm.orderNumber" placeholder="订单号" clearable />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.idCard" placeholder="受理凭证号" clearable></el-input>
+        <el-input v-model="dataAllForm.idCard" placeholder="受理凭证号" clearable />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.applyName" placeholder="产权人姓名" clearable></el-input>
+        <el-input v-model="dataAllForm.applyName" placeholder="产权人姓名" clearable />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.applyPhone" placeholder="产权人手机号" clearable></el-input>
+        <el-input v-model="dataAllForm.applyPhone" placeholder="产权人手机号" clearable />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.name" placeholder="收货人姓名" clearable></el-input>
+        <el-input v-model="dataAllForm.name" placeholder="收货人姓名" clearable />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataAllForm.phone" placeholder="收货人手机号" clearable></el-input>
+        <el-input v-model="dataAllForm.phone" placeholder="收货人手机号" clearable />
       </el-form-item>
       <el-form-item v-if="type == 1">
         <el-select v-model="dataAllForm.bigAreaId" multiple placeholder="办理大区" width="100%" clearable @change="getAreaInfo">
-          <el-option
-            v-for="item in bigAreaList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
+          <el-option v-for="item in bigAreaList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="(type == 1  && dataAllForm.bigAreaId != '') || type == 2">
+      <el-form-item v-if="(type == 1 && dataAllForm.bigAreaId != '') || type == 2">
         <el-select v-model="dataAllForm.areaId" multiple placeholder="办理网点" width="100%" clearable>
-          <el-option
-            v-for="item in areaList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
+          <el-option v-for="item in areaList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-select v-model="dataAllForm.postType" placeholder="邮寄类型" width="100%" clearable>
-          <el-option
-            v-for="item in postTypeList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
+          <el-option v-for="item in postTypeList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-select v-model="dataAllForm.postRisk" placeholder="是否保价客户" width="100%" clearable>
-          <el-option
-            v-for="item in postRiskList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
+          <el-option v-for="item in postRiskList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-select v-model="dataAllForm.status" placeholder="状态" width="100%" clearable>
-          <el-option
-            v-for="item in statusList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
+          <el-option v-for="item in statusList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-date-picker
-          v-model="createOrderTime"
-          type="daterange"
-          align="right"
-          unlink-panels
-          range-separator="至"
-          start-placeholder="订单开始日期"
-          end-placeholder="订单结束日期"
-          value-format="yyyy-MM-dd"
-          :picker-options="pickerOptions">
-        </el-date-picker>
+        <el-date-picker v-model="createOrderTime" :picker-options="pickerOptions" type="daterange" align="right"
+          unlink-panels range-separator="至" start-placeholder="订单开始日期" end-placeholder="订单结束日期" value-format="yyyy-MM-dd" />
       </el-form-item>
       <el-form-item>
         <el-button @click="getAllDataList(1)">查询</el-button>
@@ -91,247 +57,191 @@
         <el-button type="primary" @click="exportExcel">导出</el-button>
       </el-form-item>
       <el-form-item>
-        <el-upload
-          class="upload-demo"
-          :action="importExcel"
-          :show-file-list="false"
-          :before-upload="beforeImport"
-          :on-success="handleExcel">
+        <el-upload :action="importExcel" :show-file-list="false" :before-upload="beforeImport" :on-success="handleExcel"
+          class="upload-demo">
           <el-button type="primary">导入</el-button>
         </el-upload>
       </el-form-item>
     </el-form>
-      <el-table
-      :data="dataAllList"
-      border
-      v-loading="dataAllListLoading"
-      @selection-change="selectionAllChangeHandle"
-      :row-key="getRowKeys"
-      style="width: 100%;">
-      <el-table-column
-        type="selection"
-        :reserve-selection="true"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="orderNumber"
-        header-align="center"
-        align="center"
-        label="订单号">
-      </el-table-column>
-      <el-table-column
-        prop="mailNum"
-        header-align="center"
-        align="center"
-        label="快递单号">
-      </el-table-column>
-      <el-table-column
-        prop="applyName"
-        header-align="center"
-        align="center"
-        label="产权人">
-      </el-table-column>
-      <el-table-column
-        prop="applyPhone"
-        header-align="center"
-        align="center"
-        label="申请人电话">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        header-align="center"
-        align="center"
-        label="收货人">
-      </el-table-column>
-      <el-table-column
-        prop="phone"
-        header-align="center"
-        align="center"
-        label="收货人电话">
-      </el-table-column>
-      <el-table-column
-        prop="postAddress"
-        header-align="center"
-        align="center"
-        label="收货地址">
-      </el-table-column>
-      <el-table-column
-        prop="bigAreaName"
-        header-align="center"
-        align="center"
-        label="办理大区">
-      </el-table-column>
-      <el-table-column
-        prop="areaName"
-        header-align="center"
-        align="center"
-        label="办理网点">
-      </el-table-column>
-      <el-table-column
-        prop="createOrderTime"
-        header-align="center"
-        align="center"
-        label="下单时间">
-      </el-table-column>
-      <el-table-column
-        prop="idCard"
-        header-align="center"
-        align="center"
-        width="180"
-        label="凭证编号">
+    <el-table v-loading="dataAllListLoading" :data="dataAllList" :row-key="getRowKeys" border style="width: 100%;"
+      @selection-change="selectionAllChangeHandle">
+      <el-table-column :reserve-selection="true" type="selection" header-align="center" align="center" width="50" />
+      <el-table-column prop="orderNumber" header-align="center" align="center" label="订单号" />
+      <el-table-column prop="mailNum" header-align="center" align="center" label="快递单号" />
+      <el-table-column prop="applyName" header-align="center" align="center" label="产权人" />
+      <el-table-column prop="applyPhone" header-align="center" align="center" label="申请人电话" />
+      <el-table-column prop="name" header-align="center" align="center" label="收货人" />
+      <el-table-column prop="phone" header-align="center" align="center" label="收货人电话" />
+      <el-table-column prop="postAddress" header-align="center" align="center" label="收货地址" />
+      <el-table-column prop="bigAreaName" header-align="center" align="center" label="办理大区" />
+      <el-table-column prop="areaName" header-align="center" align="center" label="办理网点" />
+      <el-table-column prop="createOrderTime" header-align="center" align="center" label="下单时间" />
+      <el-table-column prop="idCard" header-align="center" align="center" width="180" label="凭证编号">
         <!--<template slot-scope="scope">-->
-          <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">-->
+        <!--<img :src="scope.row.housingAuthority" alt="" width="100" height="100" class="fdimg" @click="fangda(scope.row.housingAuthority)">-->
         <!--</template>-->
       </el-table-column>
-        <el-table-column
-          prop="postType"
-          header-align="center"
-          align="center"
-          label="邮寄类型">
-          <template slot-scope="scope">
-            <span v-for="(item,index) in postTypeList" :key="index" v-if="item.id == scope.row.postType">{{item.name}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="postRisk"
-          header-align="center"
-          align="center"
-          label="保价客户">
-          <template slot-scope="scope">
-            <span v-if="scope.row.postRisk === 1">是</span>
-            <span v-if="scope.row.postRisk === 2">否</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="订单状态">
-          <template slot-scope="scope">
-            <!--<el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 9" size="small" type="info">已出证</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>-->
-            <!--<el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>-->
-            <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
-            <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>
-            <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
-            <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>
-            <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
-            <el-tag v-else-if="scope.row.status === 6" size="small" type="warning">已支付</el-tag>
-            <el-tag v-else-if="scope.row.status === 7" size="small" type="warning">已支付</el-tag>
-            <el-tag v-else-if="scope.row.status === 8" size="small" type="success">已出证</el-tag>
-            <el-tag v-else-if="scope.row.status === 9" size="small" type="success">已出证</el-tag>
-            <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">未妥投</el-tag>
-            <el-tag v-else-if="scope.row.status === 11" size="small" type="success">已妥投</el-tag>
-            <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
-            <el-tag v-else-if="scope.row.status === 13" size="small" type="info">已发货</el-tag>
-          </template>
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作"
-      >
+      <el-table-column prop="postType" header-align="center" align="center" label="邮寄类型">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:order:update') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
+          <span v-for="(item,index) in postTypeList" v-if="item.id == scope.row.postType" :key="index">{{ item.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="postRisk" header-align="center" align="center" label="保价客户">
+        <template slot-scope="scope">
+          <span v-if="scope.row.postRisk === 1">是</span>
+          <span v-if="scope.row.postRisk === 2">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" header-align="center" align="center" label="订单状态">
+        <template slot-scope="scope">
+          <!--<el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 6" size="small" type="success">已受理</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 7" size="small" type="success">已审核</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 8" size="small" type="success">已领证</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 9" size="small" type="info">已出证</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 10" size="small" type="warning">其他</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 11" size="small" type="warning">他人代签</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>-->
+          <!--<el-tag v-else-if="scope.row.status === 13" size="small" type="info">派件中</el-tag>-->
+          <el-tag v-if="scope.row.status === 1" size="small" type="danger">待支付</el-tag>
+          <el-tag v-else-if="scope.row.status === 2" size="small" type="warning">已支付</el-tag>
+          <el-tag v-else-if="scope.row.status === 3" size="small" type="info">已发货</el-tag>
+          <el-tag v-else-if="scope.row.status === 4" size="small" type="success">已妥投</el-tag>
+          <el-tag v-else-if="scope.row.status === 5" size="small">已取消</el-tag>
+          <el-tag v-else-if="scope.row.status === 6" size="small" type="warning">已支付</el-tag>
+          <el-tag v-else-if="scope.row.status === 7" size="small" type="warning">已支付</el-tag>
+          <el-tag v-else-if="scope.row.status === 8" size="small" type="success">已出证</el-tag>
+          <el-tag v-else-if="scope.row.status === 9" size="small" type="success">已出证</el-tag>
+          <el-tag v-else-if="scope.row.status === 10" size="small" type="warning">未妥投</el-tag>
+          <el-tag v-else-if="scope.row.status === 11" size="small" type="success">已妥投</el-tag>
+          <el-tag v-else-if="scope.row.status === 12" size="small" type="danger">未妥投</el-tag>
+          <el-tag v-else-if="scope.row.status === 13" size="small" type="info">已发货</el-tag>
+          <el-tag v-else-if="scope.row.status === 14" size="small" type="info">退款中</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="isAuth('sys:order:update') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)"
+            type="text" size="small" @click="addOrUpdateHandle(scope.row.orderId)">修改</el-button>
           <el-button v-if="isAuth('sys:order:info')" type="text" size="small" @click="viewOrder(scope.row.orderId)">查看</el-button>
-          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status === 1 || scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)" type="text" size="small" @click="cancelOrderStatus(scope.row.orderId, scope.row.openid)">取消</el-button>
-          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text" size="small" @click="deleteHandle(scope.row.orderId)" disabled>删除</el-button>
+          <el-button v-if="(type===3||type===2) && (scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)"
+            type="text" size="small" @click="cancelOrderApply(scope.row.orderId)">退款申请</el-button>
+          <el-button v-if="isAuth('sys:order:delete')&&(type===1) && (scope.row.status === 14)" type="text" size="small"
+            @click="cancelOrderStatus(scope.row.orderId, scope.row.openid,scope.row.cancelReason)">确认退款</el-button>
+          <el-button v-if="isAuth('sys:order:delete')&&(type===1) && (scope.row.status === 2 || scope.row.status === 6 || scope.row.status === 7 || scope.row.status === 8 || scope.row.status === 9)"
+            type="text" size="small" @click="cancelOrderStatus(scope.row.orderId, scope.row.openid,'')">退款</el-button>
+          <el-button v-if="isAuth('sys:order:delete')&& (scope.row.status === 1)" type="text" size="small" @click="cancelOrder(scope.row.orderId, scope.row.openid)">取消</el-button>
+          <el-button v-if="isAuth('sys:order:delete') && (scope.row.status !== 3 && scope.row.status !== 13)" type="text"
+            size="small" disabled @click="deleteHandle(scope.row.orderId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageAllIndex"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageAllSize"
-      :total="totalAllPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <el-pagination :current-page="pageAllIndex" :page-sizes="[10, 20, 50, 100]" :page-size="pageAllSize" :total="totalAllPage"
+      layout="total, sizes, prev, pager, next, jumper" @size-change="sizeChangeHandle" @current-change="currentChangeHandle" />
 
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getAllDataList(1)"></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getAllDataList(1)" />
+    <cancelOrderApply v-if="cancelApplyVisible" ref="cancelOrderApply" @refreshDataList="getAllDataList(1)" />
 
     <!-- 查看 -->
-    <view-order v-if="viewOrderVisible" ref="viewOrder"></view-order>
+    <view-order v-if="viewOrderVisible" ref="viewOrder" />
   </div>
 </template>
 
 <script>
   import AddOrUpdate from './order-add-or-update.vue'
+  import cancelOrderApply from './cancelOrderApply.vue'
   import ViewOrder from './view-order.vue'
   import $ from 'jquery'
   export default {
-    data(){
-      return{
+    components: {
+      AddOrUpdate,
+      cancelOrderApply,
+      ViewOrder
+    },
+    data() {
+      return {
         importExcel: process.env.BASE_API + '/sys/order/import',
-				// url:'ems.tjeasytech.cn/',
-				show_img:'',
+        // url:'ems.tjeasytech.cn/',
+        show_img: '',
         activeName: 'first',
-        show:true,
-        statusList:[
-          {id: 1,name:'待支付'},
-          {id:2,name:'已支付'},
+        show: true,
+        statusList: [{
+            id: 1,
+            name: '待支付'
+          },
+          {
+            id: 2,
+            name: '已支付'
+          },
           // {id:6,name:'已受理'},
           // {id:7,name:'已审核'},
           // {id:8,name:'已领证'},
           // // {id:9,name:'已发证'},
-          {id:9,name:'已出证'},
-          {id:3,name:'已发货'},
+          {
+            id: 9,
+            name: '已出证'
+          },
+          {
+            id: 3,
+            name: '已发货'
+          },
           // {id:13,name:'派件中'},
-          {id:4,name:'已妥投'},
+          {
+            id: 4,
+            name: '已妥投'
+          },
           // {id:11,name:'他人代签'},
-          {id:12,name:'未妥投'},
-          {id:5,name:'已取消'}
+          {
+            id: 12,
+            name: '未妥投'
+          },
+          {
+            id: 5,
+            name: '已取消'
+          },
+          {
+            id: 14,
+            name: '退款中'
+          }
           // {id:10,name:'其他'}
         ],
         pickerOptions: {
-          shortcuts: [
-            {
-              text: '今天',
-              onClick(picker) {
-                const end = new Date();
-                const start = new Date();
-                // start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
-                picker.$emit('pick', [start, end]);
-              }
-            },{
+          shortcuts: [{
+            text: '今天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              // start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+              picker.$emit('pick', [start, end])
+            }
+          }, {
             text: '最近一周',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
             }
           }, {
             text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
             }
           }, {
             text: '最近一年',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', [start, end])
             }
           }]
         },
@@ -343,11 +253,11 @@
         postRiskList: [{
           id: 1,
           name: '是'
-        },{
+        }, {
           id: 2,
           name: '否'
         }],
-        dataAllForm:{
+        dataAllForm: {
           orderNumber: '',
           idCard: '',
           applyName: '',
@@ -369,24 +279,34 @@
         dataAllListLoading: false,
         dataAllListSelections: [],
         addOrUpdateVisible: false,
+        cancelApplyVisible: false,
         viewOrderVisible: false
       }
     },
-    activated () {
+    computed: {
+      type: {
+        get() {
+          return this.$store.state.user.type
+        }
+      }
+    },
+    activated() {
       this.getPostTypeList()
       this.getBigAreaInfo()
       this.getAreaInfo()
       this.getAllDataList(1)
     },
     methods: {
-      getBigAreaInfo(){
+      getBigAreaInfo() {
         this.$http({
           url: this.$http.adornUrl('/sys/bigarea/allList'),
           method: 'get',
           params: this.$http.adornParams()
-        }).then(({ data }) => {
+        }).then(({
+          data
+        }) => {
           this.bigAreaList = []
-          if(data && data.code === 0 && data.list && data.list.length > 0){
+          if (data && data.code === 0 && data.list && data.list.length > 0) {
             data.list.forEach((item) => {
               this.bigAreaList.push({
                 id: item.id,
@@ -397,25 +317,27 @@
         })
       },
       // 批量下载
-      downloadFile(url){
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-        iframe.style.height = 0;
-        iframe.src = url;
-        document.body.appendChild(iframe);
-        setTimeout(()=>{
-          iframe.remove();
+      downloadFile(url) {
+        const iframe = document.createElement('iframe')
+        iframe.style.display = 'none'
+        iframe.style.height = 0
+        iframe.src = url
+        document.body.appendChild(iframe)
+        setTimeout(() => {
+          iframe.remove()
         }, 3 * 60 * 1000)
       },
       // 邮寄类型
-      getPostTypeList(){
+      getPostTypeList() {
         this.$http({
           url: this.$http.adornUrl('/sys/bussiness/allList'),
           method: 'get',
           params: this.$http.adornParams()
-        }).then(({ data }) => {
+        }).then(({
+          data
+        }) => {
           this.postTypeList = []
-          if(data && data.code === 0){
+          if (data && data.code === 0) {
             data.list.forEach((item) => {
               this.postTypeList.push({
                 id: item.id,
@@ -425,7 +347,7 @@
           }
         })
       },
-      beforeImport(file){
+      beforeImport(file) {
         // console.log(file)
         // const isJPG = file.type === '.xls' || file.type === '.xlsx';
         // const isLt2M = file.size / 1024 / 1024 < 10;
@@ -438,16 +360,15 @@
         // }
         // return isJPG && isLt2M;
       },
-      handleExcel(res, file){
-        if(res.code === 0) {
+      handleExcel(res, file) {
+        if (res.code === 0) {
           this.$confirm(res.info, '提示', {
             showConfirmButton: false,
-            cancelButtonText: '关闭',
+            cancelButtonText: '关闭'
           }).then(() => {
 
-          }).catch(() => {
-          });
-        }else{
+          }).catch(() => {})
+        } else {
           this.$message({
             message: res.msg,
             type: 'error',
@@ -463,48 +384,48 @@
       //   $("body").css("overflow","auto");
       // },
       // fangda (imgSrc){
-			// 	// this.show_img = this.dataAllList[e].housingAuthority
-			// 	this.show_img = imgSrc
+      // 	// this.show_img = this.dataAllList[e].housingAuthority
+      // 	this.show_img = imgSrc
       //   this.show=false
       //   $("body").css("overflow","hidden");
       // },
 
       // 获取数据列表
-      getAllDataList (page) {
-        if(this.createOrderTime && this.createOrderTime.length > 0){
+      getAllDataList(page) {
+        if (this.createOrderTime && this.createOrderTime.length > 0) {
           this.dataAllForm.startOrderTime = this.createOrderTime[0]
           this.dataAllForm.endOrderTime = this.createOrderTime[1]
-        }else{
-          this.dataAllForm.startOrderTime = ""
-          this.dataAllForm.endOrderTime = ""
+        } else {
+          this.dataAllForm.startOrderTime = ''
+          this.dataAllForm.endOrderTime = ''
         }
 
         // 更改状态查询
-        if(this.dataAllForm.status === 1){
+        if (this.dataAllForm.status === 1) {
           this.statusStr = '1'
-        }else if(this.dataAllForm.status === 2){
+        } else if (this.dataAllForm.status === 2) {
           this.statusStr = '2,6,7'
-        }else if(this.dataAllForm.status === 9){
+        } else if (this.dataAllForm.status === 9) {
           this.statusStr = '8,9'
-        }else if(this.dataAllForm.status === 3){
+        } else if (this.dataAllForm.status === 3) {
           this.statusStr = '3,13'
-        }else if(this.dataAllForm.status === 4){
+        } else if (this.dataAllForm.status === 4) {
           this.statusStr = '4,11'
-        }else if(this.dataAllForm.status === 12){
+        } else if (this.dataAllForm.status === 12) {
           this.statusStr = '10,12'
-        }else if(this.dataAllForm.status === 5){
+        } else if (this.dataAllForm.status === 5) {
           this.statusStr = '5'
-        }else{
+        } else {
           this.statusStr = this.dataAllForm.status
         }
         // 数据转换 areaId
         let multiAreaId = ''
-        if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
+        if (this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0) {
           multiAreaId = this.dataAllForm.areaId.join(',')
         }
         // 数据转换，大区bigAreaId
         let multiBigAreaId = ''
-        if(this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0){
+        if (this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0) {
           multiBigAreaId = this.dataAllForm.bigAreaId.join(',')
         }
 
@@ -524,12 +445,14 @@
             'startOrderTime': this.dataAllForm.startOrderTime,
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.statusStr,
-            'areaId': multiBigAreaId,  // 大区
+            'areaId': multiBigAreaId, // 大区
             'handleAreaId': multiAreaId, // 网点
             'postType': this.dataAllForm.postType,
             'postRisk': this.dataAllForm.postRisk
           })
-        }).then(({ data }) => {
+        }).then(({
+          data
+        }) => {
           if (data && data.code === 0) {
             this.dataAllList = data.page.list
             console.log(this.dataAllList)
@@ -542,41 +465,86 @@
         })
       },
       // 每页数
-      sizeChangeHandle (val) {
+      sizeChangeHandle(val) {
         this.pageAllSize = val
         this.pageAllIndex = 1
         this.getAllDataList(this.pageAllIndex)
       },
       // 当前页
-      currentChangeHandle (val) {
+      currentChangeHandle(val) {
         this.pageAllIndex = val
         this.getAllDataList(this.pageAllIndex)
       },
-      getRowKeys(row){
+      getRowKeys(row) {
         return row.orderId
       },
       // 多选
-      selectionAllChangeHandle (val) {
+      selectionAllChangeHandle(val) {
         this.dataAllListSelections = val
       },
       // 新增 / 修改
-      addOrUpdateHandle (id) {
+      addOrUpdateHandle(id) {
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
           this.$refs.addOrUpdate.init(id)
         })
       },
-      cancelOrderStatus(id, openid){
-        if(openid == undefined || openid == ''){
-          this.$confirm(`该订单付款方式不是微信在线付款，所以不支持微信在线退款，只能更改订单的取消状态，是否继续?`, '提示', {
+      // 网点业务员进行退款申请
+      cancelOrderApply(id) {
+        this.$confirm(`确定申请该订单进行微信在线退款么，将提交管理员审核?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.cancelApplyVisible = true
+          this.$nextTick(() => {
+            this.$refs.cancelOrderApply.init(id)
+          })
+        })
+      },
+      cancelOrder(id, openid) {
+        this.$confirm(`即将取消订单，是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: this.$http.adornUrl(`/sys/order/updateCancelStatus/${id}`),
+            method: 'get'
+          }).then(({
+            data
+          }) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: '订单取消成功',
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  this.getAllDataList(this.pageAllIndex)
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }).catch(() => {})
+      },
+      cancelOrderStatus(id, openid, cancelReason) {
+        if (cancelReason !== undefined || cancelReason !== '') {
+          cancelReason = '退款原因为' + cancelReason + ','
+        }
+        if (openid == undefined || openid == '') {
+          this.$confirm(cancelReason + `该订单付款方式不是微信在线付款，所以不支持微信在线退款，只能更改订单的取消状态，是否继续?`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             this.$http({
-              url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
+              url: this.$http.adornUrl(`/sys/order/updateCancelStatus/${id}`),
               method: 'get'
-            }).then(({ data }) => {
+            }).then(({
+              data
+            }) => {
               if (data && data.code === 0) {
                 this.$message({
                   message: '订单取消成功',
@@ -591,8 +559,8 @@
               }
             })
           }).catch(() => {})
-        }else{
-          this.$confirm(`确定取消该订单并进行微信在线退款么?`, '提示', {
+        } else {
+          this.$confirm(cancelReason + `确定取消该订单并进行微信在线退款么?`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -600,7 +568,9 @@
             this.$http({
               url: this.$http.adornUrl(`/sys/order/cancelOrder/${id}`),
               method: 'get'
-            }).then(({ data }) => {
+            }).then(({
+              data
+            }) => {
               if (data && data.code === 0) {
                 this.$message({
                   message: '订单取消成功',
@@ -618,7 +588,7 @@
         }
       },
       // 删除订单
-      deleteHandle (id) {
+      deleteHandle(id) {
         var userIds = id ? [id] : this.dataAllListSelections.map(item => {
           return item.userId
         })
@@ -631,7 +601,9 @@
             url: this.$http.adornUrl('/sys/order/delete'),
             method: 'post',
             data: this.$http.adornData(userIds, false)
-          }).then(({ data }) => {
+          }).then(({
+            data
+          }) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
@@ -649,57 +621,57 @@
       },
 
       // 查看订单
-      viewOrder(id){
+      viewOrder(id) {
         this.viewOrderVisible = true
         this.$nextTick(() => {
           this.$refs.viewOrder.init(id)
         })
       },
-      exportExcel(){
-        if(this.createOrderTime && this.createOrderTime.length > 0){
+      exportExcel() {
+        if (this.createOrderTime && this.createOrderTime.length > 0) {
           this.dataAllForm.startOrderTime = this.createOrderTime[0]
           this.dataAllForm.endOrderTime = this.createOrderTime[1]
-        }else {
-          this.dataAllForm.startOrderTime = ""
-          this.dataAllForm.endOrderTime = ""
+        } else {
+          this.dataAllForm.startOrderTime = ''
+          this.dataAllForm.endOrderTime = ''
         }
-        let orderIdList = []
-        let orderIdStr = ""
+        const orderIdList = []
+        let orderIdStr = ''
         this.dataAllListSelections.forEach((item) => {
           orderIdList.push(item.orderId)
         })
         orderIdStr = orderIdList.join(',')
 
         // 更改状态查询
-        if(this.dataAllForm.status === 1){
+        if (this.dataAllForm.status === 1) {
           this.statusStr = '1'
-        }else if(this.dataAllForm.status === 2){
+        } else if (this.dataAllForm.status === 2) {
           this.statusStr = '2,6,7'
-        }else if(this.dataAllForm.status === 9){
+        } else if (this.dataAllForm.status === 9) {
           this.statusStr = '8,9'
-        }else if(this.dataAllForm.status === 3){
+        } else if (this.dataAllForm.status === 3) {
           this.statusStr = '3,13'
-        }else if(this.dataAllForm.status === 4){
+        } else if (this.dataAllForm.status === 4) {
           this.statusStr = '4,11'
-        }else if(this.dataAllForm.status === 12){
+        } else if (this.dataAllForm.status === 12) {
           this.statusStr = '10,12'
-        }else if(this.dataAllForm.status === 5){
+        } else if (this.dataAllForm.status === 5) {
           this.statusStr = '5'
-        }else{
+        } else {
           this.statusStr = this.dataAllForm.status
         }
 
-        if(this.dataAllForm.bigAreaId.length === 0){
+        if (this.dataAllForm.bigAreaId.length === 0) {
           this.dataAllForm.areaId = []
         }
         // 数据转换 areaId
         let multiAreaId = ''
-        if(this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0){
+        if (this.dataAllForm.areaId && this.dataAllForm.areaId.length > 0) {
           multiAreaId = this.dataAllForm.areaId.join(',')
         }
         // 数据转换，大区bigAreaId
         let multiBigAreaId = ''
-        if(this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0){
+        if (this.dataAllForm.bigAreaId && this.dataAllForm.bigAreaId.length > 0) {
           multiBigAreaId = this.dataAllForm.bigAreaId.join(',')
         }
 
@@ -711,48 +683,49 @@
             'endOrderTime': this.dataAllForm.endOrderTime,
             'status': this.dataAllForm.status
           })
-        }).then(({ data }) => {
+        }).then(({
+          data
+        }) => {
           if (data && data.code === 0) {
             this.$confirm(`是否打包下载证照图片?`, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'info'
             }).then(() => {
-              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
-                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
-                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
-                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
-                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
-                + "&status=" + this.statusStr + "&orderIdStr=" + orderIdStr)
+              this.downloadFile(this.$http.adornUrl('/sys/order/exportOrder') + '?startOrderTime=' +
+                this.dataAllForm.startOrderTime + '&endOrderTime=' + this.dataAllForm.endOrderTime +
+                '&orderNumber=' + this.dataAllForm.orderNumber + '&idCard=' + this.dataAllForm.idCard +
+                '&applyName=' + this.dataAllForm.applyName + '&applyPhone=' + this.dataAllForm.applyPhone +
+                '&name=' + this.dataAllForm.name + '&phone=' + this.dataAllForm.phone +
+                '&areaId=' + multiBigAreaId + '&handleAreaId=' + multiAreaId +
+                '&postType=' + this.dataAllForm.postType + '&postRisk=' + this.dataAllForm.postRisk +
+                '&status=' + this.statusStr + '&orderIdStr=' + orderIdStr)
 
-              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + "?startOrderTime="
-                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
-                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
-                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
-                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
-                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
-                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr)
-
-            }).catch(()=>{
-              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + "?startOrderTime="
-                + this.dataAllForm.startOrderTime + "&endOrderTime=" + this.dataAllForm.endOrderTime
-                + "&orderNumber=" + this.dataAllForm.orderNumber + "&idCard=" + this.dataAllForm.idCard
-                + "&applyName=" + this.dataAllForm.applyName + "&applyPhone=" + this.dataAllForm.applyPhone
-                + "&name=" + this.dataAllForm.name + "&phone=" + this.dataAllForm.phone
-                + "&areaId=" + multiBigAreaId + "&handleAreaId=" + multiAreaId
-                + "&postType=" + this.dataAllForm.postType + "&postRisk=" + this.dataAllForm.postRisk
-                + "&status=" + this.dataAllForm.status + "&orderIdStr=" + orderIdStr
-                // + "&downZip=2"
+              this.downloadFile(this.$http.adornUrl('/sys/order/downFileZip') + '?startOrderTime=' +
+                this.dataAllForm.startOrderTime + '&endOrderTime=' + this.dataAllForm.endOrderTime +
+                '&orderNumber=' + this.dataAllForm.orderNumber + '&idCard=' + this.dataAllForm.idCard +
+                '&applyName=' + this.dataAllForm.applyName + '&applyPhone=' + this.dataAllForm.applyPhone +
+                '&name=' + this.dataAllForm.name + '&phone=' + this.dataAllForm.phone +
+                '&areaId=' + multiBigAreaId + '&handleAreaId=' + multiAreaId +
+                '&postType=' + this.dataAllForm.postType + '&postRisk=' + this.dataAllForm.postRisk +
+                '&status=' + this.dataAllForm.status + '&orderIdStr=' + orderIdStr)
+            }).catch(() => {
+              window.location.href = this.$http.adornUrl('/sys/order/exportOrder') + '?startOrderTime=' +
+                this.dataAllForm.startOrderTime + '&endOrderTime=' + this.dataAllForm.endOrderTime +
+                '&orderNumber=' + this.dataAllForm.orderNumber + '&idCard=' + this.dataAllForm.idCard +
+                '&applyName=' + this.dataAllForm.applyName + '&applyPhone=' + this.dataAllForm.applyPhone +
+                '&name=' + this.dataAllForm.name + '&phone=' + this.dataAllForm.phone +
+                '&areaId=' + multiBigAreaId + '&handleAreaId=' + multiAreaId +
+                '&postType=' + this.dataAllForm.postType + '&postRisk=' + this.dataAllForm.postRisk +
+                '&status=' + this.dataAllForm.status + '&orderIdStr=' + orderIdStr
+              // + "&downZip=2"
             })
           } else {
             this.$message.error(data.msg)
           }
         })
       },
-      getAreaInfo(){
+      getAreaInfo() {
         // this.$http({
         //   url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
         //   method: 'get',
@@ -768,13 +741,13 @@
         //     })
         //   }
         // })
-        let url = ""
-        if(this.type === 1){
+        let url = ''
+        if (this.type === 1) {
           url = this.$http.adornUrl('/sys/handlerArea/areaNames')
-          if(this.dataAllForm.bigAreaId.length === 0){
+          if (this.dataAllForm.bigAreaId.length === 0) {
             this.dataAllForm.areaId = []
           }
-        }else{
+        } else {
           url = this.$http.adornUrl('/sys/handlerArea/areaNameList')
         }
         this.$http({
@@ -783,9 +756,11 @@
           params: this.$http.adornParams({
             'areaId': this.type === 1 ? this.dataAllForm.bigAreaId.join(',') : ''
           })
-        }).then(({ data }) => {
+        }).then(({
+          data
+        }) => {
           this.areaList = []
-          if(data && data.code === 0){
+          if (data && data.code === 0) {
             data.regionList.forEach((item) => {
               this.areaList.push({
                 id: item.id,
@@ -794,15 +769,6 @@
             })
           }
         })
-      }
-    },
-    components: {
-      AddOrUpdate,
-      ViewOrder
-    },
-    computed: {
-      type: {
-        get () { return this.$store.state.user.type }
       }
     }
   }

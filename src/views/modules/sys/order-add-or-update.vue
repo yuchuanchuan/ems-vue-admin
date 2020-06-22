@@ -17,13 +17,15 @@
         <el-input v-model="dataForm.idCard" placeholder="凭证编号"></el-input>
       </el-form-item>
 
-      <el-form-item label="产权人身份证正面" prop="ownerPositive">
+      <!-- <el-form-item label="产权人身份证正面" prop="ownerPositive">
         <Uploader ref="uploadPositive" v-model="dataForm.ownerPositive" :imgUrl="idCardImg1" :applyName="dataForm.applyName" :fileType="1"></Uploader>
       </el-form-item>
       <el-form-item label="产权人身份证反面" prop="ownerNegative">
-        <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
+        
         <Uploader ref="uploadNegative" v-model="dataForm.ownerNegative" :imgUrl="idCardImg2" :fileType="1" :applyName="dataForm.applyName"></Uploader>
-      </el-form-item>
+      </el-form-item> 
+      -->
+      <!--<el-input v-model="dataForm.ownerNegative" placeholder="产权人身份证反面"></el-input>-->
       <el-form-item label="房管局受理凭证" prop="housingAuthority">
         <!--<el-input v-model="dataForm.housingAuthority" placeholder="房管局受理凭证"></el-input>-->
         <Uploader ref="uploadAuthority" v-model="dataForm.housingAuthority" :imgUrl="houseImg" :fileType="2" :applyName="dataForm.applyName"></Uploader>
@@ -49,12 +51,12 @@
       <!--<el-form-item label="详细地址" prop="postAddress">-->
       <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址"></el-input>-->
       <!--</el-form-item>-->
-      <el-form-item label="街道/路" prop="street">
-        <el-input v-model="dataForm.street" placeholder="街道/路"></el-input>
+      <el-form-item label="街道/路、门牌号" prop="street">
+        <el-input v-model="dataForm.street" placeholder="街道/路、门牌号"></el-input>
       </el-form-item>
-      <el-form-item label="门牌号" prop="houseNum">
+<!--      <el-form-item label="门牌号" prop="houseNum">
         <el-input v-model="dataForm.houseNum" placeholder="门牌号"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <!---->
       <!--<el-form-item label="验证码" prop="mobileCode">-->
         <!--<el-input v-model="dataForm.mobileCode" placeholder="手机验证码"></el-input>-->
@@ -217,12 +219,12 @@
           // mobileCode: [
           //   { required: true, message: '手机验证码不能为空', trigger: 'blur' }
           // ],
-          ownerPositive: [
-            { required: true, message: '请上传产权人身份证正面', trigger: 'blur'}
-          ],
-          ownerNegative: [
-            { required: true, message: '请上传产权人身份证反面', trigger: 'blur'}
-          ],
+          // ownerPositive: [
+          //   { required: true, message: '请上传产权人身份证正面', trigger: 'blur'}
+          // ],
+          // ownerNegative: [
+          //   { required: true, message: '请上传产权人身份证反面', trigger: 'blur'}
+          // ],
           housingAuthority: [
             { required: true, message: '请上传房管局受理凭证', trigger: 'blur'}
           ],
@@ -235,9 +237,9 @@
           street: [
             { required: true, message: '街道/路不能为空', trigger: 'blur'}
           ],
-          houseNum: [
-            { required: true, message: '门牌号不能为空', trigger: 'blur'}
-          ],
+          // houseNum: [
+          //   { required: true, message: '门牌号不能为空', trigger: 'blur'}
+          // ],
           addressList: [
             { required: true, message: '收件地址不能为空', trigger: 'change', type:'array'}
           ],
@@ -401,11 +403,11 @@
         }).then(()=>{
           this.visible = true
           this.$nextTick(() => {
-            this.$refs.uploadPositive.imageUrl = ''
-            this.$refs.uploadNegative.imageUrl = ''
+            // this.$refs.uploadPositive.imageUrl = ''
+            // this.$refs.uploadNegative.imageUrl = ''
             this.$refs.uploadAuthority.imageUrl = ''
-            this.idCardImg1 = ''
-            this.idCardImg2 = ''
+            // this.idCardImg1 = ''
+            // this.idCardImg2 = ''
             this.houseImg = ''
             this.$refs['dataForm'].resetFields()
           })
@@ -418,8 +420,8 @@
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.dataForm = data.order
-                this.idCardImg1 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
-                this.idCardImg2 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
+                // this.idCardImg1 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
+                // this.idCardImg2 = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
                 this.houseImg = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
                 this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
               }

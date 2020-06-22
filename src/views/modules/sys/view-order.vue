@@ -23,12 +23,12 @@
         <el-form-item label="凭证编号" prop="idCard">
           <el-input v-model="dataForm.idCard" placeholder="凭证编号" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="产权人身份证正面" prop="ownerPositive">
+<!--        <el-form-item label="产权人身份证正面" prop="ownerPositive">
           <img :src="decodeURIComponent(dataForm.ownerPositive)" alt="" width="120" height="120" @click="fangda(dataForm.ownerPositive)">
         </el-form-item>
         <el-form-item label="产权人身份证反面" prop="ownerNegative">
           <img :src="dataForm.ownerNegative" alt="" width="120" height="120" @click="fangda(dataForm.ownerNegative)">
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="房管局受理凭证" prop="housingAuthority">
           <img :src="dataForm.housingAuthority" alt="" width="120" height="120" @click="fangda(dataForm.housingAuthority)">
         </el-form-item>
