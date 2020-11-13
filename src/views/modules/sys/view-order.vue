@@ -1,29 +1,29 @@
 <template>
   <div>
-    <div class="hidenbox" v-show="!show">
+    <div v-show="!show" class="hidenbox">
       <div class="cha" @click="cha">×</div>
     </div>
-    <div class="hidenimg" v-show="!show">
+    <div v-show="!show" class="hidenimg">
       <img :src="show_img">
     </div>
     <el-dialog
       :title="'查看'"
       :close-on-click-modal="false"
       :visible.sync="visible">
-      <el-form :model="dataForm" ref="dataForm" label-width="135px">
+      <el-form ref="dataForm" :model="dataForm" label-width="135px">
         <el-form-item label="产权人姓名" prop="applyName">
-          <el-input v-model="dataForm.applyName" placeholder="产权人姓名"></el-input>
+          <el-input v-model="dataForm.applyName" placeholder="产权人姓名"/>
         </el-form-item>
         <el-form-item label="产权人手机号" prop="applyPhone">
-          <el-input v-model="dataForm.applyPhone" placeholder="产权人手机号"></el-input>
+          <el-input v-model="dataForm.applyPhone" placeholder="产权人手机号"/>
         </el-form-item>
         <el-form-item label="身份证号" prop="propertyNo">
-          <el-input v-model="dataForm.propertyNo" placeholder="身份证号" :disabled="true"></el-input>
+          <el-input v-model="dataForm.propertyNo" :disabled="true" placeholder="身份证号"/>
         </el-form-item>
         <el-form-item label="凭证编号" prop="idCard">
-          <el-input v-model="dataForm.idCard" placeholder="凭证编号" :disabled="true"></el-input>
+          <el-input v-model="dataForm.idCard" :disabled="true" placeholder="凭证编号"/>
         </el-form-item>
-<!--        <el-form-item label="产权人身份证正面" prop="ownerPositive">
+        <!--        <el-form-item label="产权人身份证正面" prop="ownerPositive">
           <img :src="decodeURIComponent(dataForm.ownerPositive)" alt="" width="120" height="120" @click="fangda(dataForm.ownerPositive)">
         </el-form-item>
         <el-form-item label="产权人身份证反面" prop="ownerNegative">
@@ -33,34 +33,34 @@
           <img :src="dataForm.housingAuthority" alt="" width="120" height="120" @click="fangda(dataForm.housingAuthority)">
         </el-form-item>
         <el-form-item label="收货人姓名" prop="name">
-          <el-input v-model="dataForm.name" placeholder="姓名" :disabled="true"></el-input>
+          <el-input v-model="dataForm.name" :disabled="true" placeholder="姓名"/>
         </el-form-item>
         <el-form-item label="收货人手机号" prop="phone">
-          <el-input v-model="dataForm.phone" placeholder="手机号" :disabled="true"></el-input>
+          <el-input v-model="dataForm.phone" :disabled="true" placeholder="手机号"/>
         </el-form-item>
         <el-form-item label="收件地址" prop="addressList">
           <!--<el-input v-model="dataForm.postRisk" placeholder="是否投递保险"></el-input>-->
-          <el-cascader :disabled="true"
-                       v-model="dataForm.addressList"
-                       :options="options"
-                       :props="props"
-                       clearable
-          ></el-cascader>
+          <el-cascader
+            :disabled="true"
+            v-model="dataForm.addressList"
+            :options="options"
+            :props="props"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="街道/路" prop="postAddress">
-          <el-input v-model="dataForm.street" placeholder="街道/路" :disabled="true"></el-input>
+          <el-input v-model="dataForm.street" :disabled="true" placeholder="街道/路"/>
         </el-form-item>
         <el-form-item label="门牌号" prop="postAddress">
-          <el-input v-model="dataForm.houseNum" placeholder="门牌号" :disabled="true"></el-input>
+          <el-input v-model="dataForm.houseNum" :disabled="true" placeholder="门牌号"/>
         </el-form-item>
         <el-form-item label="邮寄类型" prop="postType">
-          <el-select v-model="dataForm.postType" placeholder="请选择" width="100%" :disabled="true">
+          <el-select v-model="dataForm.postType" :disabled="true" placeholder="请选择" width="100%">
             <el-option
               v-for="item in postTypeList"
               :key="item.id"
               :label="item.name"
-              :value="item.id">
-            </el-option>
+              :value="item.id"/>
           </el-select>
         </el-form-item>
         <!--<el-form-item label="是否投递保险" prop="postRisk">-->
@@ -75,7 +75,7 @@
 
         <el-form-item label="投递费用" size="mini" prop="postRiskId">
           <el-radio-group v-model="dataForm.postRiskId" :disabled="true">
-            <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.id" border size="medium">{{item.text}}</el-radio>
+            <el-radio v-for="(item,index) in postRiskList" :key="index" :label="item.id" border size="medium">{{ item.text }}</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -85,8 +85,7 @@
               v-for="item in bigAreaList"
               :key="item.id"
               :label="item.name"
-              :value="item.id">
-            </el-option>
+              :value="item.id"/>
           </el-select>
         </el-form-item>
         <el-form-item label="所属网点" prop="handleAreaId">
@@ -95,195 +94,194 @@
               v-for="item in areaList"
               :key="item.id"
               :label="item.name"
-              :value="item.id">
-            </el-option>
+              :value="item.id"/>
           </el-select>
         </el-form-item>
 
         <!--<el-form-item label="详细地址" prop="postAddress">-->
-          <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址" :disabled="true"></el-input>-->
+        <!--<el-input v-model="dataForm.postAddress" placeholder="详细地址" :disabled="true"></el-input>-->
         <!--</el-form-item>-->
 
       </el-form>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">关闭</el-button>
-    </span>
+        <el-button @click="visible = false">关闭</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import Uploader from '../../../components/Uploader/uploader'
-  export default {
-    data(){
-      return{
-        show_img:'',
-        show:true,
-        visible: false,
-        imageUrl: '',
-        options: [],
-        postRiskList: [],
-        props: {
-          value: "id",
-          label: "name",
-          children: "childList"
-        },
-        childOptions: [],
-        postTypeList:[],
-        areaList: [],
-        bigAreaList: [],
-        dataForm:{
-          orderId: 0,
-          applyName: '',
-          applyPhone: '',
-          name: '',
-          propertyNo: '', // 身份证号
-          idCard: '',
-          phone: '',
-          mobileCode: '',
-          ownerPositive: '',
-          ownerNegative: '',
-          housingAuthority: '',
-          postType: '',
-          postRisk: 1,
-          postRiskId: '',
-          postProvinceId: '',
-          postCityId: '',
-          postCountyId: '',
-          postAddress: '',
-          addressList: [],
-          street: '',
-          houseNum: '',
-          areaId: '',
-          handleAreaId: ''
-        },
-      }
-    },
-    methods:{
-      cha (){
-        this.show=true
-        $("body").css("overflow","auto");
+import Uploader from '../../../components/Uploader/uploader'
+export default {
+  components: {
+    Uploader
+  },
+  data() {
+    return {
+      show_img: '',
+      show: true,
+      visible: false,
+      imageUrl: '',
+      options: [],
+      postRiskList: [],
+      props: {
+        value: 'id',
+        label: 'name',
+        children: 'childList'
       },
-      fangda (imgSrc){
+      childOptions: [],
+      postTypeList: [],
+      areaList: [],
+      bigAreaList: [],
+      dataForm: {
+        orderId: 0,
+        applyName: '',
+        applyPhone: '',
+        name: '',
+        propertyNo: '', // 身份证号
+        idCard: '',
+        phone: '',
+        mobileCode: '',
+        ownerPositive: '',
+        ownerNegative: '',
+        housingAuthority: '',
+        postType: '',
+        postRisk: 1,
+        postRiskId: '',
+        postProvinceId: '',
+        postCityId: '',
+        postCountyId: '',
+        postAddress: '',
+        addressList: [],
+        street: '',
+        houseNum: '',
+        areaId: '',
+        handleAreaId: ''
+      }
+    }
+  },
+  computed: {
+    type: {
+      get() { return this.$store.state.user.type }
+    }
+  },
+  methods: {
+    cha() {
+      this.show = true
+      $('body').css('overflow', 'auto')
+    },
+    fangda(imgSrc) {
       	// this.show_img = this.dataAllList[e].housingAuthority
       	this.show_img = imgSrc
-        this.show=false
-        $("body").css("overflow","hidden");
-      },
-      init (orderId) {
-        this.dataForm.orderId = orderId || 0
+      this.show = false
+      $('body').css('overflow', 'hidden')
+    },
+    init(orderId) {
+      this.dataForm.orderId = orderId || 0
+      this.$http({
+        url: this.$http.adornUrl('/sys/area/list'),
+        method: 'get',
+        params: this.$http.adornParams()
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.options = []
+          data.areaList.forEach((item) => {
+            if (item.childList) {
+              this.options.push(item)
+            }
+          })
+        }
+      }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/area/list'),
+          url: this.$http.adornUrl('/sys/insured/listAll'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({ data }) => {
-          if(data && data.code === 0){
-            this.options = []
-            data.areaList.forEach((item) => {
-              if(item.childList){
-                this.options.push(item)
-              }
+          if (data && data.code === 0) {
+            console.log(data)
+            this.postRiskList = []
+            data.list.forEach((item) => {
+              this.postRiskList.push({
+                id: item.insuredId,
+                text: item.insuredComment + '￥' + item.insuredAmount
+              })
             })
+            this.dataForm.postRiskId = data.list[0].insuredId
           }
-        }).then(()=>{
-          this.$http({
-            url: this.$http.adornUrl('/sys/insured/listAll'),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              console.log(data)
-              this.postRiskList = []
-              data.list.forEach((item) => {
-                this.postRiskList.push({
-                  id: item.insuredId,
-                  text: item.insuredComment + '￥' + item.insuredAmount
-                })
+        })
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/bussiness/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          if (data && data.code === 0) {
+            this.postTypeList = []
+            data.list.forEach((item) => {
+              this.postTypeList.push({
+                id: item.id,
+                name: item.bussinessName
               })
-              this.dataForm.postRiskId = data.list[0].insuredId
-            }
-          })
-        }).then(()=>{
-          this.$http({
-            url: this.$http.adornUrl('/sys/bussiness/allList'),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.postTypeList = []
-              data.list.forEach((item) => {
-                this.postTypeList.push({
-                  id: item.id,
-                  name: item.bussinessName
-                })
-              })
-            }
-          })
-        }).then(()=>{
-          this.$http({
-            url: this.$http.adornUrl('/sys/bigarea/allList'),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            this.bigAreaList = []
-            if(data && data.code === 0 && data.list && data.list.length > 0){
-              data.list.forEach((item) => {
-                this.bigAreaList.push({
-                  id: item.id,
-                  name: item.name
-                })
-              })
-            }
-          })
-        }).then(()=>{
-          this.$http({
-            url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            this.areaList = []
-            if(data && data.code === 0){
-              data.regionList.forEach((item) => {
-                this.areaList.push({
-                  id: item.id,
-                  name: item.handleArea
-                })
-              })
-            }
-          })
-        }).then(()=>{
-          this.visible = true
-          this.$nextTick(() => {
-            this.$refs['dataForm'].resetFields()
-          })
-        }).then(() => {
-          if (this.dataForm.orderId) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({ data }) => {
-              if (data && data.code === 0) {
-                this.dataForm = data.order
-                this.dataForm.ownerPositive = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerPositive)
-                this.dataForm.ownerNegative = decodeURIComponent("http://ems.tjeasytech.cn/" + data.order.ownerNegative)
-                this.dataForm.housingAuthority = decodeURIComponent("http://ems.tjeasytech.cn/zip/受理凭证/" + data.order.housingAuthority)
-                this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
-              }
             })
           }
         })
-      },
-    },
-    components:{
-      Uploader
-    },
-    computed: {
-      type: {
-        get () { return this.$store.state.user.type }
-      }
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/bigarea/allList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.bigAreaList = []
+          if (data && data.code === 0 && data.list && data.list.length > 0) {
+            data.list.forEach((item) => {
+              this.bigAreaList.push({
+                id: item.id,
+                name: item.name
+              })
+            })
+          }
+        })
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/handlerArea/areaNameList'),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({ data }) => {
+          this.areaList = []
+          if (data && data.code === 0) {
+            data.regionList.forEach((item) => {
+              this.areaList.push({
+                id: item.id,
+                name: item.handleArea
+              })
+            })
+          }
+        })
+      }).then(() => {
+        this.visible = true
+        this.$nextTick(() => {
+          this.$refs['dataForm'].resetFields()
+        })
+      }).then(() => {
+        if (this.dataForm.orderId) {
+          this.$http({
+            url: this.$http.adornUrl(`/sys/order/info/${this.dataForm.orderId}`),
+            method: 'get',
+            params: this.$http.adornParams()
+          }).then(({ data }) => {
+            if (data && data.code === 0) {
+              this.dataForm = data.order
+              this.dataForm.ownerPositive = decodeURIComponent('http://ems.tjeasytech.cn/' + data.order.ownerPositive)
+              this.dataForm.ownerNegative = decodeURIComponent('http://ems.tjeasytech.cn/' + data.order.ownerNegative)
+              this.dataForm.housingAuthority = decodeURIComponent('http://ems.tjeasytech.cn/zip/受理凭证/' + data.order.housingAuthority)
+              this.dataForm.addressList = [data.order.postProvinceId, data.order.postCityId, data.order.postCountyId]
+            }
+          })
+        }
+      })
     }
   }
+}
 </script>
 
 <style scoped>

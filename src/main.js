@@ -7,7 +7,9 @@ import VueCookie from 'vue-cookie' // api: https://github.com/alfhen/vue-cookie
 import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
 import { isAuth } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
-
+// import Print from '@/printDetails/print'
+// import Print from '@/printDetails/domtoimage'
+import VueBarcode from '@xkeshi/vue-barcode';
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import 'element-ui/lib/theme-chalk/index.css'
@@ -19,6 +21,11 @@ import '@/icons' // icon
 
 Vue.use(VueCookie)
 Vue.config.productionTip = false
+
+// Vue.use(Print) // 注册
+
+Vue.component('barcode', VueBarcode); 
+
 
 // 挂载全局
 Vue.prototype.$http = httpRequest// ajax请求方法
